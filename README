@@ -1,0 +1,34 @@
+EGLBenchmark:
+-------------
+
+EGLBenchmark is a simple benchmark/testbench program to allow easy testing
+of EGL and GLES2 primitives.
+
+I wrote the program for the purpose of testing low level functionality
+of graphics drivers on various platform and was having a lack of simple
+test program, which meets the following requirements:
+
+1) Minimal requirements. Only X11, EGL and GLES2. Nothing else
+2) Sall footprint
+3) Easily expandable with a new test case
+
+So here it is. With one simple class and test cases inherited from it.
+Writing a new test case is a job of 5 minutes or less, if a primitive
+level test case is required.
+
+At the moment three test cases are included:
+
+1) EGL initialisation and destruction
+2) Simple shader program example
+3) Simple triangle drawing example
+
+Even with these simple cases a dozen low level bugs have been pulled
+out from the current GLES2 drivers.
+
+Number of test cases will grow, as I see need for them. I'm targeting now
+low level testing of ETC1 texture compression as well as dynamic
+creation of geometry data via FrameBufferObjects.
+
+Suggestions welcome.
+
+- Jarkko
