@@ -87,7 +87,6 @@ b02_SimpleGLShading::~b02_SimpleGLShading()
  */
 bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    std::cout << "lal\n";
     return createEGLDisplay(width, height, fullscreen);
 }
 
