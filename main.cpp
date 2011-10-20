@@ -16,13 +16,19 @@
 #include "b03_SimpleTriangle.h"
 
 // the default settings
+enum {
+    TEST_CONTEXTINIT = 1,
+    TEST_SIMPLESHADER,
+    TEST_SIMPLETRIANGLE
+};
 static unsigned int width = 840;
 static unsigned int height = 480;
 static unsigned int fullscreen = false;
 static int verbosity = 1;
 static float duration = 5.0f;
+static unsigned int testcase = TEST_CONTEXTINIT;
 
-void parseArgs(int argc, char *argv[])
+bool parseArgs(int argc, char *argv[])
 {
     typedef struct _o {
         const char *name;
@@ -35,6 +41,10 @@ void parseArgs(int argc, char *argv[])
         OPT_FULLSCREEN,
         OPT_DURATION,
         OPT_TESTCASE,
+        OPT_LIST,
+        OPT_USAGE,
+        OPT_H,
+        OPT_HELP,
     };
     OPTION options[] = {
         { "-verbose",    OPT_VERBOSE },
@@ -43,6 +53,10 @@ void parseArgs(int argc, char *argv[])
         { "-fullscreen", OPT_FULLSCREEN },
         { "-duration",   OPT_DURATION },
         { "-testcase",   OPT_TESTCASE },
+        { "-list",       OPT_LIST },
+        { "-usage",      OPT_USAGE },
+        { "-h",          OPT_H },
+        { "-help",       OPT_HELP },
     };
 
     for (int i=1; i<argc; i++)
@@ -77,39 +91,65 @@ void parseArgs(int argc, char *argv[])
                     duration = atof(argv[i+1]);
                     if (duration < 1.0f) duration = 1.0f;
                     break;
+                case OPT_USAGE:
+                case OPT_H:
+                case OPT_HELP:
+                    std::cout << "Usage:\n" << argv[0] << " -width <W> -height <H> -fullscreen";
+                    std::cout << "  -verbose <LEVEL 1-5> -duration <seconds> -usage|-h|-help -list -testcase <testcasename>\n";
+                    return false;
+                case OPT_LIST:
+                    std::cout << "List of available test cases:\n";
+                    std::cout << "   context:  EGL context initialization test\n";
+                    std::cout << "   shader:   Simple Shader test\n";
+                    std::cout << "   triangle: Simple Triangle test\n";
+                    return false;
+                case OPT_TESTCASE:
+                    if (i+1 == argc) break; // No params anymore
+                    if (0 == strcmp(argv[i+1], "context")) testcase = TEST_CONTEXTINIT;
+                    if (0 == strcmp(argv[i+1], "shader")) testcase = TEST_SIMPLESHADER;
+                    if (0 == strcmp(argv[i+1], "triangle")) testcase = TEST_SIMPLETRIANGLE;
+                    break;
                 }
             }
         }
     }
+    return true;
 }
 
 int main(int argc, char *argv[])
 {
-    EGLX11Benchmark *bm_table[3];
+    EGLX11Benchmark *bm;
 
-    // We have inheritance OK, so we can assume the dynamic cast to always
-    // succeed!
-    bm_table[0] = dynamic_cast<EGLX11Benchmark*>(new b01_ContextInit());
-    bm_table[1] = dynamic_cast<EGLX11Benchmark*>(new b02_SimpleGLShading());
-    bm_table[2] = dynamic_cast<EGLX11Benchmark*>(new b03_SimpleTriangle());
-
-    parseArgs(argc, argv);
-
-    for (unsigned int i=0; i<sizeof(bm_table)/sizeof(EGLX11Benchmark*); i++)
+    if (false == parseArgs(argc, argv))
     {
-        bm_table[i]->setVerbosityLevel(verbosity);
+        return 0;
+    }
 
-        if (false == bm_table[i]->initBenchmark(width, height, fullscreen))
-        {
-            std::cout << "initBenchmark() of '" << bm_table[i]->getName() <<"' failed\n";
-            continue;
-        }
+    switch(testcase)
+    {
+    case TEST_CONTEXTINIT:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b01_ContextInit());
+        break;
+    case TEST_SIMPLESHADER:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b02_SimpleGLShading());
+        break;
+    case TEST_SIMPLETRIANGLE:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b03_SimpleTriangle());
+    }
 
-        std::cout << "Benchmark name: " << bm_table[i]->getName() << "\n";
-        std::cout << "Description:    " << bm_table[i]->getDescription() << "\n";
-        std::cout << "Running benchmark...\n";
+    bm->setVerbosityLevel(verbosity);
 
-        if (false == bm_table[i]->runBenchmark(duration))
+    if (false == bm->initBenchmark(width, height, fullscreen))
+    {
+        std::cout << "initBenchmark() of '" << bm->getName() <<"' failed\n";
+    }
+    else
+    {
+        std::cout << "Benchmark name: " << bm->getName() << "\n";
+        std::cout << "Description:    " << bm->getDescription() << "\n";
+        std::cout << "Running benchmark (duration="<<duration<<" seconds)...\n";
+
+        if (false == bm->runBenchmark(duration))
         {
             std::cout << "runBenchmark() FAILED!\n";
         }
@@ -118,8 +158,8 @@ int main(int argc, char *argv[])
             std::cout << "runBenchmark() SUCCESS!\n";
         }
 
-        bm_table[i]->displayResult();
-        bm_table[i]->destroyBenchmark();
+        bm->displayResult();
+        bm->destroyBenchmark();
     }
 
     std::cout << "Done!\n";
