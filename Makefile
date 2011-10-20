@@ -11,7 +11,8 @@ SRC=main.cpp                \
     EGLX11Benchmark.cpp     \
     b01_ContextInit.cpp     \
     b02_SimpleGLShading.cpp \
-    b03_SimpleTriangle.cpp
+    b03_SimpleTriangle.cpp  \
+    b04_ETCTextureTest.cpp
 
 all:
 	g++ -g ${SRC} -o ${OUTPUT} ${CFLAGS} ${INCDIRS} ${LIBDIRS} ${LIBS}

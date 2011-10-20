@@ -14,12 +14,14 @@
 #include "b01_ContextInit.h"
 #include "b02_SimpleGLShading.h"
 #include "b03_SimpleTriangle.h"
+#include "b04_ETCTextureTest.h"
 
 // the default settings
 enum {
     TEST_CONTEXTINIT = 1,
     TEST_SIMPLESHADER,
-    TEST_SIMPLETRIANGLE
+    TEST_SIMPLETRIANGLE,
+    TEST_ETCTEXTURE,
 };
 static unsigned int width = 840;
 static unsigned int height = 480;
@@ -102,12 +104,19 @@ bool parseArgs(int argc, char *argv[])
                     std::cout << "   context:  EGL context initialization test\n";
                     std::cout << "   shader:   Simple Shader test\n";
                     std::cout << "   triangle: Simple Triangle test\n";
+                    std::cout << "   etctex:   ETC texture compression test\n";
                     return false;
                 case OPT_TESTCASE:
                     if (i+1 == argc) break; // No params anymore
                     if (0 == strcmp(argv[i+1], "context")) testcase = TEST_CONTEXTINIT;
-                    if (0 == strcmp(argv[i+1], "shader")) testcase = TEST_SIMPLESHADER;
-                    if (0 == strcmp(argv[i+1], "triangle")) testcase = TEST_SIMPLETRIANGLE;
+                    else if (0 == strcmp(argv[i+1], "shader")) testcase = TEST_SIMPLESHADER;
+                    else if (0 == strcmp(argv[i+1], "triangle")) testcase = TEST_SIMPLETRIANGLE;
+                    else if (0 == strcmp(argv[i+1], "etctex")) testcase = TEST_ETCTEXTURE;
+                    else
+                    {
+                        std::cout << "Unrecognized test case: " << argv[i+1] << "\n";
+                        return false;
+                    }
                     break;
                 }
             }
@@ -135,6 +144,10 @@ int main(int argc, char *argv[])
         break;
     case TEST_SIMPLETRIANGLE:
         bm = dynamic_cast<EGLX11Benchmark*>(new b03_SimpleTriangle());
+        break;
+    case TEST_ETCTEXTURE:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b04_ETCTextureTest());
+        break;
     }
 
     bm->setVerbosityLevel(verbosity);

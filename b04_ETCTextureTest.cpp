@@ -1,6 +1,6 @@
 
 /*
- * b01_ContextInit - benchmark #1, EGL context creation:
+ * b04_ETCTextureTest - benchmark #1, EGL context creation:
  * -----------------------------------------------------
  * This test case initializes native window, creates render surfaces and associated EGL context
  * to hold all of this information. No other actions are taken. This is the simplest test for EGL
@@ -11,20 +11,20 @@
  * For conditions of distribution and use, see copyright notice in license.txt
  */
 
-#include "b01_ContextInit.h"
+#include "b04_ETCTextureTest.h"
 
 /*
  * Constructor and destructor are dummy ones. Only descriptions are set, and other activities are
  * done when calling the virtual benchmark API
  */
 
-b01_ContextInit::b01_ContextInit()
+b04_ETCTextureTest::b04_ETCTextureTest()
 {
-    setName("EGL Context Init test");
-    setDescription("This test executes EGL context initialization test");
+    setName("ETC texture compression test");
+    setDescription("This test tests texture compression parts of GLES2 and executes a case using ETC texture format");
 }
 
-b01_ContextInit::~b01_ContextInit()
+b04_ETCTextureTest::~b04_ETCTextureTest()
 {
 }
 
@@ -33,19 +33,16 @@ b01_ContextInit::~b01_ContextInit()
  * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
  * method can be used to output information about the initialization
  */
-bool b01_ContextInit::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    w_width = width;
-    w_height = height;
-    w_fullscreen = fullscreen;
-    return true;
+    return createEGLDisplay(width, height, fullscreen);;
 }
 
 /*
  * destroyBenchmark() shall free all resources allocated by the initBenchmark() method. The core shall
  * call this method once the benchmark case has been run.
  */
-bool b01_ContextInit::destroyBenchmark(void)
+bool b04_ETCTextureTest::destroyBenchmark(void)
 {
     destroyEGLDisplay();
     return true;
@@ -54,15 +51,15 @@ bool b01_ContextInit::destroyBenchmark(void)
 /*
  * runBenchmark()
  */
-bool b01_ContextInit::runBenchmark(float duration)
+bool b04_ETCTextureTest::runBenchmark(float duration)
 {
-    return createEGLDisplay(w_width, w_height, w_fullscreen);
+    return true;
 }
 
 /*
  * displayResult()
  */
-bool b01_ContextInit::displayResult(void)
+bool b04_ETCTextureTest::displayResult(void)
 {
     return true;
 }
