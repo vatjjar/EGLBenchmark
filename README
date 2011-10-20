@@ -9,7 +9,7 @@ of graphics drivers on various platform and was having a lack of simple
 test program, which meets the following requirements:
 
 1) Minimal requirements. Only X11, EGL and GLES2. Nothing else
-2) Sall footprint
+2) Small footprint
 3) Easily expandable with a new test case
 
 So here it is. With one simple class and test cases inherited from it.
