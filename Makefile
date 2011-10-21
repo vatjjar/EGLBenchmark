@@ -4,7 +4,7 @@
 INCDIRS=
 LIBDIRS=
 CFLAGS=-Wall
-LIBS=-lEGL -lGLESv2
+LIBS=-lEGL -lGLESv2 -lX11
 OUTPUT=EGLBenchmark
 
 SRC=main.cpp                \
