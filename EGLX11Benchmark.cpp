@@ -78,17 +78,6 @@ void EGLX11Benchmark::flushGLErrors(void)
             std::cout << " (GL_INVALID_FRAMEBUFFER_OPERATION) ";
             std::cout << "glCheckFramebufferStatus(GL_FRAMEBUFFER) = " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << "\n";
             break;
-        /* Following are out of GLES2 spec:
-        case GL_STACK_UNDERFLOW:
-            std::cout << " (GL_INVALID_ENUM)\n";
-            break;
-        case GL_OUT_OF_MEMORY:
-            std::cout << " (GL_INVALID_ENUM)\n";
-            break;
-        case GL_TABLE_TOO_LARGE:
-            std::cout << " (GL_INVALID_ENUM)\n";
-            break;
-        */
         default:
             std::cout << " (UNKNOWN GL ERROR)\n";
             break;
@@ -177,8 +166,6 @@ bool EGLX11Benchmark::userInterrupt(void)
     XEvent  xev;
     bool userinterrupt = false;
 
-    //return userinterrupt;
-
     // Pump all messages from X server and interpret keypresses as user interrupts
     // No other intelligence here whatsoever
     while ( XPending ( x_display ) )
@@ -188,6 +175,16 @@ bool EGLX11Benchmark::userInterrupt(void)
             userinterrupt = true;
     }
     return userinterrupt;
+}
+
+unsigned int EGLX11Benchmark::getGLErrors(void)
+{
+    return GLerrors;
+}
+
+unsigned int EGLX11Benchmark::getEGLErrors(void)
+{
+    return EGLerrors;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,11 +215,9 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
        outputMessage(1, "Error: Unable to connect to X Server\n");
        return false;
    }
-   //MESSAGE(4, "X server handle = %d\n", x_display);
 
    outputMessage(5, "Querying X root window\n");
    root = DefaultRootWindow(x_display);
-   //MESSAGE(4, "X default root window = %d\n", root);
 
    outputMessage(5, "Creating X11 window\n");
    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
@@ -232,7 +227,6 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
               CopyFromParent, InputOutput,
               CopyFromParent, CWEventMask,
               &swa );
-   //MESSAGE(4, "X window handle = %d\n", (unsigned int)win);
 
    outputMessage(5, "Updating window attributes\n");
    xattr.override_redirect = false;

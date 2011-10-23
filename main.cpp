@@ -172,6 +172,8 @@ int main(int argc, char *argv[])
         }
 
         bm->displayResult();
+        std::cout << "Total GL errors during the test: " << bm->getGLErrors() << "\n";
+        std::cout << "Total EGL errors during the test: " << bm->getEGLErrors() << "\n";
         bm->destroyBenchmark();
     }
 
