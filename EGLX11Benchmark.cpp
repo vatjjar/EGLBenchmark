@@ -295,7 +295,7 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
    flushEGLErrors();
 
    outputMessage(5, "EGL: EGL configs available?\n");
-   if ( num_config != 1 ) {
+   if ( num_config == 0 ) {
        flushEGLErrors();
        outputMessage(1, "EGL: eglGetDisplay() no configs found!\n");
        return false;

@@ -35,7 +35,34 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
  */
 bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    return createEGLDisplay(width, height, fullscreen);;
+    GLint t;
+    GLint f[10];
+
+    if (false == createEGLDisplay(width, height, fullscreen))
+    {
+        return false;
+    }
+
+    // First we query the list of supported compressed texture formats
+    glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &t);
+    flushGLErrors();
+    MESSAGE(1, "Number of compressed texture formats supported by the driver: %d\n", t);
+
+    glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, (GLint*)&f);
+    flushGLErrors();
+    outputMessage(2, "Supported compressed texture formats:\n");
+    for (int i=0; i<t; i++)
+    {
+        switch(f[i])
+        {
+        default:
+            MESSAGE(2, "format %d: ", i);
+            MESSAGE(2, "0x%x ", f[i]);
+            outputMessage(2, "(UNKNOWN FORMAT)\n");
+            break;
+        }
+    }
+    return true;
 }
 
 /*

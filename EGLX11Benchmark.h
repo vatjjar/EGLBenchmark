@@ -23,9 +23,8 @@
 #include  <EGL/egl.h>
 
 const EGLint attr[] = {       // some attributes to set up our egl-interface
-   EGL_BUFFER_SIZE, 16,
-   EGL_RENDERABLE_TYPE,
-   EGL_OPENGL_ES2_BIT,
+   EGL_BUFFER_SIZE,     16,
+   EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
    EGL_NONE
 };
 
