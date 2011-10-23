@@ -3,7 +3,7 @@
 
 INCDIRS=
 LIBDIRS=
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 LIBS=-lEGL -lGLESv2 -lX11
 OUTPUT=EGLBenchmark
 
@@ -15,5 +15,5 @@ SRC=main.cpp                \
     b04_ETCTextureTest.cpp
 
 all:
-	g++ -g ${SRC} -o ${OUTPUT} ${CFLAGS} ${INCDIRS} ${LIBDIRS} ${LIBS}
+	g++ ${SRC} -o ${OUTPUT} ${CFLAGS} ${INCDIRS} ${LIBDIRS} ${LIBS}
 
