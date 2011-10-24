@@ -11,6 +11,8 @@
 
 #include "EGLX11Benchmark.h"
 
+#include "GLES2/gl2ext.h"
+
 class b04_ETCTextureTest : public EGLX11Benchmark
 {
 public:
@@ -21,6 +23,9 @@ public:
     bool destroyBenchmark(void);
     bool runBenchmark(float duration);
     bool displayResult(void);
+
+private:
+    bool etc1_supported;
 };
 
 #endif // b04_ETCTextureTest_H

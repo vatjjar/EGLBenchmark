@@ -22,6 +22,7 @@ b04_ETCTextureTest::b04_ETCTextureTest()
 {
     setName("ETC texture compression test");
     setDescription("This test tests texture compression parts of GLES2 and executes a case using ETC texture format");
+    etc1_supported = false;
 }
 
 b04_ETCTextureTest::~b04_ETCTextureTest()
@@ -36,7 +37,7 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
 bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
     GLint t;
-    GLint f[10];
+    GLint f[32];
 
     if (false == createEGLDisplay(width, height, fullscreen))
     {
@@ -53,15 +54,68 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     outputMessage(2, "Supported compressed texture formats:\n");
     for (int i=0; i<t; i++)
     {
+        MESSAGE(2, "format %d: ", i);
+        MESSAGE(2, "0x%x ", f[i]);
         switch(f[i])
         {
+#if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
+        case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: /* 0x83f0 */
+            outputMessage(2, "(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)\n");
+            break;
+#endif
+#if defined(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
+        case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: /* 0x83f1 */
+            outputMessage(2, "(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)\n");
+            break;
+#endif
+#if defined(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)
+        case GL_COMPRESSED_RGB_S3TC_DXT3_EXT: /* 0x83f2 */
+            outputMessage(2, "(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)\n");
+            break;
+#endif
+#if defined(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+        case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: /* 0x83f3 */
+            outputMessage(2, "(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)\n");
+            break;
+#endif
+#if defined(GL_LUMINANCE_LATC1_EXT)
+        case GL_LUMINANCE_LATC1_EXT: /* 0x8c70 */
+            outputMessage(2, "(GL_LUMINANCE_LATC1_EXT)\n");
+            break;
+#endif
+#if defined(GL_SIGNED_LUMINANCE_LATC1_EXT)
+        case GL_SIGNED_LUMINANCE_LATC1_EXT: /* 0x8c71 */
+            outputMessage(2, "(GL_SIGNED_LUMINANCE_LATC1_EXT)\n");
+            break;
+#endif
+#if defined(GL_LUMINANCE_ALPHA_LATC2_EXT)
+        case GL_LUMINANCE_ALPHA_LATC2_EXT: /* 0x8c72 */
+            outputMessage(2, "(GL_LUMINANCE_ALPHA_LATC2_EXT)\n");
+            break;
+#endif
+#if defined(GL_SIGNED_LUMINANCE_ALPHA_LATC2_EXT)
+        case GL_SIGNED_LUMINANCE_ALPHA_LATC2_EXT: /* 0x8c73 */
+            outputMessage(2, "(GL_SIGNED_LUMINANCE_ALPHA_LATC1_EXT)\n");
+            break;
+#endif
+#if defined(GL_ETC1_RGB8_OES)
+        case GL_ETC1_RGB8_OES: /* 0x8d64 */
+            etc1_supported = true;
+            outputMessage(2, "(GL_ETC1_RGB8_OES)\n");
+            break;
+#endif
         default:
-            MESSAGE(2, "format %d: ", i);
-            MESSAGE(2, "0x%x ", f[i]);
             outputMessage(2, "(UNKNOWN FORMAT)\n");
             break;
         }
     }
+
+    if (etc1_supported == false)
+    {
+        outputMessage(2, "No ETC1 support detected in drivers\n");
+        return false;
+    }
+
     return true;
 }
 
