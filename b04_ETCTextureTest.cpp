@@ -38,6 +38,26 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
 {
     GLint t;
     GLint f[32];
+    const char vertex_src[] =
+       "attribute vec4 a_Position;   \n"
+       "attribute vec2 a_TexCoord;   \n"
+       "varying vec2 v_TexCoord;     \n"
+       "void main()                  \n"
+       "{                            \n"
+       "   gl_Position = a_Position; \n"
+       "   v_TexCoord = a_TexCoord;  \n"
+       "}                            \n";
+
+    const char fragment_src[] =
+       "precision mediump float;                     \n"
+       "varying vec2 v_TexCoord;                     \n"
+       "uniform sampler2D s_texture;                 \n"
+       "void main()                                  \n"
+       "{                                            \n"
+       "  gl_FragColor = texture2D(s_texture, v_TexCoord);\n"
+       "}                                            \n";
+
+    // Display and context init
 
     if (false == createEGLDisplay(width, height, fullscreen))
     {
@@ -113,8 +133,48 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     if (etc1_supported == false)
     {
         outputMessage(2, "No ETC1 support detected in drivers\n");
+        //return false;
+    }
+
+    // Then shader init:
+
+    outputMessage(5, "loading shaders...\n");
+    vertexShader   = loadShader ( vertex_src , GL_VERTEX_SHADER  );     // load vertex shader
+    fragmentShader = loadShader ( fragment_src , GL_FRAGMENT_SHADER );  // load fragment shader
+    if (vertexShader == 0 || fragmentShader == 0)
+    {
+        outputMessage(1, "Error: Shader program loading failed\n");
         return false;
     }
+
+    outputMessage(5, "glCreateProgram()\n");
+    shaderProgram  = glCreateProgram ();
+    flushGLErrors();
+    outputMessage(5, "glAttachShader() - vertex\n");
+    glAttachShader ( shaderProgram, vertexShader );
+    flushGLErrors();
+    outputMessage(5, "glAttachShader() - fragment\n");
+    glAttachShader ( shaderProgram, fragmentShader );
+    flushGLErrors();
+
+    glBindAttribLocation ( shaderProgram, 0, "a_Position" );
+    flushGLErrors();
+
+#if 0
+    outputMessage(5, "glLinkProgram()\n");
+    glLinkProgram ( shaderProgram );
+    flushGLErrors();
+    outputMessage(5, "glUseProgram()\n");
+    glUseProgram  ( shaderProgram );
+    flushGLErrors();
+#else
+    GLLINKPROGRAM(shaderProgram);
+    GLUSEPROGRAM(shaderProgram);
+#endif
+
+    GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+    //glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
+    flushGLErrors();
 
     return true;
 }
@@ -129,11 +189,61 @@ bool b04_ETCTextureTest::destroyBenchmark(void)
     return true;
 }
 
+
+void b04_ETCTextureTest::Render(void)
+{
+    GLfloat vVertices[] = {  -0.5f, -0.5f, 0.0f,
+                             -0.5f,  0.5f, 0.0f,
+                              0.5f,  0.5f, 0.0f,
+                              0.5f, -0.5f, 0.0f };
+
+    // Set the viewport
+    glViewport ( 0, 0, w_width, w_height);
+    flushGLErrors();
+
+    // Clear the color buffer
+    glClear ( GL_COLOR_BUFFER_BIT );
+    flushGLErrors();
+
+    // Use the program object
+    glUseProgram ( shaderProgram );
+    flushGLErrors();
+
+    // Load the vertex data
+    glVertexAttribPointer ( 0, 4, GL_FLOAT, GL_FALSE, 0, vVertices );
+    flushGLErrors();
+
+    glEnableVertexAttribArray ( 0 );
+    flushGLErrors();
+
+    glDrawArrays ( GL_TRIANGLE_FAN, 0, 4 );
+    flushGLErrors();
+
+    eglSwapBuffers ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    flushGLErrors();
+}
+
 /*
  * runBenchmark()
  */
 bool b04_ETCTextureTest::runBenchmark(float duration)
 {
+    // Timer and variables
+    resetTimer();
+    totaltime = 0;
+    renderedFrames = 0;
+
+    while ( totaltime < duration )
+    {
+        Render();
+        renderedFrames++;
+
+        // Grab time since last timer reset
+        totaltime = getTime();
+
+        if (userInterrupt() == true)
+            break;
+    }
     return true;
 }
 

@@ -25,7 +25,17 @@ public:
     bool displayResult(void);
 
 private:
+    // Test case specific methods
+    void Render(void);
+
+    // Test case specific variables
+    unsigned int renderedFrames;
+    float totaltime;
+
     bool etc1_supported;
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    GLuint shaderProgram;
 };
 
 #endif // b04_ETCTextureTest_H
