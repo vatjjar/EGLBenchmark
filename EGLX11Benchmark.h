@@ -76,6 +76,11 @@ public:
     const char * getDescription(void);
 
 protected:
+    // GL wrappers, for better handling of errors et al
+    void GLCLEARCOLOR(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+    void GLLINKPROGRAM(GLuint program);
+    void GLUSEPROGRAM(GLuint program);
+
     // Benchmark class helper methods for EGL context handling
     bool createEGLDisplay(int width, int height, bool fullscreen);
     void destroyEGLDisplay(void);

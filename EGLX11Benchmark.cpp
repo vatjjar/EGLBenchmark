@@ -413,3 +413,26 @@ GLuint EGLX11Benchmark::loadShader ( const char *shader_source, GLenum type)
    outputMessage(5, "loadShader: EXIT\n");
    return shader;
 }
+
+/// GL Wrappers:
+
+void EGLX11Benchmark::GLCLEARCOLOR(GLclampf r, GLclampf g, GLclampf b, GLclampf a)
+{
+    outputMessage(5, "Attempting call to glClearColor()\n");
+    glClearColor(r, g, b, a);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLLINKPROGRAM(GLuint program)
+{
+    MESSAGE(5, "Attempting call to glLinkProgram(%d)\n", program);
+    glLinkProgram(program);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLUSEPROGRAM(GLuint program)
+{
+    MESSAGE(5, "Attempting call to glUseProgram(%d)\n", program);
+    glUseProgram(program);
+    flushGLErrors();
+}
