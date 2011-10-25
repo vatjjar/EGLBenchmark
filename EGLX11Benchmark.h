@@ -22,6 +22,8 @@
 #include  <GLES2/gl2.h>
 #include  <EGL/egl.h>
 
+#include "EGLX11Benchmark_Debug.h"
+
 const EGLint attr[] = {       // some attributes to set up our egl-interface
    EGL_BUFFER_SIZE,     16,
    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
@@ -32,13 +34,6 @@ const EGLint ctxattr[] = {
    EGL_CONTEXT_CLIENT_VERSION, 2,
    EGL_NONE
 };
-
-#define MESSAGE(level, str, param) \
-   { \
-       char buf[128]; \
-       sprintf(buf, str, param); \
-       outputMessage(level, (const char*)&buf); \
-   }
 
 // Class definition
 
@@ -68,7 +63,9 @@ public:
     bool userInterrupt(void);
 
     // Helper methods for shader handling
-    GLuint loadShader(const char *shader_source, GLenum type);
+    GLuint createShaderProgram(const char *v_src, const char *f_src);
+    GLuint loadShaderProgram(const char *shader_source, GLenum type);
+    void linkShaderProgram(GLuint shaderProgram);
     void printShaderInfo(GLuint shader);
 
     // Getters for benchmark naming info
@@ -77,9 +74,20 @@ public:
 
 protected:
     // GL wrappers, for better handling of errors et al
-    void GLCLEARCOLOR(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-    void GLLINKPROGRAM(GLuint program);
-    void GLUSEPROGRAM(GLuint program);
+    void   GLATTACHSHADER(GLuint shaderProgram, GLuint shader);
+    void   GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, const GLchar *name);
+    void   GLCLEARCOLOR(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+    GLuint GLCREATEPROGRAM(void);
+    void   GLLINKPROGRAM(GLuint program);
+    void   GLUSEPROGRAM(GLuint program);
+    void   GLVIEWPORT(GLint x, GLint y, GLsizei width, GLsizei height);
+    void   GLCLEAR(GLbitfield mask);
+    void   GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data);
+    void   GLENABLEVERTEXATTRIBARRAY(GLuint index);
+    void   GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size);
+
+    // EGL Wrappers:
+    void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
 
     // Benchmark class helper methods for EGL context handling
     bool createEGLDisplay(int width, int height, bool fullscreen);

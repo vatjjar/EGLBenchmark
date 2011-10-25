@@ -208,18 +208,18 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
     * X11 native display initialization
     */
 
-   outputMessage(5, "Connecting to X server\n");
+   MESSAGE(3, "Connecting to X server\n");
    x_display = XOpenDisplay(NULL);
    if ( x_display == NULL )
    {
-       outputMessage(1, "Error: Unable to connect to X Server\n");
+       MESSAGE(1, "Error: Unable to connect to X Server\n");
        return false;
    }
 
-   outputMessage(5, "Querying X root window\n");
+   MESSAGE(3, "Querying X root window\n");
    root = DefaultRootWindow(x_display);
 
-   outputMessage(5, "Creating X11 window\n");
+   MESSAGE(3, "Creating X11 window\n");
    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
    win = XCreateWindow(
               x_display, root,
@@ -228,17 +228,17 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
               CopyFromParent, CWEventMask,
               &swa );
 
-   outputMessage(5, "Updating window attributes\n");
+   MESSAGE(3, "Updating window attributes\n");
    xattr.override_redirect = false;
    XChangeWindowAttributes ( x_display, win, CWOverrideRedirect, &xattr );
 
-   outputMessage(5, "Setting Window manager hints\n");
+   MESSAGE(3, "Setting Window manager hints\n");
    hints.input = true;
    hints.flags = InputHint;
    XSetWMHints(x_display, win, &hints);
 
    // make the window visible on the screen
-   outputMessage(5, "Making window visible\n");
+   MESSAGE(3, "Making window visible\n");
    XMapWindow (x_display, win);
    XStoreName (x_display, win, "EGLX11Benchmark");
 
@@ -248,7 +248,7 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
    if (w_fullscreen == true)
        a_fullscreen = XInternAtom (x_display, "_NET_WM_STATE_FULLSCREEN", w_fullscreen);
 
-   outputMessage(5, "Updating window event masks\n");
+   MESSAGE(3, "Updating window event masks\n");
    memset ( &xev, 0, sizeof(xev) );
    xev.type                 = ClientMessage;
    xev.xclient.window       = win;
@@ -263,30 +263,30 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
       SubstructureNotifyMask,
       &xev );
 
-   outputMessage(4, "X11 native display init done!\n");
+   MESSAGE(2, "X11 native display init done!\n");
 
    /*
     * Now that the native window is up, we shall initialize EGL
     */
 
-   outputMessage(5, "EGL: eglGetDisplay()\n");
+   MESSAGE(3, "EGL: eglGetDisplay()\n");
    egl_display  =  eglGetDisplay( (EGLNativeDisplayType) x_display );
    if ( egl_display == EGL_NO_DISPLAY ) {
        flushEGLErrors();
-       outputMessage(1, "EGL: eglGetDisplay() failed!\n");
+       MESSAGE(1, "EGL: eglGetDisplay() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   outputMessage(5, "EGL: eglInitialize()\n");
+   MESSAGE(3, "EGL: eglInitialize()\n");
    if ( !eglInitialize( egl_display, NULL, NULL ) ) {
        flushEGLErrors();
-       outputMessage(1, "EGL: eglInitialize() failed!\n");
+       MESSAGE(1, "EGL: eglInitialize() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   outputMessage(5, "EGL: eglChooseConfig()\n");
+   MESSAGE(3, "EGL: eglChooseConfig()\n");
    if ( !eglChooseConfig( egl_display, attr, &ecfg, 1, &num_config ) ) {
        flushEGLErrors();
        outputMessage(1, "EGL: eglChooseConfig() failed!\n");
@@ -294,45 +294,45 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
    }
    flushEGLErrors();
 
-   outputMessage(5, "EGL: EGL configs available?\n");
+   MESSAGE(3, "EGL: EGL configs available?\n");
    if ( num_config == 0 ) {
        flushEGLErrors();
-       outputMessage(1, "EGL: eglGetDisplay() no configs found!\n");
+       MESSAGE(1, "EGL: eglGetDisplay() no configs found!\n");
        return false;
    }
    flushEGLErrors();
 
-   outputMessage(5, "EGL: eglCreateWindowSurface()\n");
+   MESSAGE(3, "EGL: eglCreateWindowSurface()\n");
    egl_surface = eglCreateWindowSurface ( egl_display, ecfg, win, NULL );
    if ( egl_surface == EGL_NO_SURFACE ) {
        flushEGLErrors();
-       outputMessage(5, "EGL: eglCreateWindowSurface() failed!\n");
+       MESSAGE(5, "EGL: eglCreateWindowSurface() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   outputMessage(5, "EGL: eglCreateContext()\n");
+   MESSAGE(3, "EGL: eglCreateContext()\n");
    egl_context = eglCreateContext ( egl_display, ecfg, EGL_NO_CONTEXT, ctxattr );
    if ( egl_context == EGL_NO_CONTEXT ) {
        flushEGLErrors();
-       outputMessage(1, "EGL: eglCreateContext() failed!\n");
+       MESSAGE(1, "EGL: eglCreateContext() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   outputMessage(5, "EGL: eglMakeCurrent()\n");
+   MESSAGE(3, "EGL: eglMakeCurrent()\n");
    eglMakeCurrent( egl_display, egl_surface, egl_surface, egl_context );
    flushEGLErrors();
    flushGLErrors();
 
-   outputMessage(4, "EGL initialization completed!\n");
+   MESSAGE(2, "EGL initialization completed!\n");
 
    return true;
 }
 
 void EGLX11Benchmark::destroyEGLDisplay(void)
 {
-    outputMessage(4, "Starting EGL/X11 destruction\n");
+    MESSAGE(3, "Starting EGL/X11 destruction\n");
     if (egl_display != 0)
     {
         if (egl_context != 0)
@@ -352,7 +352,7 @@ void EGLX11Benchmark::destroyEGLDisplay(void)
     egl_surface = 0;
     win = 0;
     x_display = NULL;
-    outputMessage(4, "EGL/X11 Destruction done\n");
+    outputMessage(3, "EGL/X11 Destruction done\n");
 }
 
 // Shader helpers
@@ -361,7 +361,7 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
 {
    GLint length;
 
-   outputMessage(5, "printShaderInfo: glGetShaderiv()\n");
+   MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
    glGetShaderiv ( shader , GL_INFO_LOG_LENGTH , &length );
    flushGLErrors();
 
@@ -369,70 +369,195 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
       char buffer[length];
       GLint success;
 
-      outputMessage(5, "printShaderInfo: glGetShaderInfoLog()\n");
+      MESSAGE(4, "printShaderInfo: glGetShaderInfoLog()\n");
       glGetShaderInfoLog ( shader , length , NULL , buffer );
       flushGLErrors();
-      MESSAGE(2, "Shader info: '%s'\n", buffer);
+      MESSAGE_1P(4, "Shader info: '%s'\n", buffer);
 
-      outputMessage(5, "printShaderInfo: glGetShaderiv()\n");
+      MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
       glGetShaderiv( shader, GL_COMPILE_STATUS, &success );
       flushGLErrors();
       if ( success != GL_TRUE )
       {
-          outputMessage(1, "Error: Shader compile status failed\n");
+          MESSAGE(4, "Error: Shader compile status failed\n");
           return;
       }
-      else outputMessage(5, "printShaderInfo: OK\n");
+      else MESSAGE(4, "printShaderInfo: OK\n");
    }
 }
 
-GLuint EGLX11Benchmark::loadShader ( const char *shader_source, GLenum type)
+/*
+ * Shader program helpers
+ * ----------------------
+ */
+
+GLuint EGLX11Benchmark::loadShaderProgram ( const char *shader_source, GLenum type)
 {
    GLuint shader;
 
-   outputMessage(5, "loadShader: glCreateShader()\n");
+   MESSAGE(4, "loadShader: glCreateShader()\n");
    shader = glCreateShader( type );
    flushGLErrors();
    if (shader == 0)
    {
        return 0;
    }
-   MESSAGE(5, "loadShader: shader handle = %d\n", shader);
+   MESSAGE_1P(4, "loadShader: shader handle = %d\n", shader);
 
-   outputMessage(5, "loadShader: glShaderSource()\n");
+   MESSAGE(4, "loadShader: glShaderSource()\n");
    glShaderSource  ( shader , 1 , &shader_source , NULL );
    flushGLErrors();
 
-   outputMessage(5, "loadShader: glCompileShader()\n");
+   MESSAGE(4, "loadShader: glCompileShader()\n");
    glCompileShader ( shader );
    flushGLErrors();
 
-   outputMessage(5, "loadShader: Logging info...\n");
+   MESSAGE(4, "loadShader: Logging info...\n");
    printShaderInfo ( shader );
 
-   outputMessage(5, "loadShader: EXIT\n");
+   MESSAGE(4, "loadShader: EXIT\n");
    return shader;
 }
 
-/// GL Wrappers:
+GLuint EGLX11Benchmark::createShaderProgram(const char *v_src, const char *f_src)
+{
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    GLuint shaderProgram;
+
+    shaderProgram = GLCREATEPROGRAM();
+    if (shaderProgram == 0)
+    {
+        MESSAGE(1, "Error: Shader program creation failed\n");
+        return 0;
+    }
+
+    MESSAGE(4, "Initializing shaders...\n");
+    if (v_src == NULL || f_src == NULL)
+    {
+        MESSAGE(4, "Vertex nor fragment shader source must not be NULL.\n");
+        return 0;
+    }
+
+    vertexShader   = loadShaderProgram ( v_src , GL_VERTEX_SHADER  );
+    fragmentShader = loadShaderProgram ( f_src , GL_FRAGMENT_SHADER );
+    if (vertexShader == 0 || fragmentShader == 0)
+    {
+        MESSAGE(1, "Error: Shader program loading failed\n");
+        return 0;
+    }
+
+    GLATTACHSHADER(shaderProgram, vertexShader);
+    GLATTACHSHADER(shaderProgram, fragmentShader);
+
+    return shaderProgram;
+}
+
+void EGLX11Benchmark::linkShaderProgram(GLuint shaderProgram)
+{
+    GLLINKPROGRAM(shaderProgram);
+    GLUSEPROGRAM(shaderProgram);
+}
+
+/*
+ * GL Wrappers:
+ * ------------
+ * The intention of these methods are to easily wrap GL calls and bundle them with something
+ * useful, like debug information and error grabbing. This way seems most suitable for the
+ * purpose.
+ */
+
+void EGLX11Benchmark::GLATTACHSHADER(GLuint shaderProgram, GLuint shader)
+{
+    MESSAGE_2P(4, "Attempting a call to glAttachShader(%d, %d)\n", shaderProgram, shader);
+    glAttachShader(shaderProgram, shader);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, const GLchar *name)
+{
+    MESSAGE_3P(4, "Attempting a call to glBindAttribLocation(%d, %d, '%s')\n", shaderProgram, index, name);
+    glBindAttribLocation(shaderProgram, index, name);
+    flushGLErrors();
+}
 
 void EGLX11Benchmark::GLCLEARCOLOR(GLclampf r, GLclampf g, GLclampf b, GLclampf a)
 {
-    outputMessage(5, "Attempting call to glClearColor()\n");
+    MESSAGE_4P(4, "Attempting a call to glClearColor(%f, %f, %f, %f)\n", r, g, b, a);
     glClearColor(r, g, b, a);
     flushGLErrors();
 }
 
+GLuint EGLX11Benchmark::GLCREATEPROGRAM(void)
+{
+    GLuint program;
+    MESSAGE(4, "Attempting a call to glCreateProgram()\n");
+    program = glCreateProgram();
+    flushGLErrors();
+    return program;
+}
+
 void EGLX11Benchmark::GLLINKPROGRAM(GLuint program)
 {
-    MESSAGE(5, "Attempting call to glLinkProgram(%d)\n", program);
+    MESSAGE_1P(4, "Attempting a call to glLinkProgram(%d)\n", program);
     glLinkProgram(program);
     flushGLErrors();
 }
 
 void EGLX11Benchmark::GLUSEPROGRAM(GLuint program)
 {
-    MESSAGE(5, "Attempting call to glUseProgram(%d)\n", program);
+    MESSAGE_1P(5, "Attempting a call to glUseProgram(%d)\n", program);
     glUseProgram(program);
     flushGLErrors();
+}
+
+void EGLX11Benchmark::GLVIEWPORT(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    MESSAGE_4P(5, "Attempting a call to glViewPort(%d, %d, %d, %d)\n", x, y, width, height);
+    glViewport(x, y, width, height);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLCLEAR(GLbitfield mask)
+{
+    MESSAGE_1P(5, "Attempting a call to glClear(0x%x)\n", mask);
+    glClear(mask);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data)
+{
+    MESSAGE_6P(5, "Attempting a call to glVertexAttribPointer(%d, %d, %d, %d, %d, 0x%p)\n",
+               index, size, type, normalized, stride, data);
+    glVertexAttribPointer(index, size, type, normalized, stride, data);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLENABLEVERTEXATTRIBARRAY(GLuint index)
+{
+    MESSAGE_1P(5, "Attempting a call to glEnableVertexAttribPointer(%d)\n", index);
+    glEnableVertexAttribArray(index);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size)
+{
+    MESSAGE_3P(5, "Attempting a call to glDrawArrays(%d, %d, %d)\n", mode, first, size);
+    glDrawArrays(mode, first, size);
+    flushGLErrors();
+}
+
+/*
+ * EGL Wrappers:
+ * ------------
+ * The intention of these methods are to easily wrap EGL calls and bundle them with something
+ * useful, like debug information and error grabbing. This way seems most suitable for the
+ * purpose.
+ */
+
+void EGLX11Benchmark::EGLSWAPBUFFERS(EGLDisplay egl_display, EGLSurface egl_surface)
+{
+    MESSAGE_2P(5, "Attempting a call to eglSwapBuffers(0x%p, 0x%p)\n", egl_display, egl_surface);
+    eglSwapBuffers(egl_display, egl_surface);
+    flushEGLErrors();
 }

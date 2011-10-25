@@ -82,7 +82,7 @@ b02_SimpleGLShading::~b02_SimpleGLShading()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
+ * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -135,51 +135,51 @@ bool b02_SimpleGLShading::runBenchmark(float duration)
 {
  //   XWindowAttributes  gwa;
 
-    outputMessage(5, "loading shaders...\n");
-    vertexShader   = loadShader ( vertex_src , GL_VERTEX_SHADER  );     // load vertex shader
-    fragmentShader = loadShader ( fragment_src , GL_FRAGMENT_SHADER );  // load fragment shader
+    MESSAGE(5, "loading shaders...\n");
+    vertexShader   = loadShaderProgram ( vertex_src , GL_VERTEX_SHADER  );     // load vertex shader
+    fragmentShader = loadShaderProgram ( fragment_src , GL_FRAGMENT_SHADER );  // load fragment shader
     if (vertexShader == 0 || fragmentShader == 0)
     {
-        outputMessage(1, "Error: Shader program loading failed\n");
+        MESSAGE(1, "Error: Shader program loading failed\n");
         return false;
     }
 
-    outputMessage(5, "glCreateProgram()\n");
+    MESSAGE(5, "glCreateProgram()\n");
     shaderProgram  = glCreateProgram ();
     flushGLErrors();
-    outputMessage(5, "glAttachShader() - vertex\n");
+    MESSAGE(5, "glAttachShader() - vertex\n");
     glAttachShader ( shaderProgram, vertexShader );
     flushGLErrors();
-    outputMessage(5, "glAttachShader() - fragment\n");
+    MESSAGE(5, "glAttachShader() - fragment\n");
     glAttachShader ( shaderProgram, fragmentShader );
     flushGLErrors();
 
-    outputMessage(5, "glLinkProgram()\n");
+    MESSAGE(5, "glLinkProgram()\n");
     glLinkProgram ( shaderProgram );
     flushGLErrors();
-    outputMessage(5, "glUseProgram()\n");
+    MESSAGE(5, "glUseProgram()\n");
     glUseProgram  ( shaderProgram );
     flushGLErrors();
 
-    outputMessage(5, "glGetAttribLocation() 1\n");
+    MESSAGE(5, "glGetAttribLocation() 1\n");
     position_loc  = glGetAttribLocation  ( shaderProgram , "position" );
     flushGLErrors();
-    outputMessage(5, "glGetAttribLocation() 2\n");
+    MESSAGE(5, "glGetAttribLocation() 2\n");
     phase_loc     = glGetUniformLocation ( shaderProgram , "phase"    );
     flushGLErrors();
-    outputMessage(5, "glGetAttribLocation() 3\n");
+    MESSAGE(5, "glGetAttribLocation() 3\n");
     offset_loc     = glGetUniformLocation ( shaderProgram , "offset"    );
     flushGLErrors();
 
     if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
-       outputMessage(1, "Error: Unable to get uniform location\n");
+       MESSAGE(1, "Error: Unable to get uniform location\n");
        return false;
     }
 
-    outputMessage(5, "glViewport\n");
+    MESSAGE(5, "glViewport\n");
     glViewport ( 0 , 0 , w_width , w_height );
     flushGLErrors();
-    outputMessage(5, "glClearColor\n");
+    MESSAGE(5, "glClearColor\n");
     glClearColor ( 0.08 , 0.06 , 0.07 , 1.);
     flushGLErrors();
 
@@ -207,8 +207,8 @@ bool b02_SimpleGLShading::runBenchmark(float duration)
  */
 bool b02_SimpleGLShading::displayResult(void)
 {
-    MESSAGE(1, "Total rendering time %f\n", totaltime);
-    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
+    MESSAGE_1P(1, "Total rendering time %f\n", totaltime);
+    MESSAGE_1P(1, "Total rendered frames %d\n", renderedFrames);
+    MESSAGE_1P(1, "Frames per second %f\n", renderedFrames/totaltime);
     return false;
 }

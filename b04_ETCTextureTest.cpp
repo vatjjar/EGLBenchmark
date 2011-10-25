@@ -31,7 +31,7 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
+ * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -67,115 +67,86 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     // First we query the list of supported compressed texture formats
     glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &t);
     flushGLErrors();
-    MESSAGE(1, "Number of compressed texture formats supported by the driver: %d\n", t);
+    MESSAGE_1P(1, "Number of compressed texture formats supported by the driver: %d\n", t);
 
     glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, (GLint*)&f);
     flushGLErrors();
-    outputMessage(2, "Supported compressed texture formats:\n");
+    MESSAGE(2, "Supported compressed texture formats:\n");
     for (int i=0; i<t; i++)
     {
-        MESSAGE(2, "format %d: ", i);
-        MESSAGE(2, "0x%x ", f[i]);
+        MESSAGE_1P(2, "format %d: ", i);
+        MESSAGE_1P(2, "0x%x ", f[i]);
         switch(f[i])
         {
 #if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: /* 0x83f0 */
-            outputMessage(2, "(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)\n");
+            MESSAGE(2, "(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
         case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: /* 0x83f1 */
-            outputMessage(2, "(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)\n");
+            MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)
         case GL_COMPRESSED_RGB_S3TC_DXT3_EXT: /* 0x83f2 */
-            outputMessage(2, "(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)\n");
+            MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)\n");
             break;
 #endif
 #if defined(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
         case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: /* 0x83f3 */
-            outputMessage(2, "(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)\n");
+            MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)\n");
             break;
 #endif
 #if defined(GL_LUMINANCE_LATC1_EXT)
         case GL_LUMINANCE_LATC1_EXT: /* 0x8c70 */
-            outputMessage(2, "(GL_LUMINANCE_LATC1_EXT)\n");
+            MESSAGE(2, "(GL_LUMINANCE_LATC1_EXT)\n");
             break;
 #endif
 #if defined(GL_SIGNED_LUMINANCE_LATC1_EXT)
         case GL_SIGNED_LUMINANCE_LATC1_EXT: /* 0x8c71 */
-            outputMessage(2, "(GL_SIGNED_LUMINANCE_LATC1_EXT)\n");
+            MESSAGE(2, "(GL_SIGNED_LUMINANCE_LATC1_EXT)\n");
             break;
 #endif
 #if defined(GL_LUMINANCE_ALPHA_LATC2_EXT)
         case GL_LUMINANCE_ALPHA_LATC2_EXT: /* 0x8c72 */
-            outputMessage(2, "(GL_LUMINANCE_ALPHA_LATC2_EXT)\n");
+            MESSAGE(2, "(GL_LUMINANCE_ALPHA_LATC2_EXT)\n");
             break;
 #endif
 #if defined(GL_SIGNED_LUMINANCE_ALPHA_LATC2_EXT)
         case GL_SIGNED_LUMINANCE_ALPHA_LATC2_EXT: /* 0x8c73 */
-            outputMessage(2, "(GL_SIGNED_LUMINANCE_ALPHA_LATC1_EXT)\n");
+            MESSAGE(2, "(GL_SIGNED_LUMINANCE_ALPHA_LATC1_EXT)\n");
             break;
 #endif
 #if defined(GL_ETC1_RGB8_OES)
         case GL_ETC1_RGB8_OES: /* 0x8d64 */
             etc1_supported = true;
-            outputMessage(2, "(GL_ETC1_RGB8_OES)\n");
+            MESSAGE(2, "(GL_ETC1_RGB8_OES)\n");
             break;
 #endif
         default:
-            outputMessage(2, "(UNKNOWN FORMAT)\n");
+            MESSAGE(2, "(UNKNOWN FORMAT)\n");
             break;
         }
     }
 
     if (etc1_supported == false)
     {
-        outputMessage(2, "No ETC1 support detected in drivers\n");
+        MESSAGE(2, "No ETC1 support detected in drivers\n");
         //return false;
     }
 
-    // Then shader init:
-
-    outputMessage(5, "loading shaders...\n");
-    vertexShader   = loadShader ( vertex_src , GL_VERTEX_SHADER  );     // load vertex shader
-    fragmentShader = loadShader ( fragment_src , GL_FRAGMENT_SHADER );  // load fragment shader
-    if (vertexShader == 0 || fragmentShader == 0)
+    // Shader program init:
+    shaderProgram = createShaderProgram(vertex_src, fragment_src);
+    if (shaderProgram == 0)
     {
-        outputMessage(1, "Error: Shader program loading failed\n");
+        MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
-
-    outputMessage(5, "glCreateProgram()\n");
-    shaderProgram  = glCreateProgram ();
-    flushGLErrors();
-    outputMessage(5, "glAttachShader() - vertex\n");
-    glAttachShader ( shaderProgram, vertexShader );
-    flushGLErrors();
-    outputMessage(5, "glAttachShader() - fragment\n");
-    glAttachShader ( shaderProgram, fragmentShader );
-    flushGLErrors();
-
-    glBindAttribLocation ( shaderProgram, 0, "a_Position" );
-    flushGLErrors();
-
-#if 0
-    outputMessage(5, "glLinkProgram()\n");
-    glLinkProgram ( shaderProgram );
-    flushGLErrors();
-    outputMessage(5, "glUseProgram()\n");
-    glUseProgram  ( shaderProgram );
-    flushGLErrors();
-#else
-    GLLINKPROGRAM(shaderProgram);
-    GLUSEPROGRAM(shaderProgram);
-#endif
+    GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
+    linkShaderProgram(shaderProgram);
 
     GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-    //glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
-    flushGLErrors();
-
     return true;
 }
 
@@ -197,30 +168,14 @@ void b04_ETCTextureTest::Render(void)
                               0.5f,  0.5f, 0.0f,
                               0.5f, -0.5f, 0.0f };
 
-    // Set the viewport
-    glViewport ( 0, 0, w_width, w_height);
-    flushGLErrors();
+    GLVIEWPORT(0, 0, w_width, w_height);
+    GLCLEAR(GL_COLOR_BUFFER_BIT);
+    GLUSEPROGRAM(shaderProgram);
+    GLVERTEXATTRIBPOINTER(0, 4, GL_FLOAT, GL_FALSE, 0, vVertices);
+    GLENABLEVERTEXATTRIBARRAY(0);
+    GLDRAWARRAYS(GL_TRIANGLE_FAN, 0, 4);
 
-    // Clear the color buffer
-    glClear ( GL_COLOR_BUFFER_BIT );
-    flushGLErrors();
-
-    // Use the program object
-    glUseProgram ( shaderProgram );
-    flushGLErrors();
-
-    // Load the vertex data
-    glVertexAttribPointer ( 0, 4, GL_FLOAT, GL_FALSE, 0, vVertices );
-    flushGLErrors();
-
-    glEnableVertexAttribArray ( 0 );
-    flushGLErrors();
-
-    glDrawArrays ( GL_TRIANGLE_FAN, 0, 4 );
-    flushGLErrors();
-
-    eglSwapBuffers ( egl_display, egl_surface );  // get the rendered buffer to the screen
-    flushGLErrors();
+    EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
 /*

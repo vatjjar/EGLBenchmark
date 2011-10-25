@@ -32,7 +32,7 @@ b03_SimpleTriangle::~b03_SimpleTriangle()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
+ * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -54,36 +54,14 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
     if (false == createEGLDisplay(width, height, fullscreen))
         return false;
 
-    outputMessage(5, "loading shaders...\n");
-    vertexShader   = loadShader ( vertex_src , GL_VERTEX_SHADER  );     // load vertex shader
-    fragmentShader = loadShader ( fragment_src , GL_FRAGMENT_SHADER );  // load fragment shader
-    if (vertexShader == 0 || fragmentShader == 0)
+    shaderProgram = createShaderProgram(vertex_src, fragment_src);
+    if (shaderProgram == 0)
     {
-        outputMessage(1, "Error: Shader program loading failed\n");
-        return false;
+        MESSAGE(1, "Error: Shader program object creation failed\n");
     }
+    GLBINDATTRIBLOCATION(shaderProgram, 0, "vPosition");
+    GLLINKPROGRAM(shaderProgram);
 
-    outputMessage(5, "glCreateProgram()\n");
-    shaderProgram  = glCreateProgram ();
-    flushGLErrors();
-    outputMessage(5, "glAttachShader() - vertex\n");
-    glAttachShader ( shaderProgram, vertexShader );
-    flushGLErrors();
-    outputMessage(5, "glAttachShader() - fragment\n");
-    glAttachShader ( shaderProgram, fragmentShader );
-    flushGLErrors();
-
-    glBindAttribLocation ( shaderProgram, 0, "vPosition" );
-    flushGLErrors();
-
-    outputMessage(5, "glLinkProgram()\n");
-    glLinkProgram ( shaderProgram );
-    flushGLErrors();
-    outputMessage(5, "glUseProgram()\n");
-    glUseProgram  ( shaderProgram );
-    flushGLErrors();
-
-    glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
     return true;
 }
 
@@ -104,30 +82,14 @@ void b03_SimpleTriangle::Render(void)
                             -0.5f, -0.5f, 0.0f,
                              0.5f, -0.5f, 0.0f };
 
-    // Set the viewport
-    glViewport ( 0, 0, w_width, w_height);
-    flushGLErrors();
+    GLVIEWPORT(0, 0, w_width, w_height);
+    GLCLEAR(GL_COLOR_BUFFER_BIT);
+    GLUSEPROGRAM(shaderProgram);
+    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
+    GLENABLEVERTEXATTRIBARRAY(0);
+    GLDRAWARRAYS(GL_TRIANGLES, 0, 3);
 
-    // Clear the color buffer
-    glClear ( GL_COLOR_BUFFER_BIT );
-    flushGLErrors();
-
-    // Use the program object
-    glUseProgram ( shaderProgram );
-    flushGLErrors();
-
-    // Load the vertex data
-    glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
-    flushGLErrors();
-
-    glEnableVertexAttribArray ( 0 );
-    flushGLErrors();
-
-    glDrawArrays ( GL_TRIANGLES, 0, 3 );
-    flushGLErrors();
-
-    eglSwapBuffers ( egl_display, egl_surface );  // get the rendered buffer to the screen
-    flushGLErrors();
+    EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
 
@@ -160,8 +122,8 @@ bool b03_SimpleTriangle::runBenchmark(float duration)
  */
 bool b03_SimpleTriangle::displayResult(void)
 {
-    MESSAGE(1, "Total rendering time %f\n", totaltime);
-    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
+    MESSAGE_1P(1, "Total rendering time %f\n", totaltime);
+    MESSAGE_1P(1, "Total rendered frames %d\n", renderedFrames);
+    MESSAGE_1P(1, "Frames per second %f\n", renderedFrames/totaltime);
     return false;
 }
