@@ -7,13 +7,40 @@ CFLAGS=-Wall -g
 LIBS=-lEGL -lGLESv2 -lX11
 OUTPUT=EGLBenchmark
 
-SRC=main.cpp                \
-    EGLX11Benchmark.cpp     \
-    b01_ContextInit.cpp     \
-    b02_SimpleGLShading.cpp \
-    b03_SimpleTriangle.cpp  \
-    b04_ETCTextureTest.cpp
+MKDIR=mkdir
+CPP=g++
+RM=rm
 
-all:
-	g++ ${SRC} -o ${OUTPUT} ${CFLAGS} ${INCDIRS} ${LIBDIRS} ${LIBS}
+_OBJS=main.o                      \
+    EGLX11Benchmark.o             \
+    EGLX11Benchmark_GLWrappers.o  \
+    EGLX11Benchmark_EGLWrappers.o \
+    b01_ContextInit.o             \
+    b02_SimpleGLShading.o         \
+    b03_SimpleTriangle.o          \
+    b04_ETCTextureTest.o
+ODIR=objs
+OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
 
+HEADERS=                          \
+    EGLX11Benchmark.h             \
+    EGLX11Benchmark_GLWrappers.h  \
+    EGLX11Benchmark_EGLWrappers.h \
+    b01_ContextInit.h             \
+    b02_SimpleGLShading.h         \
+    b03_SimpleTriangle.h          \
+    b04_ETCTextureTest.h
+
+default: ${ODIR} all
+
+${ODIR}:
+	${MKDIR} -p ${ODIR}
+
+${ODIR}/%.o: %.cpp ${HEADERS}
+	${CPP} -c -o $@ $< $(CFLAGS) ${INCDIRS}
+
+all: ${OBJS}
+	${CPP} -o ${OUTPUT} ${OBJS} ${LIBDIRS} ${LIBS}
+
+clean:
+	rm -rf ${OBJS}
