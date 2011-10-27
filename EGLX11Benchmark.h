@@ -79,6 +79,12 @@ protected:
     void   GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data);
     void   GLENABLEVERTEXATTRIBARRAY(GLuint index);
     void   GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size);
+    void   GLGENTEXTURES(GLsizei size, GLuint *ptr);
+    void   GLBINDTEXTURE(GLenum target, GLuint id);
+    void   GLPIXELSTOREI(GLenum type, GLint align);
+    void   GLTEXIMAGE2D(GLenum target, GLint level, GLint inernalformat, GLsizei width,
+                                       GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels);
+    void   GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param);
 
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
@@ -92,6 +98,9 @@ protected:
     GLuint loadShaderProgram(const char *shader_source, GLenum type);
     void linkShaderProgram(GLuint shaderProgram);
     void printShaderInfo(GLuint shader);
+
+    // Helpers for simple file I/O
+    unsigned char * readBinaryFile(const char *filename, unsigned int & length);
 
     // Helpers for texture loading
     GLuint loadETCTextureFromFile(const char *filename);
