@@ -78,7 +78,7 @@ void EGLX11Benchmark::GLCLEAR(GLbitfield mask)
 
 void EGLX11Benchmark::GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data)
 {
-    MESSAGE_6P(5, "Attempting a call to glVertexAttribPointer(%d, %d, %d, %d, %d, 0x%p)\n",
+    MESSAGE_6P(5, "Attempting a call to glVertexAttribPointer(%d, %d, %d, %d, %d, %p)\n",
                index, size, type, normalized, stride, data);
     glVertexAttribPointer(index, size, type, normalized, stride, data);
     flushGLErrors();
