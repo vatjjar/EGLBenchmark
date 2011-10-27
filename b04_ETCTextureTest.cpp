@@ -38,6 +38,8 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
 {
     GLint t;
     GLint f[32];
+    const char *texturefilename = "./resources/elina.pkm";
+#if 0
     const char vertex_src[] =
        "attribute vec4 a_Position;   \n"
        "attribute vec2 a_TexCoord;   \n"
@@ -56,6 +58,21 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
        "{                                            \n"
        "  gl_FragColor = texture2D(s_texture, v_TexCoord);\n"
        "}                                            \n";
+#else
+    const char vertex_src[] =
+    "attribute vec4 vPosition;    \n"
+    "void main()                  \n"
+    "{                            \n"
+    "   gl_Position = vPosition;  \n"
+    "}                            \n";
+
+ const char fragment_src[] =
+    "precision mediump float;\n"\
+    "void main()                                  \n"
+    "{                                            \n"
+    "  gl_FragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );\n"
+    "}                                            \n";
+#endif
 
     // Display and context init
 
@@ -136,7 +153,9 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
         //return false;
     }
 
-    // Shader program init:
+    /*
+     * Shader program init:
+     */
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
@@ -145,6 +164,16 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     }
     GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
     linkShaderProgram(shaderProgram);
+
+    /*
+     * Texture loading for the test case:
+     */
+    textureID = loadETCTextureFromFile(texturefilename);
+    if (textureID == 0)
+    {
+        MESSAGE_1P(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        return false;
+    }
 
     GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
     return true;
@@ -171,9 +200,9 @@ void b04_ETCTextureTest::Render(void)
     GLVIEWPORT(0, 0, w_width, w_height);
     GLCLEAR(GL_COLOR_BUFFER_BIT);
     GLUSEPROGRAM(shaderProgram);
-    GLVERTEXATTRIBPOINTER(0, 4, GL_FLOAT, GL_FALSE, 0, vVertices);
+    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
     GLENABLEVERTEXATTRIBARRAY(0);
-    GLDRAWARRAYS(GL_TRIANGLE_FAN, 0, 4);
+    GLDRAWARRAYS(GL_TRIANGLES, 0, 3);
 
     EGLSWAPBUFFERS(egl_display, egl_surface);
 }

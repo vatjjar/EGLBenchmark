@@ -62,12 +62,6 @@ public:
     float getTime(void);
     bool userInterrupt(void);
 
-    // Helper methods for shader handling
-    GLuint createShaderProgram(const char *v_src, const char *f_src);
-    GLuint loadShaderProgram(const char *shader_source, GLenum type);
-    void linkShaderProgram(GLuint shaderProgram);
-    void printShaderInfo(GLuint shader);
-
     // Getters for benchmark naming info
     const char * getName(void);
     const char * getDescription(void);
@@ -92,6 +86,16 @@ protected:
     // Benchmark class helper methods for EGL context handling
     bool createEGLDisplay(int width, int height, bool fullscreen);
     void destroyEGLDisplay(void);
+
+    // Helper methods for shader handling
+    GLuint createShaderProgram(const char *v_src, const char *f_src);
+    GLuint loadShaderProgram(const char *shader_source, GLenum type);
+    void linkShaderProgram(GLuint shaderProgram);
+    void printShaderInfo(GLuint shader);
+
+    // Helpers for texture loading
+    GLuint loadETCTextureFromFile(const char *filename);
+    GLuint loadRGBTexturefromPNG(const char *filename);
 
     void setName(const char *);
     void setDescription(const char *);

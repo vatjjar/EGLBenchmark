@@ -8,6 +8,11 @@
 
 #include "EGLX11Benchmark.h"
 
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include "sys/stat.h"
+
 EGLX11Benchmark::EGLX11Benchmark() :
     name("No name"),
     description("No description"),
@@ -459,3 +464,52 @@ void EGLX11Benchmark::linkShaderProgram(GLuint shaderProgram)
     GLUSEPROGRAM(shaderProgram);
 }
 
+/*
+ * Texture Loader helpers
+ * ----------------------
+ */
+
+GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
+{
+    struct stat results;
+    unsigned char *buffer;
+    GLuint textureID;
+
+
+    if (stat(filename, &results) != 0)
+    {
+        MESSAGE_1P(4, "IOError when trying to access '%s'\n", filename);
+        return 0;
+    }
+    buffer = new unsigned char [results.st_size];
+
+
+    MESSAGE_1P(4, "Trying to open '%s'\n", filename);
+    std::ifstream f(filename, std::ios::in | std::ios::binary);
+    if (!f.read ((char *)buffer, results.st_size))
+    {
+        MESSAGE(4, "IOERROR\n");
+        return 0;
+    }
+    MESSAGE_1P(4, "File read into memory, length %d bytes\n", (int)results.st_size);
+    f.close();
+
+    // GL texture generation part
+    glGenTextures(1, &textureID);
+    flushGLErrors();
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    flushGLErrors();
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+    flushGLErrors();
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    return textureID;
+}
+
+GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
+{
+    return 0;
+}

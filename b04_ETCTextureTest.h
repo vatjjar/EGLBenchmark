@@ -33,9 +33,8 @@ private:
     float totaltime;
 
     bool etc1_supported;
-    //GLuint vertexShader;
-    //GLuint fragmentShader;
     GLuint shaderProgram;
+    GLuint textureID;
 };
 
 #endif // b04_ETCTextureTest_H
