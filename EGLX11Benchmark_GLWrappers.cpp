@@ -98,3 +98,40 @@ void EGLX11Benchmark::GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size)
     flushGLErrors();
 }
 
+void EGLX11Benchmark::GLGENTEXTURES(GLsizei size, GLuint *ptr)
+{
+    MESSAGE_2P(4, "Attempting a call to glGenTextures(%d, %p)\n", size, ptr);
+    glGenTextures(size, ptr);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLBINDTEXTURE(GLenum target, GLuint id)
+{
+    MESSAGE_2P(4, "Attempting a call to glBindTexture(%d, %d)\n", target, id);
+    glBindTexture(target, id);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLPIXELSTOREI(GLenum type, GLint align)
+{
+    MESSAGE_2P(4, "Attempting a call to glPixelStorei(%d, %d)\n", type, align);
+    glPixelStorei(type, align);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLTEXIMAGE2D(GLenum target, GLint level, GLint internalformat, GLsizei width,
+                                   GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels)
+{
+    MESSAGE_6P(4, "Attempting a call to glTexImage2D(%d, %d, %d, %d, %d, %d",
+               target, level, internalformat, width, height, border);
+    MESSAGE_3P(4, ", %d, %d, %p)\n", format, type, pixels);
+    glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param)
+{
+    MESSAGE_3P(3, "Attempting a call to glTexParameteri(%d, %d, %d)\n", target, pname, param);
+    glTexParameteri(target, pname, param);
+    flushGLErrors();
+}
