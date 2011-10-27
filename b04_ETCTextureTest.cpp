@@ -38,7 +38,7 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
 {
     GLint t;
     GLint f[32];
-    const char *texturefilename = "./resources/elina.pkm";
+    const char *texturefilename = "./resources/etctexture.pkm";
 #if 0
     const char vertex_src[] =
        "attribute vec4 a_Position;   \n"
