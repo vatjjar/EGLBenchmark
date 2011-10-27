@@ -173,6 +173,9 @@ bool b04_ETCTextureTest::runBenchmark(float duration)
  */
 bool b04_ETCTextureTest::displayResult(void)
 {
+    MESSAGE_1P(1, "Total rendering time %f\n", totaltime);
+    MESSAGE_1P(1, "Total rendered frames %d\n", renderedFrames);
+    MESSAGE_1P(1, "Frames per second %f\n", renderedFrames/totaltime);
     return true;
 }
 
