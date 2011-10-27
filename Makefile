@@ -4,7 +4,7 @@
 INCDIRS=
 LIBDIRS=
 CFLAGS=-Wall -g
-LIBS=-lEGL -lGLESv2 -lX11
+LIBS=-lEGL -lGLESv2 -lX11 -lpng
 OUTPUT=EGLBenchmark
 
 MKDIR=mkdir
