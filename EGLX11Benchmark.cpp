@@ -519,6 +519,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     glBindTexture(GL_TEXTURE_2D, textureID);
     flushGLErrors();
 
+    //glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
     flushGLErrors();
     delete buffer;
@@ -693,6 +694,13 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
                  buffer);
     GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // At this point we might have errors already in the pipe, and if so, we'll cancel
+    if (getGLErrors() > 0)
+    {
+        glDeleteTextures(1, &textureID);
+        return 0;
+    }
 #endif
     return textureID;
 }

@@ -22,7 +22,6 @@ b04_ETCTextureTest::b04_ETCTextureTest()
 {
     setName("ETC texture compression test");
     setDescription("This test tests texture compression parts of GLES2 and executes a case using ETC texture format");
-    etc1_supported = false;
 }
 
 b04_ETCTextureTest::~b04_ETCTextureTest()
@@ -36,64 +35,174 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
  */
 bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    GLint t;
-    GLint f[32];
-    const char *texturefilename = "./resources/etctexture.pkm";
-#if 0
+    const char *texturefilename = "./resources/pngRGB.png";
     const char vertex_src[] =
        "attribute vec4 a_Position;   \n"
-       "attribute vec2 a_TexCoord;   \n"
-       "varying vec2 v_TexCoord;     \n"
+       "attribute vec2 a_Texcoord;   \n"
+       "varying vec2 v_Texcoord;     \n"
        "void main()                  \n"
        "{                            \n"
        "   gl_Position = a_Position; \n"
-       "   v_TexCoord = a_TexCoord;  \n"
+       "   v_Texcoord = a_Texcoord;  \n"
        "}                            \n";
-
     const char fragment_src[] =
        "precision mediump float;                     \n"
-       "varying vec2 v_TexCoord;                     \n"
+       "varying vec2 v_Texcoord;                     \n"
        "uniform sampler2D s_texture;                 \n"
        "void main()                                  \n"
        "{                                            \n"
-       "  gl_FragColor = texture2D(s_texture, v_TexCoord);\n"
+       "  gl_FragColor = texture2D(s_texture, v_Texcoord);\n"
        "}                                            \n";
-#else
-    const char vertex_src[] =
-    "attribute vec4 vPosition;    \n"
-    "void main()                  \n"
-    "{                            \n"
-    "   gl_Position = vPosition;  \n"
-    "}                            \n";
 
- const char fragment_src[] =
-    "precision mediump float;\n"\
-    "void main()                                  \n"
-    "{                                            \n"
-    "  gl_FragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );\n"
-    "}                                            \n";
-#endif
 
     // Display and context init
-
     if (false == createEGLDisplay(width, height, fullscreen))
     {
         return false;
     }
 
+    // Check for support of compressed ETC1 texture format
+    if (false == queryCompressedTextureformats())
+    {
+        MESSAGE(1, "Error: ETC1 texture format not supported by the driver\n");
+        //return false;
+    }
+
+    /*
+     * Shader program init:
+     */
+    shaderProgram = createShaderProgram(vertex_src, fragment_src);
+    if (shaderProgram == 0)
+    {
+        MESSAGE(1, "Error: Shader program creation failed\n");
+        return false;
+    }
+    GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
+    GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
+    linkShaderProgram(shaderProgram);
+
+    texturesampler = glGetUniformLocation(shaderProgram, "s_texture");
+
+    /*
+     * Texture loading for the test case:
+     */
+    //textureID = loadETCTextureFromFile(texturefilename);
+    textureID = loadRGBTexturefromPNG(texturefilename);
+    if (textureID == 0)
+    {
+        MESSAGE_1P(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        return false;
+    }
+
+    GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+    return true;
+}
+
+/*
+ * destroyBenchmark() shall free all resources allocated by the initBenchmark() method. The core shall
+ * call this method once the benchmark case has been run.
+ */
+bool b04_ETCTextureTest::destroyBenchmark(void)
+{
+    destroyEGLDisplay();
+    return true;
+}
+
+
+void b04_ETCTextureTest::Render(void)
+{
+    GLfloat vVertices[] = {  -0.5f, -0.5f, 0.0f,
+                             -0.5f,  0.5f, 0.0f,
+                              0.5f,  0.5f, 0.0f,
+                             -0.5f, -0.5f, 0.0f,
+                              0.5f,  0.5f, 0.0f,
+                              0.5f, -0.5f, 0.0f };
+    GLfloat vTexcoord[] = { 0.0f, 0.0f,
+                            0.0f, 1.0f,
+                            1.0f, 1.0f,
+                            0.0f, 0.0f,
+                            1.0f, 1.0f,
+                            1.0f, 0.0f };
+
+    GLVIEWPORT(0, 0, w_width, w_height);
+    GLCLEAR(GL_COLOR_BUFFER_BIT);
+    GLUSEPROGRAM(shaderProgram);
+    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
+    GLENABLEVERTEXATTRIBARRAY(0);
+    GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
+    GLENABLEVERTEXATTRIBARRAY(1);
+
+//    texturesampler = glGetUniformLocation(shaderProgram, "s_texture");
+    glActiveTexture(GL_TEXTURE0);
+    flushGLErrors();
+    GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
+    glUniform1i(texturesampler, 0);
+    flushGLErrors();
+
+    GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
+
+    EGLSWAPBUFFERS(egl_display, egl_surface);
+}
+
+/*
+ * runBenchmark()
+ */
+bool b04_ETCTextureTest::runBenchmark(float duration)
+{
+    // Timer and variables
+    resetTimer();
+    totaltime = 0;
+    renderedFrames = 0;
+
+    while ( totaltime < duration )
+    {
+        Render();
+        renderedFrames++;
+
+        // Grab time since last timer reset
+        totaltime = getTime();
+
+        if (userInterrupt() == true)
+            break;
+    }
+    return true;
+}
+
+/*
+ * displayResult()
+ */
+bool b04_ETCTextureTest::displayResult(void)
+{
+    return true;
+}
+
+
+bool b04_ETCTextureTest::queryCompressedTextureformats(void)
+{
+    GLint *v;
+    GLint t;
+    bool etc1_supported = false;
+
     // First we query the list of supported compressed texture formats
     glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &t);
     flushGLErrors();
     MESSAGE_1P(1, "Number of compressed texture formats supported by the driver: %d\n", t);
+    if (t == 0)
+    {
+        MESSAGE(1, "Error: The driver does not support texture compression.\n");
+        return false;
+    }
 
-    glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, (GLint*)&f);
+    v = new GLint [t];
+
+    glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, v);
     flushGLErrors();
+
     MESSAGE(2, "Supported compressed texture formats:\n");
     for (int i=0; i<t; i++)
     {
-        MESSAGE_1P(2, "format %d: ", i);
-        MESSAGE_1P(2, "0x%x ", f[i]);
-        switch(f[i])
+        MESSAGE_2P(2, "format %d: 0x%x ", i, v[i]);
+        switch(v[i])
         {
 #if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: /* 0x83f0 */
@@ -135,6 +244,26 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
             MESSAGE(2, "(GL_SIGNED_LUMINANCE_ALPHA_LATC1_EXT)\n");
             break;
 #endif
+#if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
+        case COMPRESSED_SRGB_S3TC_DXT1_EXT:
+            MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT\n");
+            break;
+#endif
+#if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
+        case COMPRESSED_SRGB_S3TC_DXT1_EXT:
+            MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
+            break;
+#endif
+#if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
+        case COMPRESSED_SRGB_S3TC_DXT1_EXT:
+            MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
+            break;
+#endif
+#if defined(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)
+        case COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
+            MESSAGE(2, "(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)\n");
+            break;
+#endif
 #if defined(GL_ETC1_RGB8_OES)
         case GL_ETC1_RGB8_OES: /* 0x8d64 */
             etc1_supported = true;
@@ -146,95 +275,6 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
             break;
         }
     }
-
-    if (etc1_supported == false)
-    {
-        MESSAGE(2, "No ETC1 support detected in drivers\n");
-        //return false;
-    }
-
-    /*
-     * Shader program init:
-     */
-    shaderProgram = createShaderProgram(vertex_src, fragment_src);
-    if (shaderProgram == 0)
-    {
-        MESSAGE(1, "Error: Shader program creation failed\n");
-        return false;
-    }
-    GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-    linkShaderProgram(shaderProgram);
-
-    /*
-     * Texture loading for the test case:
-     */
-    textureID = loadETCTextureFromFile(texturefilename);
-    if (textureID == 0)
-    {
-        MESSAGE_1P(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
-        return false;
-    }
-
-    GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-    return true;
-}
-
-/*
- * destroyBenchmark() shall free all resources allocated by the initBenchmark() method. The core shall
- * call this method once the benchmark case has been run.
- */
-bool b04_ETCTextureTest::destroyBenchmark(void)
-{
-    destroyEGLDisplay();
-    return true;
-}
-
-
-void b04_ETCTextureTest::Render(void)
-{
-    GLfloat vVertices[] = {  -0.5f, -0.5f, 0.0f,
-                             -0.5f,  0.5f, 0.0f,
-                              0.5f,  0.5f, 0.0f,
-                              0.5f, -0.5f, 0.0f };
-
-    GLVIEWPORT(0, 0, w_width, w_height);
-    GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLUSEPROGRAM(shaderProgram);
-    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-    GLENABLEVERTEXATTRIBARRAY(0);
-    GLDRAWARRAYS(GL_TRIANGLES, 0, 3);
-
-    EGLSWAPBUFFERS(egl_display, egl_surface);
-}
-
-/*
- * runBenchmark()
- */
-bool b04_ETCTextureTest::runBenchmark(float duration)
-{
-    // Timer and variables
-    resetTimer();
-    totaltime = 0;
-    renderedFrames = 0;
-
-    while ( totaltime < duration )
-    {
-        Render();
-        renderedFrames++;
-
-        // Grab time since last timer reset
-        totaltime = getTime();
-
-        if (userInterrupt() == true)
-            break;
-    }
-    return true;
-}
-
-/*
- * displayResult()
- */
-bool b04_ETCTextureTest::displayResult(void)
-{
-    return true;
+    delete v;
+    return etc1_supported;
 }

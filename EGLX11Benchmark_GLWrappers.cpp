@@ -107,7 +107,7 @@ void EGLX11Benchmark::GLGENTEXTURES(GLsizei size, GLuint *ptr)
 
 void EGLX11Benchmark::GLBINDTEXTURE(GLenum target, GLuint id)
 {
-    MESSAGE_2P(4, "Attempting a call to glBindTexture(%d, %d)\n", target, id);
+    MESSAGE_2P(5, "Attempting a call to glBindTexture(%d, %d)\n", target, id);
     glBindTexture(target, id);
     flushGLErrors();
 }

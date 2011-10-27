@@ -27,14 +27,15 @@ public:
 private:
     // Test case specific methods
     void Render(void);
+    bool queryCompressedTextureformats(void);
 
     // Test case specific variables
     unsigned int renderedFrames;
     float totaltime;
 
-    bool etc1_supported;
     GLuint shaderProgram;
     GLuint textureID;
+    GLuint texturesampler;
 };
 
 #endif // b04_ETCTextureTest_H
