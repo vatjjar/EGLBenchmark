@@ -524,6 +524,14 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     flushGLErrors();
     delete buffer;
 
+    // This is critical. CompressedTexImage may return invalid ENUM and if so, we will cancel
+    if (getGLErrors() != 0)
+    {
+        MESSAGE(4, "Texture loading aborted due to errors in glCompressedTexImage()\n");
+        glDeleteTextures(1, &textureID);
+        return 0;
+    }
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     flushGLErrors();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
