@@ -537,8 +537,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     glBindTexture(GL_TEXTURE_2D, textureID);
     flushGLErrors();
 
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, 128, 128, 0, length, buffer);
-    flushGLErrors();
+    GLCOMPRESSEDTEXIMAGE2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, 128, 128, 0, length-16, &buffer[16]);
     delete buffer;
 
     // This is critical. CompressedTexImage may return invalid ENUM and if so, we will cancel

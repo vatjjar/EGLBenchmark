@@ -155,4 +155,14 @@ void EGLX11Benchmark::GLUNIFORM1I(GLint location, GLint x)
 {
     MESSAGE(5, "GL call: glUniform1I(%d, %d)\n", location, x);
     glUniform1i(location, x);
+    flushGLErrors();
 }
+
+void EGLX11Benchmark::GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border, GLsizei size, const GLvoid *data)
+{
+    MESSAGE(4, "GL call: glCompressedTexImage2D(0x%x, %d, 0x%x, %d, %d, %d, %d, %p)\n",
+               target, level, internalformat, width, height, border, size, data);
+    glCompressedTexImage2D(target, level, internalformat, width, height, border, size, data);
+    flushGLErrors();
+}
+
