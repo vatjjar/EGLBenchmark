@@ -112,6 +112,8 @@ protected:
     void setName(const char *);
     void setDescription(const char *);
 
+    void MESSAGE(int level, const char *format, ...);
+
     // Benchmark case name and description
     const char * name;
     const char * description;

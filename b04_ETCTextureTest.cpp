@@ -89,7 +89,7 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     textureID = loadETCTextureFromFile(texturefilename);
     if (textureID == 0)
     {
-        MESSAGE_1P(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
     }
 
@@ -170,9 +170,9 @@ bool b04_ETCTextureTest::runBenchmark(float duration)
  */
 bool b04_ETCTextureTest::displayResult(void)
 {
-    MESSAGE_1P(1, "Total rendering time %f\n", totaltime);
-    MESSAGE_1P(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE_1P(1, "Frames per second %f\n", renderedFrames/totaltime);
+    MESSAGE(1, "Total rendering time %f\n", totaltime);
+    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
+    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
     return true;
 }
 
@@ -186,7 +186,7 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
     // First we query the list of supported compressed texture formats
     glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &t);
     flushGLErrors();
-    MESSAGE_1P(1, "Number of compressed texture formats supported by the driver: %d\n", t);
+    MESSAGE(1, "Number of compressed texture formats supported by the driver: %d\n", t);
     if (t == 0)
     {
         MESSAGE(1, "Error: The driver does not support texture compression.\n");
@@ -201,7 +201,7 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
     MESSAGE(2, "Supported compressed texture formats:\n");
     for (int i=0; i<t; i++)
     {
-        MESSAGE_2P(2, "format %d: 0x%x ", i, v[i]);
+        MESSAGE(2, "format %d: 0x%x ", i, v[i]);
         switch(v[i])
         {
 #if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)

@@ -207,8 +207,8 @@ bool b02_SimpleGLShading::runBenchmark(float duration)
  */
 bool b02_SimpleGLShading::displayResult(void)
 {
-    MESSAGE_1P(1, "Total rendering time %f\n", totaltime);
-    MESSAGE_1P(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE_1P(1, "Frames per second %f\n", renderedFrames/totaltime);
+    MESSAGE(1, "Total rendering time %f\n", totaltime);
+    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
+    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
     return false;
 }

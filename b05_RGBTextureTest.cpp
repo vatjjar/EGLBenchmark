@@ -84,7 +84,7 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     textureID = loadRGBTexturefromPNG(texturefilename);
     if (textureID == 0)
     {
-        MESSAGE_1P(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
     }
 
@@ -165,8 +165,8 @@ bool b05_RGBTextureTest::runBenchmark(float duration)
  */
 bool b05_RGBTextureTest::displayResult(void)
 {
-    MESSAGE_1P(1, "Total rendering time %f\n", totaltime);
-    MESSAGE_1P(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE_1P(1, "Frames per second %f\n", renderedFrames/totaltime);
+    MESSAGE(1, "Total rendering time %f\n", totaltime);
+    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
+    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
     return true;
 }

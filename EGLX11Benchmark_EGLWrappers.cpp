@@ -21,7 +21,7 @@
 
 void EGLX11Benchmark::EGLSWAPBUFFERS(EGLDisplay egl_display, EGLSurface egl_surface)
 {
-    MESSAGE_2P(5, "Attempting a call to eglSwapBuffers(%p, %p)\n", egl_display, egl_surface);
+    MESSAGE(5, "Attempting a call to eglSwapBuffers(%p, %p)\n", egl_display, egl_surface);
     eglSwapBuffers(egl_display, egl_surface);
     flushEGLErrors();
 }

@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "EGLX11Benchmark.h"
 

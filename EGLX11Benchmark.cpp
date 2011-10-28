@@ -11,7 +11,8 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "sys/stat.h"
+#include <sys/stat.h>
+#include <stdarg.h>
 
 #include "png.h"
 
@@ -52,6 +53,21 @@ void EGLX11Benchmark::setName(const char *n)
 void EGLX11Benchmark::setDescription(const char *d)
 {
     description = d;
+}
+
+/*
+ * Debug
+ */
+
+void EGLX11Benchmark::MESSAGE(int level, const char *format, ...)
+{
+    char *buffer = new char [256];
+    va_list args;
+    va_start (args, format);
+    vsprintf (buffer,format, args);
+    outputMessage(level, buffer);
+    va_end (args);
+    delete buffer;
 }
 
 void EGLX11Benchmark::outputMessage(int level, const char *message)
@@ -194,7 +210,10 @@ unsigned int EGLX11Benchmark::getEGLErrors(void)
     return EGLerrors;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * Display and context creation helpers
+ * ------------------------------------
+ */
 
 bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
 {
@@ -359,10 +378,13 @@ void EGLX11Benchmark::destroyEGLDisplay(void)
     egl_surface = 0;
     win = 0;
     x_display = NULL;
-    outputMessage(3, "EGL/X11 Destruction done\n");
+    MESSAGE(3, "EGL/X11 Destruction done\n");
 }
 
-// Shader helpers
+/*
+ * Shader program helpers
+ * ----------------------
+ */
 
 void EGLX11Benchmark::printShaderInfo ( GLuint shader )
 {
@@ -379,7 +401,7 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
       MESSAGE(4, "printShaderInfo: glGetShaderInfoLog()\n");
       glGetShaderInfoLog ( shader , length , NULL , buffer );
       flushGLErrors();
-      MESSAGE_1P(4, "Shader info: '%s'\n", buffer);
+      MESSAGE(4, "Shader info: '%s'\n", buffer);
 
       MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
       glGetShaderiv( shader, GL_COMPILE_STATUS, &success );
@@ -393,11 +415,6 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
    }
 }
 
-/*
- * Shader program helpers
- * ----------------------
- */
-
 GLuint EGLX11Benchmark::loadShaderProgram ( const char *shader_source, GLenum type)
 {
    GLuint shader;
@@ -409,7 +426,7 @@ GLuint EGLX11Benchmark::loadShaderProgram ( const char *shader_source, GLenum ty
    {
        return 0;
    }
-   MESSAGE_1P(4, "loadShader: shader handle = %d\n", shader);
+   MESSAGE(4, "loadShader: shader handle = %d\n", shader);
 
    MESSAGE(4, "loadShader: glShaderSource()\n");
    glShaderSource  ( shader , 1 , &shader_source , NULL );
@@ -478,13 +495,13 @@ unsigned char * EGLX11Benchmark::readBinaryFile(const char *filename, unsigned i
 
     if (stat(filename, &results) != 0)
     {
-        MESSAGE_1P(4, "IOError when trying to access '%s'\n", filename);
+        MESSAGE(4, "IOError when trying to access '%s'\n", filename);
         return NULL;
     }
     buffer = new unsigned char [results.st_size];
     length = results.st_size;
 
-    MESSAGE_1P(4, "Trying to open '%s'\n", filename);
+    MESSAGE(4, "Trying to open '%s'\n", filename);
     std::ifstream f(filename, std::ios::in | std::ios::binary);
     if (!f.read ((char *)buffer, results.st_size))
     {
@@ -512,7 +529,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     {
         return 0;
     }
-    MESSAGE_1P(4, "File read into memory, length %d bytes\n", (int)length);
+    MESSAGE(4, "File read into memory, length %d bytes\n", (int)length);
 
     // GL texture generation part
     glGenTextures(1, &textureID);
@@ -649,7 +666,7 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
             hasAlpha = false;
             break;
         default:
-            MESSAGE_1P(4, "PNG: color type %d not supported by loader.\n", info_ptr->color_type);
+            MESSAGE(4, "PNG: color type %d not supported by loader.\n", info_ptr->color_type);
             png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
             fclose(fp);
             return 0;
@@ -672,7 +689,7 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
 
     /* Close the file */
     fclose(fp);
-    MESSAGE_3P(4, "PNG image loaded: %dx%d alpha:%d\n", width, height, hasAlpha);
+    MESSAGE(4, "PNG image loaded: %dx%d alpha:%d\n", width, height, hasAlpha);
 
 
     /*
@@ -698,3 +715,5 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
 
     return textureID;
 }
+
+
