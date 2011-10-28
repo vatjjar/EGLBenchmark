@@ -22,8 +22,6 @@
 #include  <GLES2/gl2.h>
 #include  <EGL/egl.h>
 
-#include "EGLX11Benchmark_Debug.h"
-
 const EGLint attr[] = {       // some attributes to set up our egl-interface
    EGL_BUFFER_SIZE,     16,
    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
