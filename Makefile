@@ -18,7 +18,8 @@ _OBJS=main.o                      \
     b01_ContextInit.o             \
     b02_SimpleGLShading.o         \
     b03_SimpleTriangle.o          \
-    b04_ETCTextureTest.o
+    b04_ETCTextureTest.o          \
+    b05_RGBTextureTest.o
 ODIR=objs
 OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
 
@@ -29,7 +30,8 @@ HEADERS=                          \
     b01_ContextInit.h             \
     b02_SimpleGLShading.h         \
     b03_SimpleTriangle.h          \
-    b04_ETCTextureTest.h
+    b04_ETCTextureTest.h          \
+    b05_RGBTextureTest.h
 
 default: ${ODIR} all
 
