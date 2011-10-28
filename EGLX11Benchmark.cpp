@@ -502,6 +502,7 @@ unsigned char * EGLX11Benchmark::readBinaryFile(const char *filename, unsigned i
 
 GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
 {
+#if defined(GL_ETC1_RGB8_OES)
     unsigned int length;
     unsigned char *buffer;
     GLuint textureID;
@@ -519,8 +520,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     glBindTexture(GL_TEXTURE_2D, textureID);
     flushGLErrors();
 
-    //glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+    glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, 128, 128, 0, length, buffer);
     flushGLErrors();
     delete buffer;
 
@@ -530,6 +530,11 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     flushGLErrors();
 
     return textureID;
+#else
+    MESSAGE(4, "ETC1 Texture loading not supported by this platform\n");
+    MESSAGE(4, "Preprocessor flag GL_ETC1_RGB8_OES not defined\n");
+    return 0;
+#endif
 }
 
 GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)

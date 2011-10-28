@@ -85,6 +85,9 @@ protected:
     void   GLTEXIMAGE2D(GLenum target, GLint level, GLint inernalformat, GLsizei width,
                                        GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels);
     void   GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param);
+    GLint  GLGETUNIFORMLOCATION(GLuint program, const GLchar *name);
+    void   GLACTIVETEXTURE(GLenum texture);
+    void   GLUNIFORM1I(GLint location, GLint x);
 
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
