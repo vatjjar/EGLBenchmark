@@ -527,7 +527,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     // This is critical. CompressedTexImage may return invalid ENUM and if so, we will cancel
     if (getGLErrors() != 0)
     {
-        MESSAGE(4, "Texture loading aborted due to errors in glCompressedTexImage()\n");
+        MESSAGE(4, "Texture loading aborted due to errors in glCompressedTexImage2D()\n");
         glDeleteTextures(1, &textureID);
         return 0;
     }
@@ -554,7 +554,6 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
     png_structp png_ptr;
     png_infop info_ptr;
     unsigned int sig_read = 0;
-    //int color_type, interlace_type;
     FILE *fp;
     unsigned int width, height;
     bool hasAlpha;
@@ -673,47 +672,29 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
 
     /* Close the file */
     fclose(fp);
-
-
-    //std::cout << "Image loaded " << width << " " << height << " alpha " << hasAlpha << std::endl;
     MESSAGE_3P(4, "PNG image loaded: %dx%d alpha:%d\n", width, height, hasAlpha);
 
-#if 0
-    // GL texture generation part
-    glGenTextures(1, &textureID);
-    flushGLErrors();
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    flushGLErrors();
 
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    flushGLErrors();
-    glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? 4 : 3, width,
-            height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE,
-            buffer);
-    flushGLErrors();
-    delete buffer;
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    flushGLErrors();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    flushGLErrors();
-#else
+    /*
+     * GL texture generation part
+     */
     GLGENTEXTURES(1, &textureID);
     GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
     GLPIXELSTOREI(GL_UNPACK_ALIGNMENT, 1);
     GLTEXIMAGE2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA : GL_RGB, width,
                  height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE,
                  buffer);
-    GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // At this point we might have errors already in the pipe, and if so, we'll cancel
-    if (getGLErrors() > 0)
+    if (getGLErrors() != 0)
     {
+        MESSAGE(4, "Texture loading aborted due to errors in glTexImage2D()\n");
         glDeleteTextures(1, &textureID);
         return 0;
     }
-#endif
+
+    GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
     return textureID;
 }
