@@ -11,8 +11,6 @@
 
 #include "EGLX11Benchmark.h"
 
-#include "GLES2/gl2ext.h"
-
 class b04_ETCTextureTest : public EGLX11Benchmark
 {
 public:

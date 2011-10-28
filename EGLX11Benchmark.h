@@ -20,6 +20,7 @@
 #include  <X11/Xutil.h>
 
 #include  <GLES2/gl2.h>
+#include  <GLES2/gl2ext.h>
 #include  <EGL/egl.h>
 
 const EGLint attr[] = {       // some attributes to set up our egl-interface
