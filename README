@@ -21,13 +21,13 @@ At the moment three test cases are included:
 1) EGL initialisation and destruction
 2) Simple shader program example
 3) Simple triangle drawing example
+4) Texturemapping test with ETC1 texture compression
+5) Texturemapping test with regular RGB texturing
 
 Even with these simple cases a dozen low level bugs have been pulled
 out from the current GLES2 drivers.
 
-Number of test cases will grow, as I see need for them. I'm targeting now
-low level testing of ETC1 texture compression as well as dynamic
-creation of geometry data via FrameBufferObjects.
+Number of test cases will grow, as I see need for them.
 
 Suggestions welcome.
 
