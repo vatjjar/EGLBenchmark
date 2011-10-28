@@ -20,7 +20,7 @@
 
 b04_ETCTextureTest::b04_ETCTextureTest()
 {
-    setName("ETC texture compression test");
+    setName("ETC1 texture mapping test");
     setDescription("This test tests texture compression parts of GLES2 and executes a case using ETC texture format");
 }
 
@@ -35,7 +35,7 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
  */
 bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    const char *texturefilename = "./resources/pngRGB.png";
+    const char *texturefilename = "./resources/etctexture.pkm";
     const char vertex_src[] =
        "attribute vec4 a_Position;   \n"
        "attribute vec2 a_Texcoord;   \n"
@@ -65,7 +65,7 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     if (false == queryCompressedTextureformats())
     {
         MESSAGE(1, "Error: ETC1 texture format not supported by the driver\n");
-        //return false;
+        return false;
     }
 
     /*
@@ -81,13 +81,12 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
     linkShaderProgram(shaderProgram);
 
-    texturesampler = glGetUniformLocation(shaderProgram, "s_texture");
+    texturesampler = GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
 
     /*
      * Texture loading for the test case:
      */
-    //textureID = loadETCTextureFromFile(texturefilename);
-    textureID = loadRGBTexturefromPNG(texturefilename);
+    textureID = loadETCTextureFromFile(texturefilename);
     if (textureID == 0)
     {
         MESSAGE_1P(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
@@ -109,21 +108,22 @@ bool b04_ETCTextureTest::destroyBenchmark(void)
 }
 
 
+// Constant vectors for the render test
+static GLfloat vVertices[] = {  -0.5f, -0.5f, 0.0f,
+                                -0.5f,  0.5f, 0.0f,
+                                 0.5f,  0.5f, 0.0f,
+                                -0.5f, -0.5f, 0.0f,
+                                 0.5f,  0.5f, 0.0f,
+                                 0.5f, -0.5f, 0.0f };
+static GLfloat vTexcoord[] = { 0.0f, 0.0f,
+                               0.0f, 1.0f,
+                               1.0f, 1.0f,
+                               0.0f, 0.0f,
+                               1.0f, 1.0f,
+                               1.0f, 0.0f };
+
 void b04_ETCTextureTest::Render(void)
 {
-    GLfloat vVertices[] = {  -0.5f, -0.5f, 0.0f,
-                             -0.5f,  0.5f, 0.0f,
-                              0.5f,  0.5f, 0.0f,
-                             -0.5f, -0.5f, 0.0f,
-                              0.5f,  0.5f, 0.0f,
-                              0.5f, -0.5f, 0.0f };
-    GLfloat vTexcoord[] = { 0.0f, 0.0f,
-                            0.0f, 1.0f,
-                            1.0f, 1.0f,
-                            0.0f, 0.0f,
-                            1.0f, 1.0f,
-                            1.0f, 0.0f };
-
     GLVIEWPORT(0, 0, w_width, w_height);
     GLCLEAR(GL_COLOR_BUFFER_BIT);
     GLUSEPROGRAM(shaderProgram);
@@ -132,12 +132,9 @@ void b04_ETCTextureTest::Render(void)
     GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
     GLENABLEVERTEXATTRIBARRAY(1);
 
-//    texturesampler = glGetUniformLocation(shaderProgram, "s_texture");
-    glActiveTexture(GL_TEXTURE0);
-    flushGLErrors();
+    GLACTIVETEXTURE(GL_TEXTURE0);
     GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
-    glUniform1i(texturesampler, 0);
-    flushGLErrors();
+    GLUNIFORM1I(texturesampler, 0);
 
     GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
 
@@ -248,22 +245,22 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
             break;
 #endif
 #if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
-        case COMPRESSED_SRGB_S3TC_DXT1_EXT:
+        case COMPRESSED_SRGB_S3TC_DXT1_EXT: /* 0x8c4c */
             MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
-        case COMPRESSED_SRGB_S3TC_DXT1_EXT:
+        case COMPRESSED_SRGB_S3TC_DXT1_EXT: /* 0x8c4d */
             MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
-        case COMPRESSED_SRGB_S3TC_DXT1_EXT:
+        case COMPRESSED_SRGB_S3TC_DXT1_EXT: /* 0x8c4e */
             MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)
-        case COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
+        case COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT: /* 0x8c4f */
             MESSAGE(2, "(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)\n");
             break;
 #endif
