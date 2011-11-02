@@ -31,7 +31,6 @@ void EGLX11Benchmark::GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, c
     glBindAttribLocation(shaderProgram, index, name);
     flushGLErrors();
 }
-
 void EGLX11Benchmark::GLCLEARCOLOR(GLclampf r, GLclampf g, GLclampf b, GLclampf a)
 {
     MESSAGE(4, "GL call: glClearColor(%f, %f, %f, %f)\n", r, g, b, a);
@@ -135,6 +134,15 @@ void EGLX11Benchmark::GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param)
     flushGLErrors();
 }
 
+GLint EGLX11Benchmark::GLGETATTRIBLOCATION(GLuint program, const GLchar *name)
+{
+    GLint rc;
+    rc = glGetAttribLocation(program, name);
+    MESSAGE(4, "GL call: glGetAttribLocation(%d, '%s') = %d\n", program, name, rc);
+    flushGLErrors();
+    return rc;
+}
+
 GLint EGLX11Benchmark::GLGETUNIFORMLOCATION(GLuint program, const GLchar *name)
 {
     GLint rc;
@@ -153,8 +161,22 @@ void EGLX11Benchmark::GLACTIVETEXTURE(GLenum texture)
 
 void EGLX11Benchmark::GLUNIFORM1I(GLint location, GLint x)
 {
-    MESSAGE(5, "GL call: glUniform1I(%d, %d)\n", location, x);
+    MESSAGE(5, "GL call: glUniform1i(%d, %d)\n", location, x);
     glUniform1i(location, x);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLUNIFORM1F(GLint location, GLfloat x)
+{
+    MESSAGE(5, "GL call: glUniform4f(%d, %f)\n", location, x);
+    glUniform1f(location, x);
+    flushGLErrors();
+}
+
+void EGLX11Benchmark::GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
+{
+    MESSAGE(5, "GL call: glUniform4f(%d, %f, %f, %f, %f)\n", location, x, y, z, w);
+    glUniform4f(location, x, y, z, w);
     flushGLErrors();
 }
 

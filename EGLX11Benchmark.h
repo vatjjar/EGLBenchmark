@@ -84,9 +84,12 @@ protected:
     void   GLTEXIMAGE2D(GLenum target, GLint level, GLint inernalformat, GLsizei width,
                                        GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels);
     void   GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param);
+    GLint  GLGETATTRIBLOCATION(GLuint program, const GLchar *name);
     GLint  GLGETUNIFORMLOCATION(GLuint program, const GLchar *name);
     void   GLACTIVETEXTURE(GLenum texture);
     void   GLUNIFORM1I(GLint location, GLint x);
+    void   GLUNIFORM1F(GLint location, GLfloat x);
+    void   GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
     void   GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border, GLsizei size, const GLvoid *data);
 
     // EGL Wrappers:

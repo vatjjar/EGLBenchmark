@@ -87,7 +87,28 @@ b02_SimpleGLShading::~b02_SimpleGLShading()
  */
 bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    return createEGLDisplay(width, height, fullscreen);
+    if (false == createEGLDisplay(width, height, fullscreen))
+    {
+        return false;
+    }
+
+    shaderProgram = createShaderProgram(vertex_src, fragment_src);
+    if (shaderProgram == 0)
+    {
+        MESSAGE(1, "Error: Shader program object creation failed\n");
+    }
+    linkShaderProgram(shaderProgram);
+
+    position_loc  = GLGETATTRIBLOCATION(shaderProgram , "position");
+    phase_loc     = GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
+    offset_loc    = GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
+
+    if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
+       MESSAGE(1, "Error: Unable to get uniform location\n");
+       return false;
+    }
+
+    return true;
 }
 
 /*
@@ -103,28 +124,18 @@ bool b02_SimpleGLShading::destroyBenchmark(void)
 
 void b02_SimpleGLShading::Render(void)
 {
-    glClear ( GL_COLOR_BUFFER_BIT );
-    flushGLErrors();
+    GLCLEAR ( GL_COLOR_BUFFER_BIT );
 
-    glUniform1f ( phase_loc , phase );
-    flushGLErrors();
+    GLUNIFORM1F ( phase_loc , phase );
 
     phase  =  phase+0.5f;
 
-    glUniform4f ( offset_loc  ,  0.0 , 0.0 , 0.0 , 0.0 );
-    flushGLErrors();
+    GLUNIFORM4F ( offset_loc  ,  0.0 , 0.0 , 0.0 , 0.0 );
+    GLVERTEXATTRIBPOINTER ( position_loc, 3, GL_FLOAT, false, 0, vertexArray );
+    GLENABLEVERTEXATTRIBARRAY ( position_loc );
+    GLDRAWARRAYS ( GL_TRIANGLE_STRIP, 0, 5 );
 
-    glVertexAttribPointer ( position_loc, 3, GL_FLOAT, false, 0, vertexArray );
-    flushGLErrors();
-
-    glEnableVertexAttribArray ( position_loc );
-    flushGLErrors();
-
-    glDrawArrays ( GL_TRIANGLE_STRIP, 0, 5 );
-    flushGLErrors();
-
-    eglSwapBuffers ( egl_display, egl_surface );  // get the rendered buffer to the screen
-    flushGLErrors();
+    EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
 }
 
 
@@ -133,55 +144,8 @@ void b02_SimpleGLShading::Render(void)
  */
 bool b02_SimpleGLShading::runBenchmark(float duration)
 {
- //   XWindowAttributes  gwa;
-
-    MESSAGE(5, "loading shaders...\n");
-    vertexShader   = loadShaderProgram ( vertex_src , GL_VERTEX_SHADER  );     // load vertex shader
-    fragmentShader = loadShaderProgram ( fragment_src , GL_FRAGMENT_SHADER );  // load fragment shader
-    if (vertexShader == 0 || fragmentShader == 0)
-    {
-        MESSAGE(1, "Error: Shader program loading failed\n");
-        return false;
-    }
-
-    MESSAGE(5, "glCreateProgram()\n");
-    shaderProgram  = glCreateProgram ();
-    flushGLErrors();
-    MESSAGE(5, "glAttachShader() - vertex\n");
-    glAttachShader ( shaderProgram, vertexShader );
-    flushGLErrors();
-    MESSAGE(5, "glAttachShader() - fragment\n");
-    glAttachShader ( shaderProgram, fragmentShader );
-    flushGLErrors();
-
-    MESSAGE(5, "glLinkProgram()\n");
-    glLinkProgram ( shaderProgram );
-    flushGLErrors();
-    MESSAGE(5, "glUseProgram()\n");
-    glUseProgram  ( shaderProgram );
-    flushGLErrors();
-
-    MESSAGE(5, "glGetAttribLocation() 1\n");
-    position_loc  = glGetAttribLocation  ( shaderProgram , "position" );
-    flushGLErrors();
-    MESSAGE(5, "glGetAttribLocation() 2\n");
-    phase_loc     = glGetUniformLocation ( shaderProgram , "phase"    );
-    flushGLErrors();
-    MESSAGE(5, "glGetAttribLocation() 3\n");
-    offset_loc     = glGetUniformLocation ( shaderProgram , "offset"    );
-    flushGLErrors();
-
-    if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
-       MESSAGE(1, "Error: Unable to get uniform location\n");
-       return false;
-    }
-
-    MESSAGE(5, "glViewport\n");
-    glViewport ( 0 , 0 , w_width , w_height );
-    flushGLErrors();
-    MESSAGE(5, "glClearColor\n");
-    glClearColor ( 0.08 , 0.06 , 0.07 , 1.);
-    flushGLErrors();
+    GLVIEWPORT ( 0 , 0 , w_width , w_height );
+    GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
 
     // Timer and variables
     resetTimer();
