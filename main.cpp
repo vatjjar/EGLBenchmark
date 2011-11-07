@@ -31,6 +31,7 @@ static unsigned int height = 480;
 static unsigned int fullscreen = false;
 static int verbosity = 1;
 static float duration = 5.0f;
+static float fpslimit = 0.0f;
 static unsigned int testcase = TEST_CONTEXTINIT;
 
 bool parseArgs(int argc, char *argv[])
@@ -46,6 +47,7 @@ bool parseArgs(int argc, char *argv[])
         OPT_FULLSCREEN,
         OPT_DURATION,
         OPT_TESTCASE,
+        OPT_FPSLIMIT,
         OPT_LIST,
         OPT_USAGE,
         OPT_H,
@@ -59,6 +61,7 @@ bool parseArgs(int argc, char *argv[])
         { "-duration",   OPT_DURATION },
         { "-testcase",   OPT_TESTCASE },
         { "-list",       OPT_LIST },
+        { "-fpslimit",   OPT_FPSLIMIT },
         { "-usage",      OPT_USAGE },
         { "-h",          OPT_H },
         { "-help",       OPT_HELP },
@@ -123,6 +126,11 @@ bool parseArgs(int argc, char *argv[])
                         return false;
                     }
                     break;
+                case OPT_FPSLIMIT:
+                    if (i+1 == argc) break; // No params anymore
+                    fpslimit = atof(argv[i+1]);
+                    if (fpslimit < 0.0f) fpslimit = 0.0f;
+                    break;
                 }
             }
         }
@@ -182,6 +190,7 @@ int main(int argc, char *argv[])
 
         while ( totaltime < duration )
         {
+            bm->getTimeSinceLastFrame();
             if (false == bm->renderSingleFrame(deltatime))
             {
                 std::cout << "Error during framerender. Abort!\n";
@@ -189,8 +198,20 @@ int main(int argc, char *argv[])
             }
             renderedFrames++;
 
-            // Grab time since last timer reset
             deltatime = bm->getTimeSinceLastFrame();
+
+            // FPS limit
+            if (fpslimit > 0.0f)
+            {
+                float frametime;
+                frametime = 1.0f/fpslimit;
+                if (deltatime < frametime)
+                {
+                    useconds_t sl = (useconds_t)((frametime-deltatime)*1000000);
+                    usleep(sl);
+                    deltatime = frametime;
+                }
+            }
             totaltime += deltatime;
 
             if (bm->userInterrupt() == true)
