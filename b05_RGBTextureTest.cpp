@@ -136,29 +136,16 @@ void b05_RGBTextureTest::Render(void)
     EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
+
 /*
- * runBenchmark()
+ * renderSingleFrame()
  */
-bool b05_RGBTextureTest::runBenchmark(float duration)
+bool b05_RGBTextureTest::renderSingleFrame(float deltatime)
 {
-    // Timer and variables
-    resetTimer();
-    totaltime = 0;
-    renderedFrames = 0;
-
-    while ( totaltime < duration )
-    {
-        Render();
-        renderedFrames++;
-
-        // Grab time since last timer reset
-        totaltime = getTime();
-
-        if (userInterrupt() == true)
-            break;
-    }
+    Render();
     return true;
 }
+
 
 /*
  * displayResult()

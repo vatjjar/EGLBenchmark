@@ -171,17 +171,24 @@ void EGLX11Benchmark::setVerbosityLevel(unsigned int level)
 
 void EGLX11Benchmark::resetTimer(void)
 {
-    //// this is needed for time measuring  -->  frames per second
-    gettimeofday ( &t1 , &tz );
-    t2 = t1;
+    gettimeofday ( &t_start , &tz );
+    t_now = t_lastframe = t_start;
+
 }
 
-float EGLX11Benchmark::getTime(void)
+float EGLX11Benchmark::getTimeSinceTimerReset(void)
 {
-    // Calculate elapsed time since last timer reset (comparing to t1 timestamp)
-    // Result returned in seconds (float)
-    gettimeofday(&t2, &tz);
-    return (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
+    gettimeofday(&t_now, &tz);
+    return (float)(t_now.tv_sec - t_start.tv_sec + (t_now.tv_usec - t_start.tv_usec) * 1e-6);
+}
+
+float EGLX11Benchmark::getTimeSinceLastFrame(void)
+{
+    float delta;
+    gettimeofday(&t_now, &tz);
+    delta = (float)(t_now.tv_sec - t_lastframe.tv_sec + (t_now.tv_usec - t_lastframe.tv_usec) * 1e-6);
+    t_lastframe = t_now;
+    return delta;
 }
 
 bool EGLX11Benchmark::userInterrupt(void)

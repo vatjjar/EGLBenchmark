@@ -45,8 +45,9 @@ public:
 public:
     virtual bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen) = 0;
     virtual bool destroyBenchmark(void) = 0;
-    virtual bool runBenchmark(float duration) = 0;
+    //virtual bool runBenchmark(float duration) = 0;
     virtual bool displayResult(void) = 0;
+    virtual bool renderSingleFrame(float deltatime) = 0;
 
     // Methods for messages & debug output
     void outputMessage(int level, const char *message);
@@ -58,7 +59,8 @@ public:
 
     // Methods for timers and user break
     void resetTimer(void);
-    float getTime(void);
+    float getTimeSinceTimerReset(void);
+    float getTimeSinceLastFrame(void);
     bool userInterrupt(void);
 
     // Getters for benchmark naming info
@@ -133,7 +135,7 @@ protected:
     EGLSurface  egl_surface;
 
     // Timer related
-    struct timeval t1, t2;
+    struct timeval t_start, t_now, t_lastframe;
     struct timezone tz;
 
 private:

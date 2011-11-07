@@ -94,26 +94,11 @@ void b03_SimpleTriangle::Render(void)
 
 
 /*
- * runBenchmark()
+ * renderSingleFrame()
  */
-bool b03_SimpleTriangle::runBenchmark(float duration)
+bool b03_SimpleTriangle::renderSingleFrame(float deltatime)
 {
-    // Timer and variables
-    resetTimer();
-    totaltime = 0;
-    renderedFrames = 0;
-
-    while ( totaltime < duration )
-    {
-        Render();
-        renderedFrames++;
-
-        // Grab time since last timer reset
-        totaltime = getTime();
-
-        if (userInterrupt() == true)
-            break;
-    }
+    Render();
     return true;
 }
 

@@ -166,21 +166,43 @@ int main(int argc, char *argv[])
     }
     else
     {
+        float totaltime;
+        float deltatime;
+        unsigned int renderedFrames;
+
         std::cout << "Benchmark name: " << bm->getName() << "\n";
         std::cout << "Description:    " << bm->getDescription() << "\n";
         std::cout << "Running benchmark (duration="<<duration<<" seconds)...\n";
 
-        if (false == bm->runBenchmark(duration))
-        {
-            std::cout << "runBenchmark() FAILED!\n";
-        }
-        else
-        {
-            std::cout << "runBenchmark() SUCCESS!\n";
-        }
+        // Timer and variables
+        bm->resetTimer();
+        totaltime = 0.0f;
+        deltatime = 0.0f;
+        renderedFrames = 0.0f;
 
-        bm->displayResult();
-        std::cout << "Total GL errors during the test: " << bm->getGLErrors() << "\n";
+        while ( totaltime < duration )
+        {
+            if (false == bm->renderSingleFrame(deltatime))
+            {
+                std::cout << "Error during framerender. Abort!\n";
+                break;
+            }
+            renderedFrames++;
+
+            // Grab time since last timer reset
+            deltatime = bm->getTimeSinceLastFrame();
+            totaltime += deltatime;
+
+            if (bm->userInterrupt() == true)
+            {
+                std::cout << "User interrupt!\n";
+                break;
+            }
+        }
+        std::cout << "Total rendering time:             " << totaltime << "\n";
+        std::cout << "Total rendered frames:            " << renderedFrames << "\n";
+        std::cout << "Frames per second:                " << renderedFrames/totaltime << "\n";
+        std::cout << "Total GL errors during the test:  " << bm->getGLErrors() << "\n";
         std::cout << "Total EGL errors during the test: " << bm->getEGLErrors() << "\n";
         bm->destroyBenchmark();
     }

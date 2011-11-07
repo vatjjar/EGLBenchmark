@@ -108,6 +108,11 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
        return false;
     }
 
+    GLVIEWPORT ( 0 , 0 , w_width , w_height );
+    GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
+
+    // If we have errors in GL pipe, then abort.
+    if (getGLErrors() > 0) return false;
     return true;
 }
 
@@ -138,31 +143,12 @@ void b02_SimpleGLShading::Render(void)
     EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
 }
 
-
 /*
- * runBenchmark()
+ * renderSingleFrame()
  */
-bool b02_SimpleGLShading::runBenchmark(float duration)
+bool b02_SimpleGLShading::renderSingleFrame(float deltatime)
 {
-    GLVIEWPORT ( 0 , 0 , w_width , w_height );
-    GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
-
-    // Timer and variables
-    resetTimer();
-    totaltime = 0;
-    renderedFrames = 0;
-
-    while ( totaltime < duration )
-    {
-        Render();
-        renderedFrames++;
-
-        // Grab time since last timer reset
-        totaltime = getTime();
-
-        if (userInterrupt() == true)
-            break;
-    }
+    Render();
     return true;
 }
 

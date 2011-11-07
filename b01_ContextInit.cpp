@@ -35,9 +35,11 @@ b01_ContextInit::~b01_ContextInit()
  */
 bool b01_ContextInit::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    w_width = width;
-    w_height = height;
-    w_fullscreen = fullscreen;
+    if (false == createEGLDisplay(width, height, fullscreen))
+    {
+        return false;
+    }
+    GLCLEARCOLOR(0, 0, 0, 0);
     return true;
 }
 
@@ -52,11 +54,13 @@ bool b01_ContextInit::destroyBenchmark(void)
 }
 
 /*
- * runBenchmark()
+ * renderSingleFrame()
  */
-bool b01_ContextInit::runBenchmark(float duration)
+bool b01_ContextInit::renderSingleFrame(float timedelta)
 {
-    return createEGLDisplay(w_width, w_height, w_fullscreen);
+    GLCLEAR(GL_COLOR_BUFFER_BIT);
+    EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    return true;
 }
 
 /*
