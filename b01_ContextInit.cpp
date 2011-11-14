@@ -63,10 +63,3 @@ bool b01_ContextInit::renderSingleFrame(float timedelta)
     return true;
 }
 
-/*
- * displayResult()
- */
-bool b01_ContextInit::displayResult(void)
-{
-    return true;
-}

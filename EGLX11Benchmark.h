@@ -45,8 +45,6 @@ public:
 public:
     virtual bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen) = 0;
     virtual bool destroyBenchmark(void) = 0;
-    //virtual bool runBenchmark(float duration) = 0;
-    virtual bool displayResult(void) = 0;
     virtual bool renderSingleFrame(float deltatime) = 0;
 
     // Methods for messages & debug output

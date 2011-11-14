@@ -20,9 +20,7 @@ public:
 public:
     bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
     bool destroyBenchmark(void);
-    bool displayResult(void);
     bool renderSingleFrame(float deltatime);
-
 
 private:
     // Test case specific methods

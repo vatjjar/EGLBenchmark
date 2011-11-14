@@ -151,14 +151,3 @@ bool b02_SimpleGLShading::renderSingleFrame(float deltatime)
     Render();
     return true;
 }
-
-/*
- * displayResult()
- */
-bool b02_SimpleGLShading::displayResult(void)
-{
-    MESSAGE(1, "Total rendering time %f\n", totaltime);
-    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
-    return false;
-}

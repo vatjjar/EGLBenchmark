@@ -153,18 +153,6 @@ bool b04_ETCTextureTest::renderSingleFrame(float deltatime)
 }
 
 
-/*
- * displayResult()
- */
-bool b04_ETCTextureTest::displayResult(void)
-{
-    MESSAGE(1, "Total rendering time %f\n", totaltime);
-    MESSAGE(1, "Total rendered frames %d\n", renderedFrames);
-    MESSAGE(1, "Frames per second %f\n", renderedFrames/totaltime);
-    return true;
-}
-
-
 bool b04_ETCTextureTest::queryCompressedTextureformats(void)
 {
     GLint *v;
