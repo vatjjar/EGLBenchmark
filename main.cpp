@@ -29,8 +29,9 @@ enum {
 static unsigned int width = 840;
 static unsigned int height = 480;
 static unsigned int fullscreen = false;
+static unsigned int framelimit = 100;
 static int verbosity = 1;
-static float duration = 5.0f;
+//static float duration = 5.0f;
 static float fpslimit = 0.0f;
 static unsigned int testcase = TEST_CONTEXTINIT;
 
@@ -45,7 +46,8 @@ bool parseArgs(int argc, char *argv[])
         OPT_WIDTH,
         OPT_HEIGHT,
         OPT_FULLSCREEN,
-        OPT_DURATION,
+//        OPT_DURATION,
+        OPT_FRAMELIMIT,
         OPT_TESTCASE,
         OPT_FPSLIMIT,
         OPT_LIST,
@@ -58,7 +60,8 @@ bool parseArgs(int argc, char *argv[])
         { "-width",      OPT_WIDTH },
         { "-height",     OPT_HEIGHT },
         { "-fullscreen", OPT_FULLSCREEN },
-        { "-duration",   OPT_DURATION },
+//        { "-duration",   OPT_DURATION },
+        { "-framelimit", OPT_FRAMELIMIT },
         { "-testcase",   OPT_TESTCASE },
         { "-list",       OPT_LIST },
         { "-fpslimit",   OPT_FPSLIMIT },
@@ -94,16 +97,21 @@ bool parseArgs(int argc, char *argv[])
                 case OPT_FULLSCREEN:
                     fullscreen = true;
                     break;
-                case OPT_DURATION:
+//                case OPT_DURATION:
+//                    if (i+1 == argc) break; // No params anymore
+//                    duration = atof(argv[i+1]);
+//                    if (duration < 1.0f) duration = 1.0f;
+//                    break;
+                case OPT_FRAMELIMIT:
                     if (i+1 == argc) break; // No params anymore
-                    duration = atof(argv[i+1]);
-                    if (duration < 1.0f) duration = 1.0f;
+                    framelimit = atoi(argv[i+1]);
+                    if (framelimit < 1) framelimit = 1;
                     break;
                 case OPT_USAGE:
                 case OPT_H:
                 case OPT_HELP:
                     std::cout << "Usage:\n" << argv[0] << " -width <W> -height <H> -fullscreen";
-                    std::cout << "  -verbose <LEVEL 1-5> -duration <seconds> -usage|-h|-help -list -testcase <testcasename>\n";
+                    std::cout << "  -verbose <LEVEL 1-5> -framelimit <frames> -usage|-h|-help -list -testcase <testcasename>\n";
                     return false;
                 case OPT_LIST:
                     std::cout << "List of available test cases:\n";
@@ -138,14 +146,36 @@ bool parseArgs(int argc, char *argv[])
     return true;
 }
 
+void calculateFrameVariance(float *frametimes, unsigned int samples, float *average, float *variance)
+{
+    float sum, t;
+
+    sum = 0.0f;
+    for (unsigned int i=0; i<samples; i++)
+    {
+        sum += frametimes[i];
+    }
+    *average = sum / samples;
+
+    sum = 0;
+    for (unsigned int i=0; i<samples; i++)
+    {
+        sum += ((frametimes[i] - *average)*(frametimes[i] - *average));
+    }
+    *variance = sum / samples;
+}
+
 int main(int argc, char *argv[])
 {
     EGLX11Benchmark *bm;
+    float *frametimes;
 
     if (false == parseArgs(argc, argv))
     {
         return 0;
     }
+
+    frametimes = new float[framelimit];
 
     switch(testcase)
     {
@@ -177,18 +207,20 @@ int main(int argc, char *argv[])
         float totaltime;
         float deltatime;
         unsigned int renderedFrames;
+        float average, variance;
 
         std::cout << "Benchmark name: " << bm->getName() << "\n";
         std::cout << "Description:    " << bm->getDescription() << "\n";
-        std::cout << "Running benchmark (duration="<<duration<<" seconds)...\n";
+//        std::cout << "Running benchmark (duration="<<duration<<" seconds)...\n";
+        std::cout << "Running benchmark (framelimit="<<framelimit<<" frames)...\n";
 
         // Timer and variables
         bm->resetTimer();
         totaltime = 0.0f;
         deltatime = 0.0f;
-        renderedFrames = 0.0f;
+        renderedFrames = 0;
 
-        while ( totaltime < duration )
+        while ( renderedFrames < framelimit )
         {
             bm->getTimeSinceLastFrame();
             if (false == bm->renderSingleFrame(deltatime))
@@ -196,9 +228,10 @@ int main(int argc, char *argv[])
                 std::cout << "Error during framerender. Abort!\n";
                 break;
             }
-            renderedFrames++;
 
             deltatime = bm->getTimeSinceLastFrame();
+            frametimes[renderedFrames] = deltatime;
+            renderedFrames++;
 
             // FPS limit
             if (fpslimit > 0.0f)
@@ -220,8 +253,11 @@ int main(int argc, char *argv[])
                 break;
             }
         }
+        calculateFrameVariance(frametimes, framelimit, &average, &variance);
         std::cout << "Total rendering time:             " << totaltime << "\n";
         std::cout << "Total rendered frames:            " << renderedFrames << "\n";
+        std::cout << "Measurement frametime (average):  " << average << " seconds\n";
+        std::cout << "Measurement frametime (variance)  " << variance << " seconds\n";
         std::cout << "Frames per second:                " << renderedFrames/totaltime << "\n";
         std::cout << "Total GL errors during the test:  " << bm->getGLErrors() << "\n";
         std::cout << "Total EGL errors during the test: " << bm->getEGLErrors() << "\n";
