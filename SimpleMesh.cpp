@@ -46,28 +46,28 @@ bool SimpleMesh::fromFiles(const char *filename)
 
     // Faces (indices):
     memcpy(&fn[strlen(filename)], ".faces", strlen(".faces"));
-    fromFileToShortVector(fn, &n_faces, &a_faces);
+    if (NULL == fromFileToShortVector(fn, &n_faces, &a_faces)) return false;
     //std::cout << "Read file " << fn << " " << n_faces << " elements\n";
     if (n_vertices%3 != 0) return false;
     n_vertices /= 3;
 
     // Normals:
     memcpy(&fn[strlen(filename)], ".normals", strlen(".normals"));
-    fromFileToFloatVector(fn, &n_normals, &a_normals);
+    if (NULL == fromFileToFloatVector(fn, &n_normals, &a_normals)) return false;
     //std::cout << "Read file " << fn << " " << n_normals << " elements\n";
     if (n_normals%3 != 0) return false;
     n_normals /= 3;
 
     // Vertices:
     memcpy(&fn[strlen(filename)], ".vertices", strlen(".vertices"));
-    fromFileToFloatVector(fn, &n_vertices, &a_vertices);
+    if (NULL == fromFileToFloatVector(fn, &n_vertices, &a_vertices)) return false;
     //std::cout << "Read file " << fn << " " << n_vertices << " elements\n";
     if (n_vertices%3 != 0) return false;
     n_vertices /= 3;
 
     // Texcoords:
     memcpy(&fn[strlen(filename)], ".texcoords", strlen(".texcoords"));
-    fromFileToFloatVector(fn, &n_texcoords, &a_texcoords);
+    if (NULL == fromFileToFloatVector(fn, &n_texcoords, &a_texcoords)) return false;
     //std::cout << "Read file " << fn << " " << n_texcoords << " elements\n";
     if (n_texcoords%2 != 0) return false;
     n_texcoords /= 2;
@@ -157,7 +157,11 @@ bool SimpleMesh::fromFileToFloatVector(const char *filename, GLuint *n_elements,
 
     DebugLog::Instance()->MESSAGE(4, "SimpleMesh: trying to open file: %s\n", filename);
     f = fopen(filename, "r");
-    if (f == NULL) return false;
+    if (f == NULL)
+    {
+        DebugLog::Instance()->MESSAGE(4, "File open failed\n");
+        return false;
+    }
 
     i = 0;
     while (fgets(linebuffer, sizeof(linebuffer), f) != NULL)
@@ -181,7 +185,11 @@ bool SimpleMesh::fromFileToShortVector(const char *filename, GLuint *n_elements,
 
     DebugLog::Instance()->MESSAGE(4, "SimpleMesh: trying to open file: %s\n", filename);
     f = fopen(filename, "r");
-    if (f == NULL) return false;
+    if (f == NULL)
+    {
+        DebugLog::Instance()->MESSAGE(4, "File open failed\n");
+        return false;
+    }
 
     i = 0;
     while (fgets(linebuffer, sizeof(linebuffer), f) != NULL)

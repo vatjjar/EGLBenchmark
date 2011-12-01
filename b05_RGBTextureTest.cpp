@@ -93,7 +93,7 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
 
     // Try to load simple mesh from disk
     sm = new SimpleMesh();
-    if (false == sm->fromFiles("Plane"))
+    if (false == sm->fromFiles("resources/Plane"))
     {
         DebugLog::Instance()->MESSAGE(1, "Unable to load mesh from file Plane\n");
         return false;
