@@ -1,0 +1,34 @@
+<mesh>
+ <sharedgeometry vertexcount="4">
+  <vertexbuffer normals="true" positions="true" texture_coords="true">
+   <vertex>
+    <position x="-0.5" y="-0.5" z="0.0"/>
+    <normal x="0.0" y="-1.0" z="0.0"/>
+    <texcoord u="0.0" v="0.0"/>
+   </vertex>
+   <vertex>
+    <position x="-0.5" y="0.5" z="0.0"/>
+    <normal x="0.0" y="-1.0" z="0.0"/>
+    <texcoord u="0.0" v="1.0"/>
+   </vertex>
+   <vertex>
+    <position x="0.5" y="-0.5" z="0.0"/>
+    <normal x="0.0" y="-1.0" z="0.0"/>
+    <texcoord u="1.0" v="0.0"/>
+   </vertex>
+   <vertex>
+    <position x="0.5" y="0.5" z="0.0"/>
+    <normal x="0.0" y="-1.0" z="0.0"/>
+    <texcoord u="1.0" v="1.0"/>
+   </vertex>
+  </vertexbuffer>
+ </sharedgeometry>
+ <submeshes>
+  <submesh material="test.material" usesharedvertices="True">
+   <faces count="2">
+    <face v1="0" v2="1" v3="3"/>
+    <face v1="0" v2="3" v3="2"/>
+   </faces>
+  </submesh>
+ </submeshes>
+</mesh>
