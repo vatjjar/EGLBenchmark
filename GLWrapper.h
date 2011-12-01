@@ -51,8 +51,8 @@ public:
     void   GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
     void   GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border,
                                        GLsizei size, const GLvoid *data);
-    void   GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, a_faces);
-    glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *data);
+    void   GLDRAWELEMENTS(GLenum mode, GLsizei count, GLenum type, const GLvoid *data);
+
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
 
