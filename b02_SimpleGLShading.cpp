@@ -95,21 +95,21 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        MESSAGE(1, "Error: Shader program object creation failed\n");
+        log->MESSAGE(1, "Error: Shader program object creation failed\n");
     }
     linkShaderProgram(shaderProgram);
 
-    position_loc  = GLGETATTRIBLOCATION(shaderProgram , "position");
-    phase_loc     = GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
-    offset_loc    = GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
+    position_loc  = glwrap->GLGETATTRIBLOCATION(shaderProgram , "position");
+    phase_loc     = glwrap->GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
+    offset_loc    = glwrap->GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
 
     if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
-       MESSAGE(1, "Error: Unable to get uniform location\n");
+       log->MESSAGE(1, "Error: Unable to get uniform location\n");
        return false;
     }
 
-    GLVIEWPORT ( 0 , 0 , w_width , w_height );
-    GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
+    glwrap->GLVIEWPORT ( 0 , 0 , w_width , w_height );
+    glwrap->GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
 
     // If we have errors in GL pipe, then abort.
     if (getGLErrors() > 0) return false;
@@ -129,18 +129,18 @@ bool b02_SimpleGLShading::destroyBenchmark(void)
 
 void b02_SimpleGLShading::Render(void)
 {
-    GLCLEAR ( GL_COLOR_BUFFER_BIT );
+    glwrap->GLCLEAR ( GL_COLOR_BUFFER_BIT );
 
-    GLUNIFORM1F ( phase_loc , phase );
+    glwrap->GLUNIFORM1F ( phase_loc , phase );
 
-    phase  =  phase+0.5f;
+    phase = phase + 0.5f;
 
-    GLUNIFORM4F ( offset_loc  ,  0.0 , 0.0 , 0.0 , 0.0 );
-    GLVERTEXATTRIBPOINTER ( position_loc, 3, GL_FLOAT, false, 0, vertexArray );
-    GLENABLEVERTEXATTRIBARRAY ( position_loc );
-    GLDRAWARRAYS ( GL_TRIANGLE_STRIP, 0, 5 );
+    glwrap->GLUNIFORM4F ( offset_loc  ,  0.0 , 0.0 , 0.0 , 0.0 );
+    glwrap->GLVERTEXATTRIBPOINTER ( position_loc, 3, GL_FLOAT, false, 0, vertexArray );
+    glwrap->GLENABLEVERTEXATTRIBARRAY ( position_loc );
+    glwrap->GLDRAWARRAYS ( GL_TRIANGLE_STRIP, 0, 5 );
 
-    EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    glwrap->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
 }
 
 /*

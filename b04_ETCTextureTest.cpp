@@ -30,7 +30,7 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
+ * false must be returned to indicate core benchmark not to continue execution. Parent class log->MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -64,7 +64,7 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     // Check for support of compressed ETC1 texture format
     if (false == queryCompressedTextureformats())
     {
-        MESSAGE(1, "Error: ETC1 texture format not supported by the driver\n");
+        log->MESSAGE(1, "Error: ETC1 texture format not supported by the driver\n");
         return false;
     }
 
@@ -74,14 +74,14 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        MESSAGE(1, "Error: Shader program creation failed\n");
+        log->MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
-    GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-    GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
+    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
+    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
     linkShaderProgram(shaderProgram);
 
-    texturesampler = GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
+    texturesampler = glwrap->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
 
     /*
      * Texture loading for the test case:
@@ -89,11 +89,11 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     textureID = loadETCTextureFromFile(texturefilename);
     if (textureID == 0)
     {
-        MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        log->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
     }
 
-    GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+    glwrap->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
     return true;
 }
 
@@ -124,21 +124,21 @@ static GLfloat vTexcoord[] = { 0.0f, 0.0f,
 
 void b04_ETCTextureTest::Render(void)
 {
-    GLVIEWPORT(0, 0, w_width, w_height);
-    GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLUSEPROGRAM(shaderProgram);
-    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-    GLENABLEVERTEXATTRIBARRAY(0);
-    GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
-    GLENABLEVERTEXATTRIBARRAY(1);
+    glwrap->GLVIEWPORT(0, 0, w_width, w_height);
+    glwrap->GLCLEAR(GL_COLOR_BUFFER_BIT);
+    glwrap->GLUSEPROGRAM(shaderProgram);
+    glwrap->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
+    glwrap->GLENABLEVERTEXATTRIBARRAY(0);
+    glwrap->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
+    glwrap->GLENABLEVERTEXATTRIBARRAY(1);
 
-    GLACTIVETEXTURE(GL_TEXTURE0);
-    GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
-    GLUNIFORM1I(texturesampler, 0);
+    glwrap->GLACTIVETEXTURE(GL_TEXTURE0);
+    glwrap->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
+    glwrap->GLUNIFORM1I(texturesampler, 0);
 
-    GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
+    glwrap->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
 
-    EGLSWAPBUFFERS(egl_display, egl_surface);
+    glwrap->EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
 
@@ -162,10 +162,10 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
     // First we query the list of supported compressed texture formats
     glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &t);
     flushGLErrors();
-    MESSAGE(1, "Number of compressed texture formats supported by the driver: %d\n", t);
+    log->MESSAGE(1, "Number of compressed texture formats supported by the driver: %d\n", t);
     if (t == 0)
     {
-        MESSAGE(1, "Error: The driver does not support texture compression.\n");
+        log->MESSAGE(1, "Error: The driver does not support texture compression.\n");
         return false;
     }
 
@@ -174,80 +174,80 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
     glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, v);
     flushGLErrors();
 
-    MESSAGE(2, "Supported compressed texture formats:\n");
+    log->MESSAGE(2, "Supported compressed texture formats:\n");
     for (int i=0; i<t; i++)
     {
-        MESSAGE(2, "format %d: 0x%x ", i, v[i]);
+        log->MESSAGE(2, "format %d: 0x%x ", i, v[i]);
         switch(v[i])
         {
 #if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         case GL_COMPRESSED_RGB_S3TC_DXT1_EXT: /* 0x83f0 */
-            MESSAGE(2, "(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)\n");
+            log->MESSAGE(2, "(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
         case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: /* 0x83f1 */
-            MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)\n");
+            log->MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)
         case GL_COMPRESSED_RGB_S3TC_DXT3_EXT: /* 0x83f2 */
-            MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)\n");
+            log->MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)\n");
             break;
 #endif
 #if defined(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
         case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: /* 0x83f3 */
-            MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)\n");
+            log->MESSAGE(2, "(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)\n");
             break;
 #endif
 #if defined(GL_LUMINANCE_LATC1_EXT)
         case GL_LUMINANCE_LATC1_EXT: /* 0x8c70 */
-            MESSAGE(2, "(GL_LUMINANCE_LATC1_EXT)\n");
+            log->MESSAGE(2, "(GL_LUMINANCE_LATC1_EXT)\n");
             break;
 #endif
 #if defined(GL_SIGNED_LUMINANCE_LATC1_EXT)
         case GL_SIGNED_LUMINANCE_LATC1_EXT: /* 0x8c71 */
-            MESSAGE(2, "(GL_SIGNED_LUMINANCE_LATC1_EXT)\n");
+            log->MESSAGE(2, "(GL_SIGNED_LUMINANCE_LATC1_EXT)\n");
             break;
 #endif
 #if defined(GL_LUMINANCE_ALPHA_LATC2_EXT)
         case GL_LUMINANCE_ALPHA_LATC2_EXT: /* 0x8c72 */
-            MESSAGE(2, "(GL_LUMINANCE_ALPHA_LATC2_EXT)\n");
+            log->MESSAGE(2, "(GL_LUMINANCE_ALPHA_LATC2_EXT)\n");
             break;
 #endif
 #if defined(GL_SIGNED_LUMINANCE_ALPHA_LATC2_EXT)
         case GL_SIGNED_LUMINANCE_ALPHA_LATC2_EXT: /* 0x8c73 */
-            MESSAGE(2, "(GL_SIGNED_LUMINANCE_ALPHA_LATC1_EXT)\n");
+            log->MESSAGE(2, "(GL_SIGNED_LUMINANCE_ALPHA_LATC1_EXT)\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
         case COMPRESSED_SRGB_S3TC_DXT1_EXT: /* 0x8c4c */
-            MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT\n");
+            log->MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
         case COMPRESSED_SRGB_S3TC_DXT1_EXT: /* 0x8c4d */
-            MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
+            log->MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_S3TC_DXT1_EXT)
         case COMPRESSED_SRGB_S3TC_DXT1_EXT: /* 0x8c4e */
-            MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
+            log->MESSAGE(2, "(COMPRESSED_SRGB_S3TC_DXT1_EXT)\n");
             break;
 #endif
 #if defined(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)
         case COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT: /* 0x8c4f */
-            MESSAGE(2, "(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)\n");
+            log->MESSAGE(2, "(COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT)\n");
             break;
 #endif
 #if defined(GL_ETC1_RGB8_OES)
         case GL_ETC1_RGB8_OES: /* 0x8d64 */
             etc1_supported = true;
-            MESSAGE(2, "(GL_ETC1_RGB8_OES)\n");
+            log->MESSAGE(2, "(GL_ETC1_RGB8_OES)\n");
             break;
 #endif
         default:
-            MESSAGE(2, "(UNKNOWN FORMAT)\n");
+            log->MESSAGE(2, "(UNKNOWN FORMAT)\n");
             break;
         }
     }

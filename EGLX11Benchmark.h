@@ -24,6 +24,7 @@
 #include  <EGL/egl.h>
 
 #include "GLWrapper.h"
+#include "DebugLog.h"
 
 const EGLint attr[] = {       // some attributes to set up our egl-interface
    EGL_BUFFER_SIZE,     16,
@@ -49,10 +50,14 @@ public:
     virtual bool destroyBenchmark(void) = 0;
     virtual bool renderSingleFrame(float deltatime) = 0;
 
+    // Wraps for GL error fetching
     void flushGLErrors(void);
     void flushEGLErrors(void);
     unsigned int getGLErrors(void);
     unsigned int getEGLErrors(void);
+
+    // verbosity
+    void setVerbosityLevel(unsigned int level);
 
     // Methods for timers and user break
     void resetTimer(void);
@@ -104,17 +109,13 @@ protected:
     struct timeval t_start, t_now, t_lastframe;
     struct timezone tz;
 
-private:
-    // Variables EGL
-    EGLContext  egl_context;
-
-    // Other
-    unsigned int GLerrors;
-    unsigned int EGLerrors;
-
     // GLWrapper and DebugLog instances
     GLWrapper *glwrap;
     DebugLog *log;
+
+private:
+    // Variables EGL
+    EGLContext  egl_context;
 };
 
 #endif // EGLX11DISPLAY_H

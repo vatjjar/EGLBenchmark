@@ -11,6 +11,8 @@
 
 #include "EGLX11Benchmark.h"
 
+#include "SimpleMesh.h"
+
 class b05_RGBTextureTest : public EGLX11Benchmark
 {
 public:
@@ -32,6 +34,8 @@ private:
     GLuint shaderProgram;
     GLuint textureID;
     GLuint texturesampler;
+
+    SimpleMesh *sm;
 };
 
 #endif // b05_RGBTextureTest_H

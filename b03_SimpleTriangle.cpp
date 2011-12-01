@@ -32,7 +32,7 @@ b03_SimpleTriangle::~b03_SimpleTriangle()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
+ * false must be returned to indicate core benchmark not to continue execution. Parent class log->MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -57,10 +57,10 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        MESSAGE(1, "Error: Shader program object creation failed\n");
+        log->MESSAGE(1, "Error: Shader program object creation failed\n");
     }
-    GLBINDATTRIBLOCATION(shaderProgram, 0, "vPosition");
-    GLLINKPROGRAM(shaderProgram);
+    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 0, "vPosition");
+    glwrap->GLLINKPROGRAM(shaderProgram);
 
     return true;
 }
@@ -76,20 +76,20 @@ bool b03_SimpleTriangle::destroyBenchmark(void)
 }
 
 
+static GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f,
+                               -0.5f, -0.5f, 0.0f,
+                                0.5f, -0.5f, 0.0f };
+
 void b03_SimpleTriangle::Render(void)
 {
-    GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f,
-                            -0.5f, -0.5f, 0.0f,
-                             0.5f, -0.5f, 0.0f };
+    glwrap->GLVIEWPORT(0, 0, w_width, w_height);
+    glwrap->GLCLEAR(GL_COLOR_BUFFER_BIT);
+    glwrap->GLUSEPROGRAM(shaderProgram);
+    glwrap->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
+    glwrap->GLENABLEVERTEXATTRIBARRAY(0);
+    glwrap->GLDRAWARRAYS(GL_TRIANGLES, 0, 3);
 
-    GLVIEWPORT(0, 0, w_width, w_height);
-    GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLUSEPROGRAM(shaderProgram);
-    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-    GLENABLEVERTEXATTRIBARRAY(0);
-    GLDRAWARRAYS(GL_TRIANGLES, 0, 3);
-
-    EGLSWAPBUFFERS(egl_display, egl_surface);
+    glwrap->EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
 

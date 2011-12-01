@@ -148,7 +148,7 @@ bool parseArgs(int argc, char *argv[])
 
 void calculateFrameVariance(float *frametimes, unsigned int samples, float *average, float *variance)
 {
-    float sum, t;
+    float sum;
 
     sum = 0.0f;
     for (unsigned int i=0; i<samples; i++)

@@ -10,6 +10,7 @@
 #define DebugLog_H
 
 #include <stdarg.h>
+#include <stdio.h>
 
 class DebugLog {
 public:

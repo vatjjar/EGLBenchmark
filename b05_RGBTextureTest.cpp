@@ -30,7 +30,7 @@ b05_RGBTextureTest::~b05_RGBTextureTest()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
+ * false must be returned to indicate core benchmark not to continue execution. Parent class log->MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -54,7 +54,6 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
        "  gl_FragColor = texture2D(s_texture, v_Texcoord);\n"
        "}                                            \n";
 
-
     /*
      * Display and context init
      */
@@ -69,14 +68,14 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        MESSAGE(1, "Error: Shader program creation failed\n");
+        log->MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
-    GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-    GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
+    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
+    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
     linkShaderProgram(shaderProgram);
 
-    texturesampler = GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
+    texturesampler = glwrap->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
 
     /*
      * Texture loading for the test case:
@@ -84,11 +83,21 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     textureID = loadRGBTexturefromPNG(texturefilename);
     if (textureID == 0)
     {
-        MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        log->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
     }
 
-    GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Try to load simple mesh from disk
+    sm = new SimpleMesh();
+    if (false == sm->fromFiles("Plane"))
+    {
+        log->MESSAGE(1, "Unable to load mesh from file Plane\n");
+        return false;
+    }
+
+
+    glwrap->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
     return true;
 }
 
@@ -119,21 +128,25 @@ static GLfloat vTexcoord[] = { 0.0f, 0.0f,
 
 void b05_RGBTextureTest::Render(void)
 {
-    GLVIEWPORT(0, 0, w_width, w_height);
-    GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLUSEPROGRAM(shaderProgram);
-    GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-    GLENABLEVERTEXATTRIBARRAY(0);
-    GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
-    GLENABLEVERTEXATTRIBARRAY(1);
+    glwrap->GLVIEWPORT(0, 0, w_width, w_height);
+    glwrap->GLCLEAR(GL_COLOR_BUFFER_BIT);
+    glwrap->GLUSEPROGRAM(shaderProgram);
 
-    GLACTIVETEXTURE(GL_TEXTURE0);
-    GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
-    GLUNIFORM1I(texturesampler, 0);
+    glwrap->GLACTIVETEXTURE(GL_TEXTURE0);
+    glwrap->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
+    glwrap->GLUNIFORM1I(texturesampler, 0);
 
-    GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
+#if 0
+    glwrap->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
+    glwrap->GLENABLEVERTEXATTRIBARRAY(0);
+    glwrap->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
+    glwrap->GLENABLEVERTEXATTRIBARRAY(1);
+    glwrap->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
+#else
+    sm->renderAsIndexedElements_VBO();
+#endif
 
-    EGLSWAPBUFFERS(egl_display, egl_surface);
+    glwrap->EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
 

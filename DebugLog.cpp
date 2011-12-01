@@ -6,11 +6,22 @@
  * For conditions of distribution and use, see copyright notice in license.txt
  */
 
+#include <iostream>
+
 #include "DebugLog.h"
 
 /******************************************************************************
  * Debug logging methods
  */
+
+DebugLog::DebugLog() :
+    verbosity(1)
+{
+}
+
+DebugLog::~ DebugLog()
+{
+}
 
 void DebugLog::MESSAGE(int level, const char *format, ...)
 {
@@ -29,4 +40,9 @@ void DebugLog::outputMessage(int level, const char *message)
     {
         std::cout << level <<": " << message;
     }
+}
+
+void DebugLog::setVerbosityLevel(unsigned int level)
+{
+    verbosity = level;
 }

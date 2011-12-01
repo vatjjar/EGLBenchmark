@@ -9,12 +9,22 @@
 #ifndef GLWrapper_H
 #define GLWrapper_H
 
+#include  <GLES2/gl2.h>
+#include  <GLES2/gl2ext.h>
+#include  <EGL/egl.h>
+
+#include "DebugLog.h"
+
 class GLWrapper {
 public:
     GLWrapper();
     ~GLWrapper();
 
-protected:
+    void flushGLErrors(void);
+    void flushEGLErrors(void);
+    unsigned int getGLErrors(void);
+    unsigned int getEGLErrors(void);
+
     // GL wrappers, for better handling of errors et al
     void   GLATTACHSHADER(GLuint shaderProgram, GLuint shader);
     void   GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, const GLchar *name);
@@ -41,12 +51,19 @@ protected:
     void   GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
     void   GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border,
                                        GLsizei size, const GLvoid *data);
-
+    void   GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, a_faces);
+    glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *data);
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
 
-private:
+protected:
 
+private:
+    DebugLog *log;
+
+    // Error counters
+    unsigned int GLerrors;
+    unsigned int EGLerrors;
 };
 
 #endif // GLWrapper_H

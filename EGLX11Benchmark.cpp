@@ -12,7 +12,6 @@
 #include <iostream>
 #include <fstream>
 #include <sys/stat.h>
-#include <stdarg.h>
 
 #include "png.h"
 
@@ -23,10 +22,7 @@ EGLX11Benchmark::EGLX11Benchmark() :
     x_display(NULL),
     egl_display(0),
     egl_surface(0),
-    egl_context(0),
-    verbosity(1),
-    GLerrors(0),
-    EGLerrors(0)
+    egl_context(0)
 {
     glwrap = new GLWrapper();
     log = new DebugLog();
@@ -56,97 +52,15 @@ void EGLX11Benchmark::setDescription(const char *d)
     description = d;
 }
 
-void EGLX11Benchmark::flushGLErrors(void)
+void EGLX11Benchmark::setVerbosityLevel(unsigned int level)
 {
-    GLuint error;
-    error = glGetError();
-    if (error != GL_NO_ERROR)
-    {
-        GLerrors++;
-        std::cout << "GL ERROR: glGetError() returned " << error;
-        switch(error)
-        {
-        case GL_INVALID_VALUE:
-            std::cout << " (GL_INVALID_VALUE)\n";
-            break;
-        case GL_INVALID_ENUM:
-            std::cout << " (GL_INVALID_ENUM)\n";
-            break;
-        case GL_INVALID_OPERATION:
-            std::cout << " (GL_INVALID_OPERATION)\n";
-            break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            std::cout << " (GL_INVALID_FRAMEBUFFER_OPERATION) ";
-            std::cout << "glCheckFramebufferStatus(GL_FRAMEBUFFER) = " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << "\n";
-            break;
-        default:
-            std::cout << " (UNKNOWN GL ERROR)\n";
-            break;
-        }
-    }
-}
-
-void EGLX11Benchmark::flushEGLErrors(void)
-{
-    GLuint error;
-    error = eglGetError();
-    if (error != EGL_SUCCESS)
-    {
-        EGLerrors++;
-        std::cout << "EGL ERROR: eglGetError() returned " << error;
-        switch(error)
-        {
-        case EGL_NOT_INITIALIZED:
-            std::cout << " (EGL_NOT_INITIALIZED)\n";
-            break;
-        case EGL_BAD_ACCESS:
-            std::cout << " (EGL_BAD_ACCESS)\n";
-            break;
-        case EGL_BAD_ALLOC:
-            std::cout << " (EGL_BAD_ALLOC)\n";
-            break;
-        case EGL_BAD_ATTRIBUTE:
-            std::cout << " (EGL_BAD_ATTRIBUTE) ";
-            break;
-        case EGL_BAD_CONTEXT:
-            std::cout << " (EGL_BAD_CONTEXT) ";
-            break;
-        case EGL_BAD_CONFIG:
-            std::cout << " (EGL_BAD_CONFIG) ";
-            break;
-        case EGL_BAD_CURRENT_SURFACE:
-            std::cout << " (EGL_BAD_CURRENT_SURFACE) ";
-            break;
-        case EGL_BAD_DISPLAY:
-            std::cout << " (EGL_BAD_DISPLAY) ";
-            break;
-        case EGL_BAD_SURFACE:
-            std::cout << " (EGL_BAD_SURFACE) ";
-            break;
-        case EGL_BAD_MATCH:
-            std::cout << " (EGL_BAD_MATCH) ";
-            break;
-        case EGL_BAD_PARAMETER:
-            std::cout << " (EGL_BAD_PARAMETER) ";
-            break;
-        case EGL_BAD_NATIVE_PIXMAP:
-            std::cout << " (EGL_BAD_NATIVE_PIXMAP) ";
-            break;
-        case EGL_BAD_NATIVE_WINDOW:
-            std::cout << " (EGL_BAD_NATIVE_WINDOW) ";
-            break;
-        default:
-            std::cout << " (UNKNOWN EGL ERROR)\n";
-            break;
-        }
-    }
+    log->setVerbosityLevel(level);
 }
 
 void EGLX11Benchmark::resetTimer(void)
 {
     gettimeofday ( &t_start , &tz );
     t_now = t_lastframe = t_start;
-
 }
 
 float EGLX11Benchmark::getTimeSinceTimerReset(void)
@@ -180,14 +94,24 @@ bool EGLX11Benchmark::userInterrupt(void)
     return userinterrupt;
 }
 
+void EGLX11Benchmark::flushGLErrors(void)
+{
+    glwrap->flushGLErrors();
+}
+
+void EGLX11Benchmark::flushEGLErrors(void)
+{
+    glwrap->flushEGLErrors();
+}
+
 unsigned int EGLX11Benchmark::getGLErrors(void)
 {
-    return GLerrors;
+    return glwrap->getGLErrors();
 }
 
 unsigned int EGLX11Benchmark::getEGLErrors(void)
 {
-    return EGLerrors;
+    return glwrap->getEGLErrors();
 }
 
 /*
@@ -214,18 +138,18 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
     * X11 native display initialization
     */
 
-   MESSAGE(3, "Connecting to X server\n");
+   log->MESSAGE(3, "Connecting to X server\n");
    x_display = XOpenDisplay(NULL);
    if ( x_display == NULL )
    {
-       MESSAGE(1, "Error: Unable to connect to X Server\n");
+       log->MESSAGE(1, "Error: Unable to connect to X Server\n");
        return false;
    }
 
-   MESSAGE(3, "Querying X root window\n");
+   log->MESSAGE(3, "Querying X root window\n");
    root = DefaultRootWindow(x_display);
 
-   MESSAGE(3, "Creating X11 window\n");
+   log->MESSAGE(3, "Creating X11 window\n");
    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
    win = XCreateWindow(
               x_display, root,
@@ -234,17 +158,17 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
               CopyFromParent, CWEventMask,
               &swa );
 
-   MESSAGE(3, "Updating window attributes\n");
+   log->MESSAGE(3, "Updating window attributes\n");
    xattr.override_redirect = false;
    XChangeWindowAttributes ( x_display, win, CWOverrideRedirect, &xattr );
 
-   MESSAGE(3, "Setting Window manager hints\n");
+   log->MESSAGE(3, "Setting Window manager hints\n");
    hints.input = true;
    hints.flags = InputHint;
    XSetWMHints(x_display, win, &hints);
 
    // make the window visible on the screen
-   MESSAGE(3, "Making window visible\n");
+   log->MESSAGE(3, "Making window visible\n");
    XMapWindow (x_display, win);
    XStoreName (x_display, win, "EGLX11Benchmark");
 
@@ -254,7 +178,7 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
    if (w_fullscreen == true)
        a_fullscreen = XInternAtom (x_display, "_NET_WM_STATE_FULLSCREEN", w_fullscreen);
 
-   MESSAGE(3, "Updating window event masks\n");
+   log->MESSAGE(3, "Updating window event masks\n");
    memset ( &xev, 0, sizeof(xev) );
    xev.type                 = ClientMessage;
    xev.xclient.window       = win;
@@ -269,76 +193,76 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
       SubstructureNotifyMask,
       &xev );
 
-   MESSAGE(2, "X11 native display init done!\n");
+   log->MESSAGE(2, "X11 native display init done!\n");
 
    /*
     * Now that the native window is up, we shall initialize EGL
     */
 
-   MESSAGE(3, "EGL: eglGetDisplay()\n");
+   log->MESSAGE(3, "EGL: eglGetDisplay()\n");
    egl_display  =  eglGetDisplay( (EGLNativeDisplayType) x_display );
    if ( egl_display == EGL_NO_DISPLAY ) {
        flushEGLErrors();
-       MESSAGE(1, "EGL: eglGetDisplay() failed!\n");
+       log->MESSAGE(1, "EGL: eglGetDisplay() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   MESSAGE(3, "EGL: eglInitialize()\n");
+   log->MESSAGE(3, "EGL: eglInitialize()\n");
    if ( !eglInitialize( egl_display, NULL, NULL ) ) {
        flushEGLErrors();
-       MESSAGE(1, "EGL: eglInitialize() failed!\n");
+       log->MESSAGE(1, "EGL: eglInitialize() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   MESSAGE(3, "EGL: eglChooseConfig()\n");
+   log->MESSAGE(3, "EGL: eglChooseConfig()\n");
    if ( !eglChooseConfig( egl_display, attr, &ecfg, 1, &num_config ) ) {
        flushEGLErrors();
-       outputMessage(1, "EGL: eglChooseConfig() failed!\n");
+       log->MESSAGE(1, "EGL: eglChooseConfig() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   MESSAGE(3, "EGL: EGL configs available?\n");
+   log->MESSAGE(3, "EGL: EGL configs available?\n");
    if ( num_config == 0 ) {
        flushEGLErrors();
-       MESSAGE(1, "EGL: eglGetDisplay() no configs found!\n");
+       log->MESSAGE(1, "EGL: eglGetDisplay() no configs found!\n");
        return false;
    }
    flushEGLErrors();
 
-   MESSAGE(3, "EGL: eglCreateWindowSurface()\n");
+   log->MESSAGE(3, "EGL: eglCreateWindowSurface()\n");
    egl_surface = eglCreateWindowSurface ( egl_display, ecfg, win, NULL );
    if ( egl_surface == EGL_NO_SURFACE ) {
        flushEGLErrors();
-       MESSAGE(5, "EGL: eglCreateWindowSurface() failed!\n");
+       log->MESSAGE(5, "EGL: eglCreateWindowSurface() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   MESSAGE(3, "EGL: eglCreateContext()\n");
+   log->MESSAGE(3, "EGL: eglCreateContext()\n");
    egl_context = eglCreateContext ( egl_display, ecfg, EGL_NO_CONTEXT, ctxattr );
    if ( egl_context == EGL_NO_CONTEXT ) {
        flushEGLErrors();
-       MESSAGE(1, "EGL: eglCreateContext() failed!\n");
+       log->MESSAGE(1, "EGL: eglCreateContext() failed!\n");
        return false;
    }
    flushEGLErrors();
 
-   MESSAGE(3, "EGL: eglMakeCurrent()\n");
+   log->MESSAGE(3, "EGL: eglMakeCurrent()\n");
    eglMakeCurrent( egl_display, egl_surface, egl_surface, egl_context );
    flushEGLErrors();
    flushGLErrors();
 
-   MESSAGE(2, "EGL initialization completed!\n");
+   log->MESSAGE(2, "EGL initialization completed!\n");
 
    return true;
 }
 
 void EGLX11Benchmark::destroyEGLDisplay(void)
 {
-    MESSAGE(3, "Starting EGL/X11 destruction\n");
+    log->MESSAGE(3, "Starting EGL/X11 destruction\n");
     if (egl_display != 0)
     {
         if (egl_context != 0)
@@ -358,7 +282,7 @@ void EGLX11Benchmark::destroyEGLDisplay(void)
     egl_surface = 0;
     win = 0;
     x_display = NULL;
-    MESSAGE(3, "EGL/X11 Destruction done\n");
+    log->MESSAGE(3, "EGL/X11 Destruction done\n");
 }
 
 /*
@@ -370,7 +294,7 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
 {
    GLint length;
 
-   MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
+   log->MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
    glGetShaderiv ( shader , GL_INFO_LOG_LENGTH , &length );
    flushGLErrors();
 
@@ -378,20 +302,20 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
       char buffer[length];
       GLint success;
 
-      MESSAGE(4, "printShaderInfo: glGetShaderInfoLog()\n");
+      log->MESSAGE(4, "printShaderInfo: glGetShaderInfoLog()\n");
       glGetShaderInfoLog ( shader , length , NULL , buffer );
       flushGLErrors();
-      MESSAGE(4, "Shader info: '%s'\n", buffer);
+      log->MESSAGE(4, "Shader info: '%s'\n", buffer);
 
-      MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
+      log->MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
       glGetShaderiv( shader, GL_COMPILE_STATUS, &success );
       flushGLErrors();
       if ( success != GL_TRUE )
       {
-          MESSAGE(4, "Error: Shader compile status failed\n");
+          log->MESSAGE(4, "Error: Shader compile status failed\n");
           return;
       }
-      else MESSAGE(4, "printShaderInfo: OK\n");
+      else log->MESSAGE(4, "printShaderInfo: OK\n");
    }
 }
 
@@ -399,27 +323,27 @@ GLuint EGLX11Benchmark::loadShaderProgram ( const char *shader_source, GLenum ty
 {
    GLuint shader;
 
-   MESSAGE(4, "loadShader: glCreateShader()\n");
+   log->MESSAGE(4, "loadShader: glCreateShader()\n");
    shader = glCreateShader( type );
    flushGLErrors();
    if (shader == 0)
    {
        return 0;
    }
-   MESSAGE(4, "loadShader: shader handle = %d\n", shader);
+   log->MESSAGE(4, "loadShader: shader handle = %d\n", shader);
 
-   MESSAGE(4, "loadShader: glShaderSource()\n");
+   log->MESSAGE(4, "loadShader: glShaderSource()\n");
    glShaderSource  ( shader , 1 , &shader_source , NULL );
    flushGLErrors();
 
-   MESSAGE(4, "loadShader: glCompileShader()\n");
+   log->MESSAGE(4, "loadShader: glCompileShader()\n");
    glCompileShader ( shader );
    flushGLErrors();
 
-   MESSAGE(4, "loadShader: Logging info...\n");
+   log->MESSAGE(4, "loadShader: Logging info...\n");
    printShaderInfo ( shader );
 
-   MESSAGE(4, "loadShader: EXIT\n");
+   log->MESSAGE(4, "loadShader: EXIT\n");
    return shader;
 }
 
@@ -432,14 +356,14 @@ GLuint EGLX11Benchmark::createShaderProgram(const char *v_src, const char *f_src
     shaderProgram = glwrap->GLCREATEPROGRAM();
     if (shaderProgram == 0)
     {
-        MESSAGE(1, "Error: Shader program creation failed\n");
+        log->MESSAGE(1, "Error: Shader program creation failed\n");
         return 0;
     }
 
-    MESSAGE(4, "Initializing shaders...\n");
+    log->MESSAGE(4, "Initializing shaders...\n");
     if (v_src == NULL || f_src == NULL)
     {
-        MESSAGE(4, "Vertex nor fragment shader source must not be NULL.\n");
+        log->MESSAGE(4, "Vertex nor fragment shader source must not be NULL.\n");
         return 0;
     }
 
@@ -447,7 +371,7 @@ GLuint EGLX11Benchmark::createShaderProgram(const char *v_src, const char *f_src
     fragmentShader = loadShaderProgram ( f_src , GL_FRAGMENT_SHADER );
     if (vertexShader == 0 || fragmentShader == 0)
     {
-        MESSAGE(1, "Error: Shader program loading failed\n");
+        log->MESSAGE(1, "Error: Shader program loading failed\n");
         return 0;
     }
 
@@ -475,17 +399,17 @@ unsigned char * EGLX11Benchmark::readBinaryFile(const char *filename, unsigned i
 
     if (stat(filename, &results) != 0)
     {
-        MESSAGE(4, "IOError when trying to access '%s'\n", filename);
+        log->MESSAGE(4, "IOError when trying to access '%s'\n", filename);
         return NULL;
     }
     buffer = new unsigned char [results.st_size];
     length = results.st_size;
 
-    MESSAGE(4, "Trying to open '%s'\n", filename);
+    log->MESSAGE(4, "Trying to open '%s'\n", filename);
     std::ifstream f(filename, std::ios::in | std::ios::binary);
     if (!f.read ((char *)buffer, results.st_size))
     {
-        MESSAGE(4, "IOERROR\n");
+        log->MESSAGE(4, "IOERROR\n");
         return NULL;
     }
     f.close();
@@ -509,7 +433,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     {
         return 0;
     }
-    MESSAGE(4, "File read into memory, length %d bytes\n", (int)length);
+    log->MESSAGE(4, "File read into memory, length %d bytes\n", (int)length);
 
     // GL texture generation part
     glGenTextures(1, &textureID);
@@ -523,7 +447,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     // This is critical. CompressedTexImage may return invalid ENUM and if so, we will cancel
     if (getGLErrors() != 0)
     {
-        MESSAGE(4, "Texture loading aborted due to errors in glCompressedTexImage2D()\n");
+        log->MESSAGE(4, "Texture loading aborted due to errors in glCompressedTexImage2D()\n");
         glDeleteTextures(1, &textureID);
         return 0;
     }
@@ -535,8 +459,8 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
 
     return textureID;
 #else
-    MESSAGE(4, "ETC1 Texture loading not supported by this platform\n");
-    MESSAGE(4, "Preprocessor flag GL_ETC1_RGB8_OES not defined\n");
+    log->MESSAGE(4, "ETC1 Texture loading not supported by this platform\n");
+    log->MESSAGE(4, "Preprocessor flag GL_ETC1_RGB8_OES not defined\n");
     return 0;
 #endif
 }
@@ -645,7 +569,7 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
             hasAlpha = false;
             break;
         default:
-            MESSAGE(4, "PNG: color type %d not supported by loader.\n", info_ptr->color_type);
+            log->MESSAGE(4, "PNG: color type %d not supported by loader.\n", info_ptr->color_type);
             png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
             fclose(fp);
             return 0;
@@ -668,7 +592,7 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
 
     /* Close the file */
     fclose(fp);
-    MESSAGE(4, "PNG image loaded: %dx%d alpha:%d\n", width, height, hasAlpha);
+    log->MESSAGE(4, "PNG image loaded: %dx%d alpha:%d\n", width, height, hasAlpha);
 
 
     /*
@@ -684,7 +608,7 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
     // At this point we might have errors already in the pipe, and if so, we'll cancel
     if (getGLErrors() != 0)
     {
-        MESSAGE(4, "Texture loading aborted due to errors in glTexImage2D()\n");
+        log->MESSAGE(4, "Texture loading aborted due to errors in glTexImage2D()\n");
         glDeleteTextures(1, &textureID);
         return 0;
     }
