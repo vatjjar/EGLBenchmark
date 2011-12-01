@@ -50,6 +50,10 @@ public:
     void   GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border,
                                        GLsizei size, const GLvoid *data);
     void   GLDRAWELEMENTS(GLenum mode, GLsizei count, GLenum type, const GLvoid *data);
+    void   GLGENBUFFERS(GLsizei n, GLuint *buffers);
+    void   GLBINDBUFFER(GLenum target, GLuint buffer);
+    void   GLBUFFERDATA(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage);
+    void   GLDELETEBUFFERS(GLsizei n, const GLuint *buffers);
 
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);

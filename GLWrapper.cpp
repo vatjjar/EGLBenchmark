@@ -326,6 +326,33 @@ void GLWrapper::GLDRAWELEMENTS(GLenum mode, GLsizei count, GLenum type, const GL
     flushGLErrors();
 }
 
+void GLWrapper::GLGENBUFFERS(GLsizei n, GLuint *buffers)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glGenBuffers(%d, %p)\n", n, buffers);
+    glGenBuffers(n, buffers);
+    flushGLErrors();
+}
+
+void GLWrapper::GLBINDBUFFER(GLenum target, GLuint buffer)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glBindBuffer(%d, %d)\n", target, buffer);
+    glBindBuffer(target, buffer);
+    flushGLErrors();
+}
+
+void GLWrapper::GLBUFFERDATA(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glBufferData(%d, %d, %p, %d)\n", target, size, data, usage);
+    glBufferData(target, size, data, usage);
+    flushGLErrors();
+}
+void GLWrapper::GLDELETEBUFFERS(GLsizei n, const GLuint *buffers)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glDeleteBuffers(%d, %p)\n", n, buffers);
+    glDeleteBuffers(n, buffers);
+    flushGLErrors();
+}
+
 /******************************************************************************
  * EGL Wrappers
  */
