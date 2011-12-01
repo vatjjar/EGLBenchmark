@@ -335,7 +335,7 @@ void GLWrapper::GLGENBUFFERS(GLsizei n, GLuint *buffers)
 
 void GLWrapper::GLBINDBUFFER(GLenum target, GLuint buffer)
 {
-    DebugLog::Instance()->MESSAGE(4, "GL call: glBindBuffer(%d, %d)\n", target, buffer);
+    DebugLog::Instance()->MESSAGE(5, "GL call: glBindBuffer(%d, %d)\n", target, buffer);
     glBindBuffer(target, buffer);
     flushGLErrors();
 }
