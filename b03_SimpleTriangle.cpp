@@ -11,6 +11,8 @@
 
 #include "b03_SimpleTriangle.h"
 
+#include "DebugLog.h"
+
 /*
  * Constructor and destructor are dummy ones. Only descriptions are set, and other activities are
  * done when calling the virtual benchmark API
@@ -32,7 +34,7 @@ b03_SimpleTriangle::~b03_SimpleTriangle()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class log->MESSAGE()
+ * false must be returned to indicate core benchmark not to continue execution. DebugLog::Instance()->MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -57,7 +59,7 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        log->MESSAGE(1, "Error: Shader program object creation failed\n");
+        DebugLog::Instance()->MESSAGE(1, "Error: Shader program object creation failed\n");
     }
     glwrap->GLBINDATTRIBLOCATION(shaderProgram, 0, "vPosition");
     glwrap->GLLINKPROGRAM(shaderProgram);

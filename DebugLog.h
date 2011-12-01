@@ -14,7 +14,8 @@
 
 class DebugLog {
 public:
-    DebugLog();
+    static DebugLog * Instance();
+
     ~DebugLog();
 
     // Methods for messages & debug output
@@ -24,8 +25,11 @@ public:
     void MESSAGE(int level, const char *format, ...);
 
 private:
-    int verbosity;
+    DebugLog();                                     // Private constructor
+    DebugLog(DebugLog const &) {};
+    static DebugLog *p_Instance;                    // Single instance placeholder
 
+    int verbosity;
 };
 
 #endif // DebugLog_H

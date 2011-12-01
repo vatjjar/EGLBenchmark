@@ -19,6 +19,8 @@
 
 #include "b02_SimpleGLShading.h"
 
+#include "DebugLog.h"
+
 /*
  * local constants for the test case:
  */
@@ -95,7 +97,7 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        log->MESSAGE(1, "Error: Shader program object creation failed\n");
+        DebugLog::Instance()->MESSAGE(1, "Error: Shader program object creation failed\n");
     }
     linkShaderProgram(shaderProgram);
 
@@ -104,7 +106,7 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
     offset_loc    = glwrap->GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
 
     if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
-       log->MESSAGE(1, "Error: Unable to get uniform location\n");
+       DebugLog::Instance()->MESSAGE(1, "Error: Unable to get uniform location\n");
        return false;
     }
 

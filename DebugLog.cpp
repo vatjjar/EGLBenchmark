@@ -11,6 +11,21 @@
 #include "DebugLog.h"
 
 /******************************************************************************
+ * Global static instance of the class
+ */
+
+DebugLog * DebugLog::p_Instance = NULL;
+
+DebugLog * DebugLog::Instance()
+{
+    if (p_Instance == NULL)
+    {
+        p_Instance = new DebugLog();
+    }
+    return p_Instance;
+}
+
+/******************************************************************************
  * Debug logging methods
  */
 

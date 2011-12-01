@@ -13,6 +13,8 @@
 
 #include "b05_RGBTextureTest.h"
 
+#include "DebugLog.h"
+
 /*
  * Constructor and destructor are dummy ones. Only descriptions are set, and other activities are
  * done when calling the virtual benchmark API
@@ -30,7 +32,7 @@ b05_RGBTextureTest::~b05_RGBTextureTest()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class log->MESSAGE()
+ * false must be returned to indicate core benchmark not to continue execution. DebugLog::Instance()->MESSAGE()
  * method can be used to output information about the initialization
  */
 bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
@@ -68,7 +70,7 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
-        log->MESSAGE(1, "Error: Shader program creation failed\n");
+        DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
     glwrap->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
@@ -83,7 +85,7 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     textureID = loadRGBTexturefromPNG(texturefilename);
     if (textureID == 0)
     {
-        log->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
     }
 
@@ -92,7 +94,7 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     sm = new SimpleMesh();
     if (false == sm->fromFiles("Plane"))
     {
-        log->MESSAGE(1, "Unable to load mesh from file Plane\n");
+        DebugLog::Instance()->MESSAGE(1, "Unable to load mesh from file Plane\n");
         return false;
     }
 

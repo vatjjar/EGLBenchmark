@@ -13,8 +13,6 @@
 #include  <GLES2/gl2ext.h>
 #include  <EGL/egl.h>
 
-#include "DebugLog.h"
-
 class GLWrapper {
 public:
     GLWrapper();
@@ -59,8 +57,6 @@ public:
 protected:
 
 private:
-    DebugLog *log;
-
     // Error counters
     unsigned int GLerrors;
     unsigned int EGLerrors;

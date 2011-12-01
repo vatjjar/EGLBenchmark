@@ -24,7 +24,6 @@
 #include  <EGL/egl.h>
 
 #include "GLWrapper.h"
-#include "DebugLog.h"
 
 const EGLint attr[] = {       // some attributes to set up our egl-interface
    EGL_BUFFER_SIZE,     16,
@@ -111,7 +110,6 @@ protected:
 
     // GLWrapper and DebugLog instances
     GLWrapper *glwrap;
-    DebugLog *log;
 
 private:
     // Variables EGL

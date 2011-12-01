@@ -18,6 +18,8 @@
 #include "b04_ETCTextureTest.h"
 #include "b05_RGBTextureTest.h"
 
+#include "DebugLog.h"
+
 // the default settings
 enum {
     TEST_CONTEXTINIT = 1,
@@ -196,7 +198,7 @@ int main(int argc, char *argv[])
         break;
     }
 
-    bm->setVerbosityLevel(verbosity);
+    DebugLog::Instance()->setVerbosityLevel(verbosity);
 
     if (false == bm->initBenchmark(width, height, fullscreen))
     {
