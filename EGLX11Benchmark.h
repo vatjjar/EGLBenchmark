@@ -23,6 +23,8 @@
 #include  <GLES2/gl2ext.h>
 #include  <EGL/egl.h>
 
+#include "GLWrapper.h"
+
 const EGLint attr[] = {       // some attributes to set up our egl-interface
    EGL_BUFFER_SIZE,     16,
    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
@@ -47,9 +49,6 @@ public:
     virtual bool destroyBenchmark(void) = 0;
     virtual bool renderSingleFrame(float deltatime) = 0;
 
-    // Methods for messages & debug output
-    void outputMessage(int level, const char *message);
-    void setVerbosityLevel(unsigned int level);
     void flushGLErrors(void);
     void flushEGLErrors(void);
     unsigned int getGLErrors(void);
@@ -66,35 +65,6 @@ public:
     const char * getDescription(void);
 
 protected:
-    // GL wrappers, for better handling of errors et al
-    void   GLATTACHSHADER(GLuint shaderProgram, GLuint shader);
-    void   GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, const GLchar *name);
-    void   GLCLEARCOLOR(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-    GLuint GLCREATEPROGRAM(void);
-    void   GLLINKPROGRAM(GLuint program);
-    void   GLUSEPROGRAM(GLuint program);
-    void   GLVIEWPORT(GLint x, GLint y, GLsizei width, GLsizei height);
-    void   GLCLEAR(GLbitfield mask);
-    void   GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data);
-    void   GLENABLEVERTEXATTRIBARRAY(GLuint index);
-    void   GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size);
-    void   GLGENTEXTURES(GLsizei size, GLuint *ptr);
-    void   GLBINDTEXTURE(GLenum target, GLuint id);
-    void   GLPIXELSTOREI(GLenum type, GLint align);
-    void   GLTEXIMAGE2D(GLenum target, GLint level, GLint inernalformat, GLsizei width,
-                                       GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels);
-    void   GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param);
-    GLint  GLGETATTRIBLOCATION(GLuint program, const GLchar *name);
-    GLint  GLGETUNIFORMLOCATION(GLuint program, const GLchar *name);
-    void   GLACTIVETEXTURE(GLenum texture);
-    void   GLUNIFORM1I(GLint location, GLint x);
-    void   GLUNIFORM1F(GLint location, GLfloat x);
-    void   GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-    void   GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border, GLsizei size, const GLvoid *data);
-
-    // EGL Wrappers:
-    void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
-
     // Benchmark class helper methods for EGL context handling
     bool createEGLDisplay(int width, int height, bool fullscreen);
     void destroyEGLDisplay(void);
@@ -114,8 +84,6 @@ protected:
 
     void setName(const char *);
     void setDescription(const char *);
-
-    void MESSAGE(int level, const char *format, ...);
 
     // Benchmark case name and description
     const char * name;
@@ -139,11 +107,14 @@ protected:
 private:
     // Variables EGL
     EGLContext  egl_context;
+
     // Other
-    int verbosity;
     unsigned int GLerrors;
     unsigned int EGLerrors;
 
+    // GLWrapper and DebugLog instances
+    GLWrapper *glwrap;
+    DebugLog *log;
 };
 
 #endif // EGLX11DISPLAY_H

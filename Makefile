@@ -13,8 +13,9 @@ RM=rm
 
 _OBJS=main.o                      \
     EGLX11Benchmark.o             \
-    EGLX11Benchmark_GLWrappers.o  \
-    EGLX11Benchmark_EGLWrappers.o \
+    DebugLog.o                    \
+    GLWrapper.o                   \
+    SimpleMesh.o                  \
     b01_ContextInit.o             \
     b02_SimpleGLShading.o         \
     b03_SimpleTriangle.o          \
@@ -25,8 +26,9 @@ OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
 
 HEADERS=                          \
     EGLX11Benchmark.h             \
-    EGLX11Benchmark_GLWrappers.h  \
-    EGLX11Benchmark_EGLWrappers.h \
+    DebugLog.h                    \
+    GLWrapper.h                   \
+    SimpleMesh.h                  \
     b01_ContextInit.h             \
     b02_SimpleGLShading.h         \
     b03_SimpleTriangle.h          \
