@@ -146,7 +146,7 @@ void b05_RGBTextureTest::Render(void)
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
     GLWrapper::Instance()->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
 #else
-    sm->renderAsIndexedElements_VBO();
+    sm->renderAsIndexedElements();
 #endif
 
     GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);

@@ -48,8 +48,8 @@ bool SimpleMesh::fromFiles(const char *filename)
     memcpy(&fn[strlen(filename)], ".faces", strlen(".faces"));
     if (false == fromFileToShortVector(fn, &n_faces, &a_faces)) return false;
     //std::cout << "Read file " << fn << " " << n_faces << " elements\n";
-    if (n_vertices%3 != 0) return false;
-    n_vertices /= 3;
+    if (n_faces%3 != 0) return false;
+    n_faces /= 3;
 
     // Normals:
     memcpy(&fn[strlen(filename)], ".normals", strlen(".normals"));
