@@ -39,7 +39,7 @@ bool b01_ContextInit::initBenchmark(unsigned int width, unsigned int height, boo
     {
         return false;
     }
-    glwrap->GLCLEARCOLOR(0, 0, 0, 0);
+    GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
     return true;
 }
 
@@ -58,8 +58,8 @@ bool b01_ContextInit::destroyBenchmark(void)
  */
 bool b01_ContextInit::renderSingleFrame(float timedelta)
 {
-    glwrap->GLCLEAR(GL_COLOR_BUFFER_BIT);
-    glwrap->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
+    GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
     return true;
 }
 

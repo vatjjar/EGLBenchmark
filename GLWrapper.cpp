@@ -12,6 +12,21 @@
 
 #include <iostream>
 
+/******************************************************************************
+ * Global static instance of the class
+ */
+
+GLWrapper * GLWrapper::p_Instance = NULL;
+
+GLWrapper * GLWrapper::Instance()
+{
+    if (p_Instance == NULL)
+    {
+        p_Instance = new GLWrapper();
+    }
+    return p_Instance;
+}
+
 /*
  * GL Wrappers:
  * ------------

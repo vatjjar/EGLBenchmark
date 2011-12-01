@@ -108,9 +108,6 @@ protected:
     struct timeval t_start, t_now, t_lastframe;
     struct timezone tz;
 
-    // GLWrapper and DebugLog instances
-    GLWrapper *glwrap;
-
 private:
     // Variables EGL
     EGLContext  egl_context;

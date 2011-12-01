@@ -20,6 +20,7 @@
 #include "b02_SimpleGLShading.h"
 
 #include "DebugLog.h"
+#include "GLWrapper.h"
 
 /*
  * local constants for the test case:
@@ -101,17 +102,17 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
     }
     linkShaderProgram(shaderProgram);
 
-    position_loc  = glwrap->GLGETATTRIBLOCATION(shaderProgram , "position");
-    phase_loc     = glwrap->GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
-    offset_loc    = glwrap->GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
+    position_loc  = GLWrapper::Instance()->GLGETATTRIBLOCATION(shaderProgram , "position");
+    phase_loc     = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
+    offset_loc    = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
 
     if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
        DebugLog::Instance()->MESSAGE(1, "Error: Unable to get uniform location\n");
        return false;
     }
 
-    glwrap->GLVIEWPORT ( 0 , 0 , w_width , w_height );
-    glwrap->GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
+    GLWrapper::Instance()->GLVIEWPORT ( 0 , 0 , w_width , w_height );
+    GLWrapper::Instance()->GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
 
     // If we have errors in GL pipe, then abort.
     if (getGLErrors() > 0) return false;
@@ -131,18 +132,18 @@ bool b02_SimpleGLShading::destroyBenchmark(void)
 
 void b02_SimpleGLShading::Render(void)
 {
-    glwrap->GLCLEAR ( GL_COLOR_BUFFER_BIT );
+    GLWrapper::Instance()->GLCLEAR ( GL_COLOR_BUFFER_BIT );
 
-    glwrap->GLUNIFORM1F ( phase_loc , phase );
+    GLWrapper::Instance()->GLUNIFORM1F ( phase_loc , phase );
 
     phase = phase + 0.5f;
 
-    glwrap->GLUNIFORM4F ( offset_loc  ,  0.0 , 0.0 , 0.0 , 0.0 );
-    glwrap->GLVERTEXATTRIBPOINTER ( position_loc, 3, GL_FLOAT, false, 0, vertexArray );
-    glwrap->GLENABLEVERTEXATTRIBARRAY ( position_loc );
-    glwrap->GLDRAWARRAYS ( GL_TRIANGLE_STRIP, 0, 5 );
+    GLWrapper::Instance()->GLUNIFORM4F ( offset_loc  ,  0.0 , 0.0 , 0.0 , 0.0 );
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER ( position_loc, 3, GL_FLOAT, false, 0, vertexArray );
+    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY ( position_loc );
+    GLWrapper::Instance()->GLDRAWARRAYS ( GL_TRIANGLE_STRIP, 0, 5 );
 
-    glwrap->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
 }
 
 /*

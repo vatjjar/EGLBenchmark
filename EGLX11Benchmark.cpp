@@ -8,6 +8,7 @@
 
 #include "EGLX11Benchmark.h"
 #include "DebugLog.h"
+#include "GLWrapper.h"
 
 #include <vector>
 #include <iostream>
@@ -26,7 +27,6 @@ EGLX11Benchmark::EGLX11Benchmark() :
     egl_surface(0),
     egl_context(0)
 {
-    glwrap = new GLWrapper();
 }
 
 EGLX11Benchmark::~EGLX11Benchmark()
@@ -97,22 +97,22 @@ bool EGLX11Benchmark::userInterrupt(void)
 
 void EGLX11Benchmark::flushGLErrors(void)
 {
-    glwrap->flushGLErrors();
+    GLWrapper::Instance()->flushGLErrors();
 }
 
 void EGLX11Benchmark::flushEGLErrors(void)
 {
-    glwrap->flushEGLErrors();
+    GLWrapper::Instance()->flushEGLErrors();
 }
 
 unsigned int EGLX11Benchmark::getGLErrors(void)
 {
-    return glwrap->getGLErrors();
+    return GLWrapper::Instance()->getGLErrors();
 }
 
 unsigned int EGLX11Benchmark::getEGLErrors(void)
 {
-    return glwrap->getEGLErrors();
+    return GLWrapper::Instance()->getEGLErrors();
 }
 
 /*
@@ -354,7 +354,7 @@ GLuint EGLX11Benchmark::createShaderProgram(const char *v_src, const char *f_src
     GLuint fragmentShader;
     GLuint shaderProgram;
 
-    shaderProgram = glwrap->GLCREATEPROGRAM();
+    shaderProgram = GLWrapper::Instance()->GLCREATEPROGRAM();
     if (shaderProgram == 0)
     {
         DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
@@ -376,16 +376,16 @@ GLuint EGLX11Benchmark::createShaderProgram(const char *v_src, const char *f_src
         return 0;
     }
 
-    glwrap->GLATTACHSHADER(shaderProgram, vertexShader);
-    glwrap->GLATTACHSHADER(shaderProgram, fragmentShader);
+    GLWrapper::Instance()->GLATTACHSHADER(shaderProgram, vertexShader);
+    GLWrapper::Instance()->GLATTACHSHADER(shaderProgram, fragmentShader);
 
     return shaderProgram;
 }
 
 void EGLX11Benchmark::linkShaderProgram(GLuint shaderProgram)
 {
-    glwrap->GLLINKPROGRAM(shaderProgram);
-    glwrap->GLUSEPROGRAM(shaderProgram);
+    GLWrapper::Instance()->GLLINKPROGRAM(shaderProgram);
+    GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
 }
 
 /*
@@ -442,7 +442,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     glBindTexture(GL_TEXTURE_2D, textureID);
     flushGLErrors();
 
-    glwrap->GLCOMPRESSEDTEXIMAGE2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, 128, 128, 0, length-16, &buffer[16]);
+    GLWrapper::Instance()->GLCOMPRESSEDTEXIMAGE2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, 128, 128, 0, length-16, &buffer[16]);
     delete buffer;
 
     // This is critical. CompressedTexImage may return invalid ENUM and if so, we will cancel
@@ -599,10 +599,10 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
     /*
      * GL texture generation part
      */
-    glwrap->GLGENTEXTURES(1, &textureID);
-    glwrap->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
-    glwrap->GLPIXELSTOREI(GL_UNPACK_ALIGNMENT, 1);
-    glwrap->GLTEXIMAGE2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA : GL_RGB, width,
+    GLWrapper::Instance()->GLGENTEXTURES(1, &textureID);
+    GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
+    GLWrapper::Instance()->GLPIXELSTOREI(GL_UNPACK_ALIGNMENT, 1);
+    GLWrapper::Instance()->GLTEXIMAGE2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA : GL_RGB, width,
                  height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE,
                  buffer);
 
@@ -614,8 +614,8 @@ GLuint EGLX11Benchmark::loadRGBTexturefromPNG(const char *filename)
         return 0;
     }
 
-    glwrap->GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glwrap->GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    GLWrapper::Instance()->GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    GLWrapper::Instance()->GLTEXPARAMETERI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     return textureID;
 }

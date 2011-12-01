@@ -15,7 +15,7 @@
 
 class GLWrapper {
 public:
-    GLWrapper();
+    static GLWrapper * Instance();
     ~GLWrapper();
 
     void flushGLErrors(void);
@@ -57,6 +57,10 @@ public:
 protected:
 
 private:
+    GLWrapper();
+    GLWrapper(GLWrapper const &) {};
+    static GLWrapper *p_Instance;                    // Single instance placeholder
+
     // Error counters
     unsigned int GLerrors;
     unsigned int EGLerrors;

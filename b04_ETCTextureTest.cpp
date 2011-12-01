@@ -14,6 +14,7 @@
 #include "b04_ETCTextureTest.h"
 
 #include "DebugLog.h"
+#include "GLWrapper.h"
 
 /*
  * Constructor and destructor are dummy ones. Only descriptions are set, and other activities are
@@ -79,11 +80,11 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
         DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
-    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-    glwrap->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
+    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
+    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
     linkShaderProgram(shaderProgram);
 
-    texturesampler = glwrap->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
+    texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
 
     /*
      * Texture loading for the test case:
@@ -95,7 +96,7 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
         return false;
     }
 
-    glwrap->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+    GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
     return true;
 }
 
@@ -126,21 +127,21 @@ static GLfloat vTexcoord[] = { 0.0f, 0.0f,
 
 void b04_ETCTextureTest::Render(void)
 {
-    glwrap->GLVIEWPORT(0, 0, w_width, w_height);
-    glwrap->GLCLEAR(GL_COLOR_BUFFER_BIT);
-    glwrap->GLUSEPROGRAM(shaderProgram);
-    glwrap->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-    glwrap->GLENABLEVERTEXATTRIBARRAY(0);
-    glwrap->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
-    glwrap->GLENABLEVERTEXATTRIBARRAY(1);
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+    GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
+    GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
+    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
+    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
 
-    glwrap->GLACTIVETEXTURE(GL_TEXTURE0);
-    glwrap->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
-    glwrap->GLUNIFORM1I(texturesampler, 0);
+    GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
+    GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
+    GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
 
-    glwrap->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
+    GLWrapper::Instance()->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
 
-    glwrap->EGLSWAPBUFFERS(egl_display, egl_surface);
+    GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
 }
 
 
