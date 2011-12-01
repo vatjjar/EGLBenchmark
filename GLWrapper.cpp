@@ -7,8 +7,7 @@
  */
 
 
-#include "EGLX11Benchmark.h"
-#include "EGLX11Benchmark_GLWrappers.h"
+#include "GLWrapper.h"
 
 /*
  * GL Wrappers:
@@ -18,27 +17,27 @@
  * purpose.
  */
 
-void EGLX11Benchmark::GLATTACHSHADER(GLuint shaderProgram, GLuint shader)
+void GLWrapper::GLATTACHSHADER(GLuint shaderProgram, GLuint shader)
 {
     MESSAGE(4, "GL call: glAttachShader(%d, %d)\n", shaderProgram, shader);
     glAttachShader(shaderProgram, shader);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, const GLchar *name)
+void GLWrapper::GLBINDATTRIBLOCATION(GLuint shaderProgram, GLuint index, const GLchar *name)
 {
     MESSAGE(4, "GL call: glBindAttribLocation(%d, %d, '%s')\n", shaderProgram, index, name);
     glBindAttribLocation(shaderProgram, index, name);
     flushGLErrors();
 }
-void EGLX11Benchmark::GLCLEARCOLOR(GLclampf r, GLclampf g, GLclampf b, GLclampf a)
+void GLWrapper::GLCLEARCOLOR(GLclampf r, GLclampf g, GLclampf b, GLclampf a)
 {
     MESSAGE(4, "GL call: glClearColor(%f, %f, %f, %f)\n", r, g, b, a);
     glClearColor(r, g, b, a);
     flushGLErrors();
 }
 
-GLuint EGLX11Benchmark::GLCREATEPROGRAM(void)
+GLuint GLWrapper::GLCREATEPROGRAM(void)
 {
     GLuint program;
     program = glCreateProgram();
@@ -47,35 +46,35 @@ GLuint EGLX11Benchmark::GLCREATEPROGRAM(void)
     return program;
 }
 
-void EGLX11Benchmark::GLLINKPROGRAM(GLuint program)
+void GLWrapper::GLLINKPROGRAM(GLuint program)
 {
     MESSAGE(4, "GL call: glLinkProgram(%d)\n", program);
     glLinkProgram(program);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLUSEPROGRAM(GLuint program)
+void GLWrapper::GLUSEPROGRAM(GLuint program)
 {
     MESSAGE(5, "GL call: glUseProgram(%d)\n", program);
     glUseProgram(program);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLVIEWPORT(GLint x, GLint y, GLsizei width, GLsizei height)
+void GLWrapper::GLVIEWPORT(GLint x, GLint y, GLsizei width, GLsizei height)
 {
     MESSAGE(5, "GL call: glViewPort(%d, %d, %d, %d)\n", x, y, width, height);
     glViewport(x, y, width, height);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLCLEAR(GLbitfield mask)
+void GLWrapper::GLCLEAR(GLbitfield mask)
 {
     MESSAGE(5, "GL call: glClear(0x%x)\n", mask);
     glClear(mask);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data)
+void GLWrapper::GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *data)
 {
     MESSAGE(5, "GL call: glVertexAttribPointer(%d, %d, %d, %d, %d, %p)\n",
                index, size, type, normalized, stride, data);
@@ -83,42 +82,42 @@ void EGLX11Benchmark::GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum typ
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLENABLEVERTEXATTRIBARRAY(GLuint index)
+void GLWrapper::GLENABLEVERTEXATTRIBARRAY(GLuint index)
 {
     MESSAGE(5, "GL call: glEnableVertexAttribPointer(%d)\n", index);
     glEnableVertexAttribArray(index);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size)
+void GLWrapper::GLDRAWARRAYS(GLenum mode, GLint first, GLsizei size)
 {
     MESSAGE(5, "GL call: glDrawArrays(%d, %d, %d)\n", mode, first, size);
     glDrawArrays(mode, first, size);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLGENTEXTURES(GLsizei size, GLuint *ptr)
+void GLWrapper::GLGENTEXTURES(GLsizei size, GLuint *ptr)
 {
     MESSAGE(4, "GL call: glGenTextures(%d, %p)\n", size, ptr);
     glGenTextures(size, ptr);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLBINDTEXTURE(GLenum target, GLuint id)
+void GLWrapper::GLBINDTEXTURE(GLenum target, GLuint id)
 {
     MESSAGE(5, "GL call: glBindTexture(%d, %d)\n", target, id);
     glBindTexture(target, id);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLPIXELSTOREI(GLenum type, GLint align)
+void GLWrapper::GLPIXELSTOREI(GLenum type, GLint align)
 {
     MESSAGE(4, "GL call: glPixelStorei(%d, %d)\n", type, align);
     glPixelStorei(type, align);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLTEXIMAGE2D(GLenum target, GLint level, GLint internalformat, GLsizei width,
+void GLWrapper::GLTEXIMAGE2D(GLenum target, GLint level, GLint internalformat, GLsizei width,
                                    GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels)
 {
     MESSAGE(4, "GL call: glTexImage2D(%d, %d, %d, %d, %d, %d, %d, %d, %p)\n",
@@ -127,14 +126,14 @@ void EGLX11Benchmark::GLTEXIMAGE2D(GLenum target, GLint level, GLint internalfor
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param)
+void GLWrapper::GLTEXPARAMETERI(GLenum target, GLenum pname, GLint param)
 {
     MESSAGE(4, "GL call: glTexParameteri(%d, %d, %d)\n", target, pname, param);
     glTexParameteri(target, pname, param);
     flushGLErrors();
 }
 
-GLint EGLX11Benchmark::GLGETATTRIBLOCATION(GLuint program, const GLchar *name)
+GLint GLWrapper::GLGETATTRIBLOCATION(GLuint program, const GLchar *name)
 {
     GLint rc;
     rc = glGetAttribLocation(program, name);
@@ -143,7 +142,7 @@ GLint EGLX11Benchmark::GLGETATTRIBLOCATION(GLuint program, const GLchar *name)
     return rc;
 }
 
-GLint EGLX11Benchmark::GLGETUNIFORMLOCATION(GLuint program, const GLchar *name)
+GLint GLWrapper::GLGETUNIFORMLOCATION(GLuint program, const GLchar *name)
 {
     GLint rc;
     rc = glGetUniformLocation(program, name);
@@ -152,35 +151,35 @@ GLint EGLX11Benchmark::GLGETUNIFORMLOCATION(GLuint program, const GLchar *name)
     return rc;
 }
 
-void EGLX11Benchmark::GLACTIVETEXTURE(GLenum texture)
+void GLWrapper::GLACTIVETEXTURE(GLenum texture)
 {
     MESSAGE(5, "GL call: glActiveTexture(%d)\n", texture);
     glActiveTexture(texture);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLUNIFORM1I(GLint location, GLint x)
+void GLWrapper::GLUNIFORM1I(GLint location, GLint x)
 {
     MESSAGE(5, "GL call: glUniform1i(%d, %d)\n", location, x);
     glUniform1i(location, x);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLUNIFORM1F(GLint location, GLfloat x)
+void GLWrapper::GLUNIFORM1F(GLint location, GLfloat x)
 {
     MESSAGE(5, "GL call: glUniform4f(%d, %f)\n", location, x);
     glUniform1f(location, x);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
+void GLWrapper::GLUNIFORM4F(GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 {
     MESSAGE(5, "GL call: glUniform4f(%d, %f, %f, %f, %f)\n", location, x, y, z, w);
     glUniform4f(location, x, y, z, w);
     flushGLErrors();
 }
 
-void EGLX11Benchmark::GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border, GLsizei size, const GLvoid *data)
+void GLWrapper::GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint height, GLint border, GLsizei size, const GLvoid *data)
 {
     MESSAGE(4, "GL call: glCompressedTexImage2D(0x%x, %d, 0x%x, %d, %d, %d, %d, %p)\n",
                target, level, internalformat, width, height, border, size, data);
@@ -188,3 +187,13 @@ void EGLX11Benchmark::GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum 
     flushGLErrors();
 }
 
+/******************************************************************************
+ * EGL Wrappers
+ */
+
+void GLWrapper::EGLSWAPBUFFERS(EGLDisplay egl_display, EGLSurface egl_surface)
+{
+    MESSAGE(5, "Attempting a call to eglSwapBuffers(%p, %p)\n", egl_display, egl_surface);
+    eglSwapBuffers(egl_display, egl_surface);
+    flushEGLErrors();
+}
