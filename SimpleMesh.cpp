@@ -81,42 +81,58 @@ bool SimpleMesh::fromFiles(const char *filename)
 
 void SimpleMesh::renderAsIndexedElements(void)
 {
-    // Assumption is that Vertex attrib array 0 is for vertices
-    // and array 1 for texcoords
-    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, a_vertices);
+    // Assumption is that Vertex attrib array are ordered as follows:
+    // 0: for vertices
+    // 1: for texcoords
+    // 2: for indices
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
-    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, a_texcoords);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, a_vertices);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, a_texcoords);
 
-    //std::cout << "rendering arrays " << 3*n_faces << "\n";
     GLWrapper::Instance()->GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, a_faces);
-    //glDrawArrays(GL_TRIANGLES, 0, n_vertices);
 }
 
 void SimpleMesh::renderAsIndexedElements_VBO(void)
 {
-    GLuint VBOs[3];
+    static GLuint VBOs[3] = { 0, 0, 0 };
 
-    GLWrapper::Instance()->GLGENBUFFERS(3, VBOs);
+    if (VBOs[0] == 0) // Initial creation of VBOs
+    {
+        GLWrapper::Instance()->GLGENBUFFERS(3, VBOs);
+        if (VBOs[0] == 0)
+        {
+            DebugLog::Instance()->MESSAGE(2, "SimpleMesh: VBO creation failed\n");
+            return;
+        }
+        GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[0]);
+        GLWrapper::Instance()->GLBUFFERDATA(GL_ARRAY_BUFFER, n_vertices*3*sizeof(GLfloat), a_vertices, GL_STATIC_DRAW);
 
+        GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[1]);
+        GLWrapper::Instance()->GLBUFFERDATA(GL_ARRAY_BUFFER, n_texcoords*2*sizeof(GLfloat), a_texcoords, GL_STATIC_DRAW);
+
+        GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, VBOs[2]);
+        GLWrapper::Instance()->GLBUFFERDATA(GL_ELEMENT_ARRAY_BUFFER, n_faces*3*sizeof(GLshort), a_faces, GL_STATIC_DRAW);
+
+        // At this point it should be safe to delete original data, since it is in GPU mem
+    }
+
+    // Assumption is that Vertex attrib array are ordered as follows:
+    // 0: for vertices
+    // 1: for texcoords
+    // 2: for indices
     GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[0]);
-    GLWrapper::Instance()->GLBUFFERDATA(GL_ARRAY_BUFFER, n_vertices*3*sizeof(GLfloat), a_vertices, GL_STATIC_DRAW);
-    GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[1]);
-    GLWrapper::Instance()->GLBUFFERDATA(GL_ARRAY_BUFFER, n_texcoords*2*sizeof(GLfloat), a_texcoords, GL_STATIC_DRAW);
-
-    GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, VBOs[2]);
-    GLWrapper::Instance()->GLBUFFERDATA(GL_ELEMENT_ARRAY_BUFFER, n_faces*3*sizeof(GLshort), a_faces, GL_STATIC_DRAW);
-
-    // Assumption is that Vertex attrib array 0 is for vertices
-    // and array 1 for texcoords
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
+    GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[1]);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
-    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, a_vertices);
-    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, a_texcoords);
 
-    GLWrapper::Instance()->GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, a_faces);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    GLWrapper::Instance()->GLDELETEBUFFERS(3, VBOs);
+    //GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, VBOs[2]);
+    GLWrapper::Instance()->GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, NULL);
+
+    //GLWrapper::Instance()->GLDELETEBUFFERS(3, VBOs);
 }
 
 void SimpleMesh::renderAsArrays(void)

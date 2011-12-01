@@ -321,7 +321,7 @@ void GLWrapper::GLCOMPRESSEDTEXIMAGE2D(GLenum target, GLint level, GLenum intern
 
 void GLWrapper::GLDRAWELEMENTS(GLenum mode, GLsizei count, GLenum type, const GLvoid *data)
 {
-    DebugLog::Instance()->MESSAGE(4, "GL call: glDrawElements(%d, %d, %d, %p)\n", mode, count, type, data);
+    DebugLog::Instance()->MESSAGE(5, "GL call: glDrawElements(%d, %d, %d, %p)\n", mode, count, type, data);
     glDrawElements(mode, count, type, data);
     flushGLErrors();
 }
@@ -346,6 +346,7 @@ void GLWrapper::GLBUFFERDATA(GLenum target, GLsizeiptr size, const GLvoid *data,
     glBufferData(target, size, data, usage);
     flushGLErrors();
 }
+
 void GLWrapper::GLDELETEBUFFERS(GLsizei n, const GLuint *buffers)
 {
     DebugLog::Instance()->MESSAGE(4, "GL call: glDeleteBuffers(%d, %p)\n", n, buffers);
