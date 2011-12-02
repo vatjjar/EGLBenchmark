@@ -17,6 +17,7 @@
 #include "b03_SimpleTriangle.h"
 #include "b04_ETCTextureTest.h"
 #include "b05_RGBTextureTest.h"
+#include "b06_VBOElementsRGB.h"
 
 #include "DebugLog.h"
 
@@ -26,7 +27,8 @@ enum {
     TEST_SIMPLESHADER,
     TEST_SIMPLETRIANGLE,
     TEST_ETCTEXTURE,
-    TEST_RGBTEXTURE
+    TEST_RGBTEXTURE,
+    TEST_VBOELEMENTSRGB
 };
 static unsigned int width = 840;
 static unsigned int height = 480;
@@ -117,11 +119,12 @@ bool parseArgs(int argc, char *argv[])
                     return false;
                 case OPT_LIST:
                     std::cout << "List of available test cases:\n";
-                    std::cout << "   context:  EGL context initialization test\n";
-                    std::cout << "   shader:   Simple Shader test\n";
-                    std::cout << "   triangle: Simple Triangle test\n";
-                    std::cout << "   etctest:  ETC texture mapping test\n";
-                    std::cout << "   rgbtest:  RGB texture mapping test\n";
+                    std::cout << "   context:       EGL context initialization test\n";
+                    std::cout << "   shader:        Simple Shader test\n";
+                    std::cout << "   triangle:      Simple Triangle test\n";
+                    std::cout << "   etctest:       ETC texture mapping test\n";
+                    std::cout << "   rgbtest:       RGB texture mapping test\n";
+                    std::cout << "   vboelementrgb: VBO rendering with elements and RGB texturing\n";
                     return false;
                 case OPT_TESTCASE:
                     if (i+1 == argc) break; // No params anymore
@@ -130,6 +133,7 @@ bool parseArgs(int argc, char *argv[])
                     else if (0 == strcmp(argv[i+1], "triangle")) testcase = TEST_SIMPLETRIANGLE;
                     else if (0 == strcmp(argv[i+1], "etctest")) testcase = TEST_ETCTEXTURE;
                     else if (0 == strcmp(argv[i+1], "rgbtest")) testcase = TEST_RGBTEXTURE;
+                    else if (0 == strcmp(argv[i+1], "vboelementrgb")) testcase = TEST_VBOELEMENTSRGB;
                     else
                     {
                         std::cout << "Unrecognized test case: " << argv[i+1] << "\n";
@@ -195,6 +199,9 @@ int main(int argc, char *argv[])
         break;
     case TEST_RGBTEXTURE:
         bm = dynamic_cast<EGLX11Benchmark*>(new b05_RGBTextureTest());
+        break;
+    case TEST_VBOELEMENTSRGB:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b06_VBOElementsRGB());
         break;
     }
 

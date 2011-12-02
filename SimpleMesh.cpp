@@ -85,10 +85,10 @@ void SimpleMesh::renderAsIndexedElements(void)
     // 0: for vertices
     // 1: for texcoords
     // 2: for indices
-    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, a_vertices);
-    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
+    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, a_texcoords);
+    GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
 
     GLWrapper::Instance()->GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, a_faces);
 }
@@ -119,20 +119,22 @@ void SimpleMesh::renderAsIndexedElements_VBO(void)
 
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
-    // 1: for texcoords
-    // 2: for indices
     GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[0]);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
+
+    // 1: for texcoords
     GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, VBOs[1]);
+    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
 
-    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    //GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, VBOs[2]);
+    // 2: for indices
+    GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, VBOs[2]);
     GLWrapper::Instance()->GLDRAWELEMENTS(GL_TRIANGLES, 3*n_faces, GL_UNSIGNED_SHORT, NULL);
 
-    //GLWrapper::Instance()->GLDELETEBUFFERS(3, VBOs);
+    // Generally a good idea to disable VBOs after rendering is done
+    GLWrapper::Instance()->GLBINDBUFFER(GL_ARRAY_BUFFER, 0);
+    GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void SimpleMesh::renderAsArrays(void)

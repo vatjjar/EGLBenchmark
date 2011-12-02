@@ -6,16 +6,18 @@
  * For conditions of distribution and use, see copyright notice in license.txt
  */
 
-#ifndef b05_RGBTextureTest_H
-#define b05_RGBTextureTest_H
+#ifndef b06_VBOElementsRGB_H
+#define b06_VBOElementsRGB_H
 
 #include "EGLX11Benchmark.h"
 
-class b05_RGBTextureTest : public EGLX11Benchmark
+#include "SimpleMesh.h"
+
+class b06_VBOElementsRGB : public EGLX11Benchmark
 {
 public:
-    b05_RGBTextureTest();
-    ~b05_RGBTextureTest();
+    b06_VBOElementsRGB();
+    ~b06_VBOElementsRGB();
 
     bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
     bool destroyBenchmark(void);
@@ -32,7 +34,9 @@ private:
     GLuint shaderProgram;
     GLuint textureID;
     GLuint texturesampler;
+
+    SimpleMesh *sm;
 };
 
-#endif // b05_RGBTextureTest_H
+#endif // b06_VBOElementsRGB_H
 
