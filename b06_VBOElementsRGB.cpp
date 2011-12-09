@@ -124,7 +124,9 @@ void b06_VBOElementsRGB::Render(void)
     GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
     GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
 
-    sm->renderAsIndexedElements_VBO();
+//    sm->renderAsIndexedElements();
+//    sm->renderAsIndexedElements_VBO();
+    sm->renderAsArrays();
 
     GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
 }

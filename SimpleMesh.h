@@ -34,8 +34,9 @@ public:
     void renderAsIndexedElements_VBO(void);
 
     void renderAsArrays(void);
-    void renderAsVertexbufferobject(void);
+    void renderAsArrays_VBO(void);
 
+    bool createArrayData(void);
 protected:
 
 private:
@@ -50,6 +51,11 @@ private:
     GLfloat *a_normals;
     GLfloat *a_texcoords;
     GLshort *a_faces;
+
+    // Array data (non-indexed)
+    GLfloat *a_array_vertices;
+    GLfloat *a_array_normals;
+    GLfloat *a_array_texcoords;
 };
 
 #endif // SIMPLEMESH_H
