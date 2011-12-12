@@ -109,6 +109,7 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
  */
 bool b06_VBOElementsRGB::destroyBenchmark(void)
 {
+    delete sm;
     destroyEGLDisplay();
     return true;
 }
@@ -126,7 +127,8 @@ void b06_VBOElementsRGB::Render(void)
 
 //    sm->renderAsIndexedElements();
 //    sm->renderAsIndexedElements_VBO();
-    sm->renderAsArrays();
+//    sm->renderAsArrays();
+    sm->renderAsArrays_VBO();
 
     GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
 }
@@ -140,3 +142,17 @@ bool b06_VBOElementsRGB::renderSingleFrame(float deltatime)
     Render();
     return true;
 }
+
+/*
+ * getRenderStatistics()
+ */
+bool b06_VBOElementsRGB::getRenderStatistics(RENDER_STATISTICS *rs)
+{
+    rs->r_vertices = sm->getRenderedVertices();
+    rs->r_normals = sm->getRenderedNormals();
+    rs->r_texcoords = sm->getRenderedTexcoords();
+    rs->r_faces = sm->getRenderedFaces();
+    rs->r_batches = sm->getRenderedBatches();
+    return true;
+}
+

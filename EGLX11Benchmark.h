@@ -36,6 +36,14 @@ const EGLint ctxattr[] = {
    EGL_NONE
 };
 
+typedef struct _render_statistics {
+    unsigned int r_vertices;
+    unsigned int r_normals;
+    unsigned int r_texcoords;
+    unsigned int r_faces;
+    unsigned int r_batches;
+} RENDER_STATISTICS;
+
 // Class definition
 
 class EGLX11Benchmark
@@ -48,6 +56,7 @@ public:
     virtual bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen) = 0;
     virtual bool destroyBenchmark(void) = 0;
     virtual bool renderSingleFrame(float deltatime) = 0;
+    virtual bool getRenderStatistics(RENDER_STATISTICS *rs) = 0;
 
     // Wraps for GL error fetching
     void flushGLErrors(void);

@@ -154,3 +154,11 @@ bool b02_SimpleGLShading::renderSingleFrame(float deltatime)
     Render();
     return true;
 }
+
+/*
+ * getRenderStatistics()
+ */
+bool b02_SimpleGLShading::getRenderStatistics(RENDER_STATISTICS *rs)
+{
+    return true;
+}

@@ -155,6 +155,15 @@ bool b04_ETCTextureTest::renderSingleFrame(float deltatime)
     return true;
 }
 
+/*
+ * getRenderStatistics()
+ */
+bool b04_ETCTextureTest::getRenderStatistics(RENDER_STATISTICS *rs)
+{
+    return true;
+}
+
+
 
 bool b04_ETCTextureTest::queryCompressedTextureformats(void)
 {

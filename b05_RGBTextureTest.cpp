@@ -149,3 +149,10 @@ bool b05_RGBTextureTest::renderSingleFrame(float deltatime)
     return true;
 }
 
+/*
+ * getRenderStatistics()
+ */
+bool b05_RGBTextureTest::getRenderStatistics(RENDER_STATISTICS *rs)
+{
+    return true;
+}

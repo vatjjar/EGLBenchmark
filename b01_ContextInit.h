@@ -20,6 +20,7 @@ public:
     bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
     bool destroyBenchmark(void);
     bool renderSingleFrame(float deltatime);
+    bool getRenderStatistics(RENDER_STATISTICS *rs);
 };
 
 #endif // B01_CONTEXTINIT_H

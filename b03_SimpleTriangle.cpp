@@ -104,3 +104,11 @@ bool b03_SimpleTriangle::renderSingleFrame(float deltatime)
     Render();
     return true;
 }
+
+/*
+ * getRenderStatistics()
+ */
+bool b03_SimpleTriangle::getRenderStatistics(RENDER_STATISTICS *rs)
+{
+    return true;
+}

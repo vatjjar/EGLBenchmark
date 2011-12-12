@@ -156,6 +156,7 @@ void calculateFrameVariance(float *frametimes, unsigned int samples, float *aver
 {
     float sum;
 
+    // First an average of the frame update times
     sum = 0.0f;
     for (unsigned int i=0; i<samples; i++)
     {
@@ -163,6 +164,7 @@ void calculateFrameVariance(float *frametimes, unsigned int samples, float *aver
     }
     *average = sum / samples;
 
+    // and then a variance of the frame update time
     sum = 0;
     for (unsigned int i=0; i<samples; i++)
     {
@@ -181,6 +183,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    // A vector to store each frame update time
     frametimes = new float[framelimit];
 
     switch(testcase)
@@ -217,6 +220,7 @@ int main(int argc, char *argv[])
         float deltatime;
         unsigned int renderedFrames;
         float average, variance;
+        RENDER_STATISTICS rs;
 
         std::cout << "Benchmark name: " << bm->getName() << "\n";
         std::cout << "Description:    " << bm->getDescription() << "\n";
@@ -263,6 +267,7 @@ int main(int argc, char *argv[])
             }
         }
         calculateFrameVariance(frametimes, framelimit, &average, &variance);
+        bm->getRenderStatistics(&rs);
         std::cout << "Total rendering time:             " << totaltime << "\n";
         std::cout << "Total rendered frames:            " << renderedFrames << "\n";
         std::cout << "Measurement frametime (average):  " << average << " seconds\n";
@@ -270,6 +275,10 @@ int main(int argc, char *argv[])
         std::cout << "Frames per second:                " << renderedFrames/totaltime << "\n";
         std::cout << "Total GL errors during the test:  " << bm->getGLErrors() << "\n";
         std::cout << "Total EGL errors during the test: " << bm->getEGLErrors() << "\n";
+        std::cout << "Total rendering: "<<rs.r_vertices<<" vert, "<<rs.r_normals<<" norm, " <<
+                     rs.r_texcoords<<" texc, "<<rs.r_faces<<" face, "<<rs.r_batches<<" batch\n";
+        std::cout << "Total frame rendering: "<<rs.r_vertices/renderedFrames<<" vert, "<<rs.r_normals/renderedFrames<<" norm, " <<
+                     rs.r_texcoords/renderedFrames<<" texc, "<<rs.r_faces/renderedFrames<<" face, "<<rs.r_batches/renderedFrames<<" batch\n";
         bm->destroyBenchmark();
     }
 

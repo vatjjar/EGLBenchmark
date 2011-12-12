@@ -63,3 +63,11 @@ bool b01_ContextInit::renderSingleFrame(float timedelta)
     return true;
 }
 
+
+/*
+ * getRenderStatistics()
+ */
+bool b01_ContextInit::getRenderStatistics(RENDER_STATISTICS *rs)
+{
+    return true;
+}
