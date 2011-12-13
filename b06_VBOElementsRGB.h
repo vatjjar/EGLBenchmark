@@ -13,6 +13,8 @@
 
 #include "SimpleMesh.h"
 
+#define TESTOBJECTS (5)
+
 class b06_VBOElementsRGB : public EGLX11Benchmark
 {
 public:
@@ -33,10 +35,11 @@ private:
     float totaltime;
 
     GLuint shaderProgram;
-    GLuint textureID;
     GLuint texturesampler;
 
-    SimpleMesh *sm;
+    // Mesh and texture istances for the test case
+    SimpleMesh *sm[TESTOBJECTS];
+    GLuint textureID[TESTOBJECTS];
 };
 
 #endif // b06_VBOElementsRGB_H

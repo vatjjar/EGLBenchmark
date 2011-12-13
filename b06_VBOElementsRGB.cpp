@@ -80,30 +80,32 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
     texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
 
     /*
-     * Texture loading for the test case:
+     * Texture and mesh loading for the test case:
      */
-#if 0
-    textureID = loadRGBTexturefromPNG("./resources/pngRGB.png");
-    if (textureID == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/pngRGB.png");
-        return false;
-    }
-#else
-    textureID = loadETCTextureFromFile("./resources/etctexture.pkm");
-    if (textureID == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/etctexture.pkm");
-        return false;
-    }
-#endif
 
-    // Try to load simple mesh from disk
-    sm = new SimpleMesh();
-    if (false == sm->fromFiles("resources/Plane"))
+    for (int i=0; i<TESTOBJECTS; i++)
     {
-        DebugLog::Instance()->MESSAGE(1, "Unable to load mesh from file Plane\n");
-        return false;
+        sm[i] = new SimpleMesh();
+        if (false == sm[i]->fromFiles("resources/Plane"))
+        {
+            DebugLog::Instance()->MESSAGE(1, "Unable to load mesh from file Plane\n");
+            return false;
+        }
+#if 0 //defined(GL_ETC1_RGB8_OES)
+        textureID[i] = loadETCTextureFromFile("./resources/etctexture.pkm");
+        if (textureID[i] == 0)
+        {
+            DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/etctexture.pkm");
+            return false;
+        }
+#else
+        textureID[i] = loadRGBTexturefromPNG("./resources/pngRGB.png");
+        if (textureID[i] == 0)
+        {
+            DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/pngRGB.png");
+            return false;
+        }
+#endif
     }
 
     GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
@@ -116,7 +118,11 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
  */
 bool b06_VBOElementsRGB::destroyBenchmark(void)
 {
-    delete sm;
+    for (int i=0; i<TESTOBJECTS; i++)
+    {
+        delete sm[i];
+//        GLWrapper::GL
+    }
     destroyEGLDisplay();
     return true;
 }
@@ -128,14 +134,17 @@ void b06_VBOElementsRGB::Render(void)
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
     GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
 
-    GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
-    GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
-    GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
+    for (int i=0; i<TESTOBJECTS; i++)
+    {
+        GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
+        GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID[i]);
+        GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
 
-//    sm->renderAsIndexedElements();
-//    sm->renderAsIndexedElements_VBO();
-//    sm->renderAsArrays();
-    sm->renderAsArrays_VBO();
+    //    sm[i]->renderAsIndexedElements();
+    //    sm[i]->renderAsIndexedElements_VBO();
+    //    sm[i]->renderAsArrays();
+        sm[i]->renderAsArrays_VBO();
+    }
 
     GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
 }
@@ -155,11 +164,14 @@ bool b06_VBOElementsRGB::renderSingleFrame(float deltatime)
  */
 bool b06_VBOElementsRGB::getRenderStatistics(RENDER_STATISTICS *rs)
 {
-    rs->r_vertices = sm->getRenderedVertices();
-    rs->r_normals = sm->getRenderedNormals();
-    rs->r_texcoords = sm->getRenderedTexcoords();
-    rs->r_faces = sm->getRenderedFaces();
-    rs->r_batches = sm->getRenderedBatches();
+    memset(rs, 0, sizeof(RENDER_STATISTICS));
+    for (int i=0; i<TESTOBJECTS; i++)
+    {
+        rs->r_vertices  += sm[i]->getRenderedVertices();
+        rs->r_normals   += sm[i]->getRenderedNormals();
+        rs->r_texcoords += sm[i]->getRenderedTexcoords();
+        rs->r_faces     += sm[i]->getRenderedFaces();
+        rs->r_batches   += sm[i]->getRenderedBatches();
+    }
     return true;
 }
-
