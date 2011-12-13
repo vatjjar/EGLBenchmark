@@ -38,7 +38,6 @@ b06_VBOElementsRGB::~b06_VBOElementsRGB()
  */
 bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
-    const char *texturefilename = "./resources/pngRGB.png";
     const char vertex_src[] =
        "attribute vec4 a_Position;   \n"
        "attribute vec2 a_Texcoord;   \n"
@@ -83,13 +82,21 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
     /*
      * Texture loading for the test case:
      */
-    textureID = loadRGBTexturefromPNG(texturefilename);
+#if 0
+    textureID = loadRGBTexturefromPNG("./resources/pngRGB.png");
     if (textureID == 0)
     {
         DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
     }
-
+#else
+    textureID = loadETCTextureFromFile("./resources/etcteture.pkm");
+    if (textureID == 0)
+    {
+        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        return false;
+    }
+#endif
 
     // Try to load simple mesh from disk
     sm = new SimpleMesh();
