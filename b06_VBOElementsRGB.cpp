@@ -86,14 +86,14 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
     textureID = loadRGBTexturefromPNG("./resources/pngRGB.png");
     if (textureID == 0)
     {
-        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/pngRGB.png");
         return false;
     }
 #else
     textureID = loadETCTextureFromFile("./resources/etcteture.pkm");
     if (textureID == 0)
     {
-        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
+        DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/etcteture.pkm");
         return false;
     }
 #endif
