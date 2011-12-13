@@ -428,13 +428,18 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     unsigned int length;
     unsigned char *buffer;
     GLuint textureID;
+    unsigned short w, h;
 
     buffer = readBinaryFile(filename, length);
     if (buffer == NULL)
     {
         return 0;
     }
-    DebugLog::Instance()->MESSAGE(4, "File read into memory, length %d bytes\n", (int)length);
+    DebugLog::Instance()->MESSAGE(4, "PKM File read into memory, length %d bytes\n", (int)length);
+
+    w = (buffer[8] << 8) + buffer[9];
+    h = (buffer[10] << 8) + buffer[11];
+    DebugLog::Instance()->MESSAGE(4, "ETC1 image width %d and height %d\n", w, h);
 
     // GL texture generation part
     glGenTextures(1, &textureID);
@@ -442,7 +447,7 @@ GLuint EGLX11Benchmark::loadETCTextureFromFile(const char *filename)
     glBindTexture(GL_TEXTURE_2D, textureID);
     flushGLErrors();
 
-    GLWrapper::Instance()->GLCOMPRESSEDTEXIMAGE2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, 128, 128, 0, length-16, &buffer[16]);
+    GLWrapper::Instance()->GLCOMPRESSEDTEXIMAGE2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, w, h, 0, length-16, &buffer[16]);
     delete buffer;
 
     // This is critical. CompressedTexImage may return invalid ENUM and if so, we will cancel
