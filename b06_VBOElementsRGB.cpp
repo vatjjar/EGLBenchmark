@@ -85,27 +85,26 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
 
     for (int i=0; i<TESTOBJECTS; i++)
     {
+        // Generate meshes
         sm[i] = new SimpleMesh();
         if (false == sm[i]->fromFiles("resources/Plane"))
         {
             DebugLog::Instance()->MESSAGE(1, "Unable to load mesh from file Plane\n");
             return false;
         }
+
+        // Generate textures
 #if 0 //defined(GL_ETC1_RGB8_OES)
-        textureID[i] = loadETCTextureFromFile("./resources/etctexture.pkm");
-        if (textureID[i] == 0)
-        {
-            DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/etctexture.pkm");
-            return false;
-        }
+        const char * filename = "resources/etctexture.pkm";
 #else
-        textureID[i] = loadRGBTexturefromPNG("./resources/pngRGB.png");
-        if (textureID[i] == 0)
+        const char * filename = "resources/pngRGB.png";
+#endif
+        st[i] = new SimpleTexture();
+        if (false == st[i]->fromFile(filename))
         {
-            DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", "./resources/pngRGB.png");
+            DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", filename);
             return false;
         }
-#endif
     }
 
     GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
@@ -121,7 +120,7 @@ bool b06_VBOElementsRGB::destroyBenchmark(void)
     for (int i=0; i<TESTOBJECTS; i++)
     {
         delete sm[i];
-//        GLWrapper::GL
+        delete st[i];
     }
     destroyEGLDisplay();
     return true;
@@ -137,7 +136,8 @@ void b06_VBOElementsRGB::Render(void)
     for (int i=0; i<TESTOBJECTS; i++)
     {
         GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
-        GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID[i]);
+        st[i]->bind();
+        //GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID[i]);
         GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
 
     //    sm[i]->renderAsIndexedElements();

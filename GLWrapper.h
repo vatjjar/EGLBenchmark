@@ -54,6 +54,7 @@ public:
     void   GLBINDBUFFER(GLenum target, GLuint buffer);
     void   GLBUFFERDATA(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage);
     void   GLDELETEBUFFERS(GLsizei n, const GLuint *buffers);
+    void   GLDELETETEXTURES(GLsizei n, const GLuint *textures);
 
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);

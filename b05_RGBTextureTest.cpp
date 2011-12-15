@@ -83,8 +83,8 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     /*
      * Texture loading for the test case:
      */
-    textureID = loadRGBTexturefromPNG(texturefilename);
-    if (textureID == 0)
+    st = new SimpleTexture();
+    if (false == st->fromFile(texturefilename))
     {
         DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", texturefilename);
         return false;
@@ -127,7 +127,7 @@ void b05_RGBTextureTest::Render(void)
     GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
 
     GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
-    GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
+    st->bind();
     GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
 
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);

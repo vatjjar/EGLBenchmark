@@ -12,6 +12,7 @@
 #include "EGLX11Benchmark.h"
 
 #include "SimpleMesh.h"
+#include "SimpleTexture.h"
 
 #define TESTOBJECTS (5)
 
@@ -38,8 +39,8 @@ private:
     GLuint texturesampler;
 
     // Mesh and texture istances for the test case
-    SimpleMesh *sm[TESTOBJECTS];
-    GLuint textureID[TESTOBJECTS];
+    SimpleMesh    *sm[TESTOBJECTS];
+    SimpleTexture *st[TESTOBJECTS];
 };
 
 #endif // b06_VBOElementsRGB_H

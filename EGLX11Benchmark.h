@@ -88,13 +88,6 @@ protected:
     void linkShaderProgram(GLuint shaderProgram);
     void printShaderInfo(GLuint shader);
 
-    // Helpers for simple file I/O
-    unsigned char * readBinaryFile(const char *filename, unsigned int & length);
-
-    // Helpers for texture loading
-    GLuint loadETCTextureFromFile(const char *filename);
-    GLuint loadRGBTexturefromPNG(const char *filename);
-
     void setName(const char *);
     void setDescription(const char *);
 

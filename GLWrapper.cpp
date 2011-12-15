@@ -354,6 +354,13 @@ void GLWrapper::GLDELETEBUFFERS(GLsizei n, const GLuint *buffers)
     flushGLErrors();
 }
 
+void GLWrapper::GLDELETETEXTURES(GLsizei n, const GLuint *textures)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glDeleteTextures(%d, %p)\n", n, textures);
+    glDeleteTextures(n, textures);
+    flushGLErrors();
+}
+
 /******************************************************************************
  * EGL Wrappers
  */

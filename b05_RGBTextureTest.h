@@ -11,6 +11,8 @@
 
 #include "EGLX11Benchmark.h"
 
+#include "SimpleTexture.h"
+
 class b05_RGBTextureTest : public EGLX11Benchmark
 {
 public:
@@ -31,8 +33,9 @@ private:
     float totaltime;
 
     GLuint shaderProgram;
-    GLuint textureID;
     GLuint texturesampler;
+
+    SimpleTexture *st;
 };
 
 #endif // b05_RGBTextureTest_H

@@ -16,6 +16,7 @@ _OBJS=main.o                      \
     DebugLog.o                    \
     GLWrapper.o                   \
     SimpleMesh.o                  \
+    SimpleTexture.o               \
     b01_ContextInit.o             \
     b02_SimpleGLShading.o         \
     b03_SimpleTriangle.o          \
@@ -31,6 +32,7 @@ HEADERS=                          \
     DebugLog.h                    \
     GLWrapper.h                   \
     SimpleMesh.h                  \
+    SimpleTexture.h               \
     b01_ContextInit.h             \
     b02_SimpleGLShading.h         \
     b03_SimpleTriangle.h          \
