@@ -293,28 +293,22 @@ void EGLX11Benchmark::printShaderInfo ( GLuint shader )
 {
    GLint length;
 
-   DebugLog::Instance()->MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
-   glGetShaderiv ( shader , GL_INFO_LOG_LENGTH , &length );
-   flushGLErrors();
+   GLWrapper::Instance()->GLGETSHADERIV( shader , GL_INFO_LOG_LENGTH , &length );
 
-   if ( length ) {
+   if ( length )
+   {
       char buffer[length];
       GLint success;
 
-      DebugLog::Instance()->MESSAGE(4, "printShaderInfo: glGetShaderInfoLog()\n");
-      glGetShaderInfoLog ( shader , length , NULL , buffer );
-      flushGLErrors();
+      GLWrapper::Instance()->GLGETSHADERINFOLOG( shader , length , NULL , buffer );
       DebugLog::Instance()->MESSAGE(4, "Shader info: '%s'\n", buffer);
 
-      DebugLog::Instance()->MESSAGE(4, "printShaderInfo: glGetShaderiv()\n");
-      glGetShaderiv( shader, GL_COMPILE_STATUS, &success );
-      flushGLErrors();
+      GLWrapper::Instance()->GLGETSHADERIV( shader, GL_COMPILE_STATUS, &success );
       if ( success != GL_TRUE )
       {
-          DebugLog::Instance()->MESSAGE(4, "Error: Shader compile status failed\n");
+          DebugLog::Instance()->MESSAGE(4, "Error: Shader compilation failed\n");
           return;
       }
-      else DebugLog::Instance()->MESSAGE(4, "printShaderInfo: OK\n");
    }
 }
 
@@ -322,27 +316,18 @@ GLuint EGLX11Benchmark::loadShaderProgram ( const char *shader_source, GLenum ty
 {
    GLuint shader;
 
-   DebugLog::Instance()->MESSAGE(4, "loadShader: glCreateShader()\n");
-   shader = glCreateShader( type );
-   flushGLErrors();
+   shader = GLWrapper::Instance()->GLCREATESHADER( type );
    if (shader == 0)
    {
+       DebugLog::Instance()->MESSAGE(2, "loadShader: shader creation failed.\n");
        return 0;
    }
-   DebugLog::Instance()->MESSAGE(4, "loadShader: shader handle = %d\n", shader);
 
-   DebugLog::Instance()->MESSAGE(4, "loadShader: glShaderSource()\n");
-   glShaderSource  ( shader , 1 , &shader_source , NULL );
-   flushGLErrors();
+   GLWrapper::Instance()->GLSHADERSOURCE( shader , 1 , &shader_source , NULL );
+   GLWrapper::Instance()->GLCOMPILESHADER( shader );
 
-   DebugLog::Instance()->MESSAGE(4, "loadShader: glCompileShader()\n");
-   glCompileShader ( shader );
-   flushGLErrors();
-
-   DebugLog::Instance()->MESSAGE(4, "loadShader: Logging info...\n");
    printShaderInfo ( shader );
 
-   DebugLog::Instance()->MESSAGE(4, "loadShader: EXIT\n");
    return shader;
 }
 

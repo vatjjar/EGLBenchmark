@@ -361,6 +361,43 @@ void GLWrapper::GLDELETETEXTURES(GLsizei n, const GLuint *textures)
     flushGLErrors();
 }
 
+void GLWrapper::GLGETSHADERIV(GLuint shader, GLenum pname, GLint *params)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glGetShaderiv(%d, %d, %p)\n", shader, pname, params);
+    glGetShaderiv(shader, pname, params);
+    flushGLErrors();
+}
+
+GLuint GLWrapper::GLCREATESHADER(GLenum type)
+{
+    GLuint rc;
+    rc = glCreateShader(type);
+    DebugLog::Instance()->MESSAGE(4, "GL call: glCreateShader(%d) = %d\n", type, rc);
+    flushGLErrors();
+    return rc;
+}
+
+void GLWrapper::GLGETSHADERINFOLOG(GLuint shader, GLsizei bufsize, GLsizei *length, GLchar *infolog)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glGetShaderInfoLog(%d, %d, %p, %p)\n", shader, bufsize, length, infolog);
+    glGetShaderInfoLog(shader, bufsize, length, infolog);
+    flushGLErrors();
+}
+
+void GLWrapper::GLSHADERSOURCE(GLuint shader, GLsizei count, const GLchar **string, const GLint *length)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glShaderSource(%d, %d, %p, %p)\n", shader, count, string, length);
+    glShaderSource(shader, count, string, length);
+    flushGLErrors();
+}
+
+void GLWrapper::GLCOMPILESHADER(GLuint shader)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glCompileShader(%d)\n", shader);
+    glCompileShader(shader);
+    flushGLErrors();
+}
+
 /******************************************************************************
  * EGL Wrappers
  */

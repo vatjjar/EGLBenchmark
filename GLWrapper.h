@@ -56,6 +56,12 @@ public:
     void   GLDELETEBUFFERS(GLsizei n, const GLuint *buffers);
     void   GLDELETETEXTURES(GLsizei n, const GLuint *textures);
 
+    void   GLGETSHADERIV(GLuint shader, GLenum pname, GLint *params);
+    GLuint GLCREATESHADER(GLenum type);
+    void   GLGETSHADERINFOLOG(GLuint shader, GLsizei bufsize, GLsizei *length, GLchar *infolog);
+    void   GLSHADERSOURCE(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
+    void   GLCOMPILESHADER(GLuint shader);
+
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);
 
