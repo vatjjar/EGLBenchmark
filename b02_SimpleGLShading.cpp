@@ -21,6 +21,7 @@
 
 #include "DebugLog.h"
 #include "GLWrapper.h"
+#include "SimpleShader.h"
 
 /*
  * local constants for the test case:
@@ -95,13 +96,22 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
         return false;
     }
 
+    ss = new SimpleShader();
+    if (false == ss->fromFiles(vertex_src, fragment_src))
+    {
+        DebugLog::Instance()->MESSAGE(2, "Shader program object failed\n");
+        return false;
+    }
+    ss->linkProgram();
+
+#if 0
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
         DebugLog::Instance()->MESSAGE(1, "Error: Shader program object creation failed\n");
     }
     linkShaderProgram(shaderProgram);
-
+#endif
     position_loc  = GLWrapper::Instance()->GLGETATTRIBLOCATION(shaderProgram , "position");
     phase_loc     = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
     offset_loc    = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
@@ -111,8 +121,8 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
        return false;
     }
 
-    GLWrapper::Instance()->GLVIEWPORT ( 0 , 0 , w_width , w_height );
-    GLWrapper::Instance()->GLCLEARCOLOR(0.08 , 0.06 , 0.07 , 1.);
+    GLWrapper::Instance()->GLVIEWPORT ( 0, 0, w_width, w_height );
+    GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
 
     // If we have errors in GL pipe, then abort.
     if (getGLErrors() > 0) return false;

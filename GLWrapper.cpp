@@ -398,6 +398,20 @@ void GLWrapper::GLCOMPILESHADER(GLuint shader)
     flushGLErrors();
 }
 
+void GLWrapper::GLDELETEPROGRAM(GLuint program)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glDeleteProgram(%d)\n", program);
+    glDeleteProgram(program);
+    flushGLErrors();
+}
+
+void GLWrapper::GLDELETESHADER(GLuint shader)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glDeleteShader(%d)\n", shader);
+    glDeleteShader(shader);
+    flushGLErrors();
+}
+
 /******************************************************************************
  * EGL Wrappers
  */

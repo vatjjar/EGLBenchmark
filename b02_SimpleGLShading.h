@@ -11,6 +11,8 @@
 
 #include "EGLX11Benchmark.h"
 
+#include "SimpleShader.h"
+
 class b02_SimpleGLShading : public EGLX11Benchmark
 {
 public:
@@ -33,12 +35,11 @@ private:
 
     // Variables for the animation in this test case
     float phase;
-    GLuint vertexShader;
-    GLuint fragmentShader;
-    GLuint shaderProgram;
     GLint phase_loc;
     GLint offset_loc;
     GLint position_loc;
+
+    SimpleShader *ss;
 };
 
 #endif // b02_SimpleGLShading_H

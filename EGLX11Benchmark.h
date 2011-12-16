@@ -82,12 +82,6 @@ protected:
     bool createEGLDisplay(int width, int height, bool fullscreen);
     void destroyEGLDisplay(void);
 
-    // Helper methods for shader handling
-    GLuint createShaderProgram(const char *v_src, const char *f_src);
-    GLuint loadShaderProgram(const char *shader_source, GLenum type);
-    void linkShaderProgram(GLuint shaderProgram);
-    void printShaderInfo(GLuint shader);
-
     void setName(const char *);
     void setDescription(const char *);
 

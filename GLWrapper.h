@@ -61,6 +61,8 @@ public:
     void   GLGETSHADERINFOLOG(GLuint shader, GLsizei bufsize, GLsizei *length, GLchar *infolog);
     void   GLSHADERSOURCE(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
     void   GLCOMPILESHADER(GLuint shader);
+    void   GLDELETEPROGRAM(GLuint program);
+    void   GLDELETESHADER(GLuint shader);
 
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);

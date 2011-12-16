@@ -17,6 +17,7 @@ _OBJS=main.o                      \
     GLWrapper.o                   \
     SimpleMesh.o                  \
     SimpleTexture.o               \
+    SimpleShader.o                \
     b01_ContextInit.o             \
     b02_SimpleGLShading.o         \
     b03_SimpleTriangle.o          \
@@ -33,6 +34,7 @@ HEADERS=                          \
     GLWrapper.h                   \
     SimpleMesh.h                  \
     SimpleTexture.h               \
+    SimpleShader.h                \
     b01_ContextInit.h             \
     b02_SimpleGLShading.h         \
     b03_SimpleTriangle.h          \
