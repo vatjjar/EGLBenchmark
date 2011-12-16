@@ -115,7 +115,8 @@ bool parseArgs(int argc, char *argv[])
                 case OPT_H:
                 case OPT_HELP:
                     std::cout << "Usage:\n" << argv[0] << " -width <W> -height <H> -fullscreen";
-                    std::cout << "  -verbose <LEVEL 1-5> -framelimit <frames> -usage|-h|-help -list -testcase <testcasename>\n";
+                    std::cout << " -verbose <1-5> -framelimit <frames> -usage|-h|-help -list -testcase <testcasename>";
+                    std::cout << " -fpslimit <target FPS>\n";
                     return false;
                 case OPT_LIST:
                     std::cout << "List of available test cases:\n";
@@ -225,7 +226,7 @@ int main(int argc, char *argv[])
         std::cout << "Benchmark name: " << bm->getName() << "\n";
         std::cout << "Description:    " << bm->getDescription() << "\n";
 //        std::cout << "Running benchmark (duration="<<duration<<" seconds)...\n";
-        std::cout << "Running benchmark (framelimit="<<framelimit<<" frames)...\n";
+        std::cout << "Running benchmark (framelimit="<<framelimit<<" frames, fpslimit="<<fpslimit<<"fps)...\n";
 
         // Timer and variables
         bm->resetTimer();
