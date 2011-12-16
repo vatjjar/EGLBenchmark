@@ -35,7 +35,6 @@ static unsigned int height = 480;
 static unsigned int fullscreen = false;
 static unsigned int framelimit = 100;
 static int verbosity = 1;
-//static float duration = 5.0f;
 static float fpslimit = 0.0f;
 static unsigned int testcase = TEST_CONTEXTINIT;
 
@@ -50,7 +49,6 @@ bool parseArgs(int argc, char *argv[])
         OPT_WIDTH,
         OPT_HEIGHT,
         OPT_FULLSCREEN,
-//        OPT_DURATION,
         OPT_FRAMELIMIT,
         OPT_TESTCASE,
         OPT_FPSLIMIT,
@@ -64,7 +62,6 @@ bool parseArgs(int argc, char *argv[])
         { "-width",      OPT_WIDTH },
         { "-height",     OPT_HEIGHT },
         { "-fullscreen", OPT_FULLSCREEN },
-//        { "-duration",   OPT_DURATION },
         { "-framelimit", OPT_FRAMELIMIT },
         { "-testcase",   OPT_TESTCASE },
         { "-list",       OPT_LIST },
@@ -101,11 +98,6 @@ bool parseArgs(int argc, char *argv[])
                 case OPT_FULLSCREEN:
                     fullscreen = true;
                     break;
-//                case OPT_DURATION:
-//                    if (i+1 == argc) break; // No params anymore
-//                    duration = atof(argv[i+1]);
-//                    if (duration < 1.0f) duration = 1.0f;
-//                    break;
                 case OPT_FRAMELIMIT:
                     if (i+1 == argc) break; // No params anymore
                     framelimit = atoi(argv[i+1]);
@@ -225,7 +217,6 @@ int main(int argc, char *argv[])
 
         std::cout << "Benchmark name: " << bm->getName() << "\n";
         std::cout << "Description:    " << bm->getDescription() << "\n";
-//        std::cout << "Running benchmark (duration="<<duration<<" seconds)...\n";
         std::cout << "Running benchmark (framelimit="<<framelimit<<" frames, fpslimit="<<fpslimit<<"fps)...\n";
 
         // Timer and variables
@@ -269,16 +260,16 @@ int main(int argc, char *argv[])
         }
         calculateFrameVariance(frametimes, framelimit, &average, &variance);
         bm->getRenderStatistics(&rs);
-        std::cout << "Total rendering time:             " << totaltime << "\n";
-        std::cout << "Total rendered frames:            " << renderedFrames << "\n";
+        std::cout << "Total rendering time:             " << totaltime << " seconds\n";
+        std::cout << "Total rendered frames:            " << renderedFrames << " seconds\n";
         std::cout << "Measurement frametime (average):  " << average << " seconds\n";
         std::cout << "Measurement frametime (variance)  " << variance << " seconds\n";
-        std::cout << "Frames per second:                " << renderedFrames/totaltime << "\n";
+        std::cout << "Frames per second:                " << renderedFrames/totaltime << " fps\n";
         std::cout << "Total GL errors during the test:  " << bm->getGLErrors() << "\n";
         std::cout << "Total EGL errors during the test: " << bm->getEGLErrors() << "\n";
         std::cout << "Total rendering: "<<rs.r_vertices<<" vert, "<<rs.r_normals<<" norm, " <<
                      rs.r_texcoords<<" texc, "<<rs.r_faces<<" face, "<<rs.r_batches<<" batch\n";
-        std::cout << "Total frame rendering: "<<rs.r_vertices/renderedFrames<<" vert, "<<rs.r_normals/renderedFrames<<" norm, " <<
+        std::cout << "Avg. frame rendering: "<<rs.r_vertices/renderedFrames<<" vert, "<<rs.r_normals/renderedFrames<<" norm, " <<
                      rs.r_texcoords/renderedFrames<<" texc, "<<rs.r_faces/renderedFrames<<" face, "<<rs.r_batches/renderedFrames<<" batch\n";
         bm->destroyBenchmark();
     }
