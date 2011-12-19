@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
         calculateFrameVariance(frametimes, framelimit, &average, &variance);
         bm->getRenderStatistics(&rs);
         std::cout << "Total rendering time:             " << totaltime << " seconds\n";
-        std::cout << "Total rendered frames:            " << renderedFrames << " seconds\n";
+        std::cout << "Total rendered frames:            " << renderedFrames << "\n";
         std::cout << "Measurement frametime (average):  " << average << " seconds\n";
         std::cout << "Measurement frametime (variance)  " << variance << " seconds\n";
         std::cout << "Frames per second:                " << renderedFrames/totaltime << " fps\n";
