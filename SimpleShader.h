@@ -27,10 +27,12 @@ public:
 
 public:
     /* File I/O */
-    bool fromFiles(const char *v_src, f_src);
+    bool fromFiles(const char *v_src, const char *f_src);
     void bindProgram(void);
     void linkProgram(void);
     void destroyProgram(void);
+
+    GLuint getProgramObject(void);
 
 protected:
 

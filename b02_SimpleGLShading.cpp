@@ -69,9 +69,6 @@ static const float vertexArray[] = {
 b02_SimpleGLShading::b02_SimpleGLShading() :
     renderedFrames(0),
     phase(0),
-    vertexShader(0),
-    fragmentShader(0),
-    shaderProgram(0),
     phase_loc(0),
     offset_loc(0),
     position_loc(0)
@@ -112,9 +109,9 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
     }
     linkShaderProgram(shaderProgram);
 #endif
-    position_loc  = GLWrapper::Instance()->GLGETATTRIBLOCATION(shaderProgram , "position");
-    phase_loc     = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram , "phase"   );
-    offset_loc    = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram , "offset"  );
+    position_loc  = GLWrapper::Instance()->GLGETATTRIBLOCATION(ss->getProgramObject(), "position");
+    phase_loc     = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "phase"   );
+    offset_loc    = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "offset"  );
 
     if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
        DebugLog::Instance()->MESSAGE(1, "Error: Unable to get uniform location\n");

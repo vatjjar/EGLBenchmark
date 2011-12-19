@@ -11,6 +11,8 @@
 
 #include "EGLX11Benchmark.h"
 
+#include "SimpleShader.h"
+
 class b03_SimpleTriangle : public EGLX11Benchmark
 {
 public:
@@ -31,9 +33,7 @@ private:
     unsigned int renderedFrames;
     float totaltime;
 
-    GLuint vertexShader;
-    GLuint fragmentShader;
-    GLuint shaderProgram;
+    SimpleShader *ss;
 };
 
 #endif // b03_SimpleTriangle_H

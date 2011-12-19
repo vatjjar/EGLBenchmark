@@ -64,6 +64,11 @@ void SimpleShader::destroyProgram(void)
     programObject = 0;
 }
 
+GLuint SimpleShader::getProgramObject(void)
+{
+    return programObject;
+}
+
 /******************************************************************************
  * Private methods
  */
@@ -122,8 +127,6 @@ GLuint SimpleShader::loadShaderProgram ( const char *shader_source, GLenum type)
 
 GLuint SimpleShader::createShaderProgram(const char *v_src, const char *f_src)
 {
-//    GLuint vertexShader;
-//    GLuint fragmentShader;
     GLuint shaderProgram;
 
     shaderProgram = GLWrapper::Instance()->GLCREATEPROGRAM();

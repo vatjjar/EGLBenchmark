@@ -67,17 +67,19 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
     /*
      * Shader program init:
      */
+#if 0
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
         DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
-    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
-    linkShaderProgram(shaderProgram);
+#endif
+//    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
+//    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
+//    linkShaderProgram(shaderProgram);
 
-    texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
+//    texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
 
     /*
      * Texture and mesh loading for the test case:
@@ -105,6 +107,19 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
             DebugLog::Instance()->MESSAGE(1, "Error: Loading of texturefile '%s' failed.\n", filename);
             return false;
         }
+
+        // Generate shader progams:
+        ss[i] = new SimpleShader();
+        if (false == ss[i]->fromFiles(vertex_src, fragment_src))
+        {
+            DebugLog::Instance()->MESSAGE(2, "Shader program object creation failed\n");
+            return false;
+        }
+        GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss[i]->getProgramObject(), 0, "a_Position");
+        GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss[i]->getProgramObject(), 1, "a_Texcoord");
+        ss[i]->linkProgram();
+        texturesampler[i] = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss[i]->getProgramObject(), "s_texture");
+
     }
 
     GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
@@ -121,6 +136,7 @@ bool b06_VBOElementsRGB::destroyBenchmark(void)
     {
         delete sm[i];
         delete st[i];
+        delete ss[i];
     }
     destroyEGLDisplay();
     return true;
@@ -131,14 +147,16 @@ void b06_VBOElementsRGB::Render(void)
 {
     GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
+//    GLWrapper::Instance()->GLUSEPROGRAM(shaderPr);
 
     for (int i=0; i<TESTOBJECTS; i++)
     {
         GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
         st[i]->bind();
         //GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID[i]);
-        GLWrapper::Instance()->GLUNIFORM1I(texturesampler, 0);
+        GLWrapper::Instance()->GLUNIFORM1I(texturesampler[i], 0);
+
+        ss[i]->bindProgram();
 
     //    sm[i]->renderAsIndexedElements();
     //    sm[i]->renderAsIndexedElements_VBO();

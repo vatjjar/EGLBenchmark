@@ -68,17 +68,26 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     /*
      * Shader program init:
      */
+    ss = new SimpleShader();
+    if (false == ss->fromFiles(vertex_src, fragment_src))
+    {
+        DebugLog::Instance()->MESSAGE(2, "Shader program object creation failed\n");
+        return false;
+    }
+#if 0
     shaderProgram = createShaderProgram(vertex_src, fragment_src);
     if (shaderProgram == 0)
     {
         DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
         return false;
     }
-    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
-    linkShaderProgram(shaderProgram);
+#endif
+    GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "a_Position");
+    GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 1, "a_Texcoord");
+    ss->linkProgram();
+//    linkShaderProgram(shaderProgram);
 
-    texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
+    texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "s_texture");
 
     /*
      * Texture loading for the test case:
@@ -124,7 +133,7 @@ void b05_RGBTextureTest::Render(void)
 {
     GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
+//  GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
 
     GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
     st->bind();

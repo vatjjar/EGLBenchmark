@@ -13,6 +13,7 @@
 
 #include "SimpleMesh.h"
 #include "SimpleTexture.h"
+#include "SimpleShader.h"
 
 #define TESTOBJECTS (5)
 
@@ -35,12 +36,11 @@ private:
     unsigned int renderedFrames;
     float totaltime;
 
-    GLuint shaderProgram;
-    GLuint texturesampler;
-
     // Mesh and texture istances for the test case
     SimpleMesh    *sm[TESTOBJECTS];
     SimpleTexture *st[TESTOBJECTS];
+    SimpleShader  *ss[TESTOBJECTS];
+    GLuint texturesampler[TESTOBJECTS];
 };
 
 #endif // b06_VBOElementsRGB_H
