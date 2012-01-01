@@ -18,6 +18,7 @@
 #include "b04_ETCTextureTest.h"
 #include "b05_RGBTextureTest.h"
 #include "b06_VBOElementsRGB.h"
+#include "b07_PointCloud.h"
 
 #include "DebugLog.h"
 
@@ -28,7 +29,8 @@ enum {
     TEST_SIMPLETRIANGLE,
     TEST_ETCTEXTURE,
     TEST_RGBTEXTURE,
-    TEST_VBOELEMENTSRGB
+    TEST_VBOELEMENTSRGB,
+    TEST_POINTCLOUD,
 };
 static unsigned int width = 840;
 static unsigned int height = 480;
@@ -118,6 +120,7 @@ bool parseArgs(int argc, char *argv[])
                     std::cout << "   etctest:       ETC texture mapping test\n";
                     std::cout << "   rgbtest:       RGB texture mapping test\n";
                     std::cout << "   vboelementrgb: VBO rendering with elements and RGB texturing\n";
+                    std::cout << "   pointcloud     Point cloud rendering test\n";
                     return false;
                 case OPT_TESTCASE:
                     if (i+1 == argc) break; // No params anymore
@@ -127,6 +130,7 @@ bool parseArgs(int argc, char *argv[])
                     else if (0 == strcmp(argv[i+1], "etctest")) testcase = TEST_ETCTEXTURE;
                     else if (0 == strcmp(argv[i+1], "rgbtest")) testcase = TEST_RGBTEXTURE;
                     else if (0 == strcmp(argv[i+1], "vboelementrgb")) testcase = TEST_VBOELEMENTSRGB;
+                    else if (0 == strcmp(argv[i+1], "pointcloud")) testcase = TEST_POINTCLOUD;
                     else
                     {
                         std::cout << "Unrecognized test case: " << argv[i+1] << "\n";
@@ -199,6 +203,9 @@ int main(int argc, char *argv[])
     case TEST_VBOELEMENTSRGB:
         bm = dynamic_cast<EGLX11Benchmark*>(new b06_VBOElementsRGB());
         break;
+    case TEST_POINTCLOUD:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b07_PointCloud());
+        break;
     }
 
     DebugLog::Instance()->setVerbosityLevel(verbosity);
@@ -234,6 +241,8 @@ int main(int argc, char *argv[])
                 break;
             }
 
+            // Deltatime is time taken by the render process. It does not take fpslimit or
+            // othes issues into account.
             deltatime = bm->getTimeSinceLastFrame();
             frametimes[renderedFrames] = deltatime;
             renderedFrames++;

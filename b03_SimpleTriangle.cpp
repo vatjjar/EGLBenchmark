@@ -60,16 +60,7 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
         DebugLog::Instance()->MESSAGE(2, "Shader program object creation failed\n");
         return false;
     }
-
-#if 0
-    shaderProgram = createShaderProgram(vertex_src, fragment_src);
-    if (shaderProgram == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Shader program object creation failed\n");
-    }
-#endif
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "vPosition");
-//    GLWrapper::Instance()->GLLINKPROGRAM(shaderProgram);
     ss->linkProgram();
 
     return true;
@@ -94,7 +85,6 @@ void b03_SimpleTriangle::Render(void)
 {
     GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-//    GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
     GLWrapper::Instance()->GLDRAWARRAYS(GL_TRIANGLES, 0, 3);

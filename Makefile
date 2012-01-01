@@ -11,7 +11,8 @@ MKDIR=mkdir
 CPP=g++
 RM=rm
 
-_OBJS=main.o                      \
+_OBJS=                            \
+    main.o                        \
     EGLX11Benchmark.o             \
     DebugLog.o                    \
     GLWrapper.o                   \
@@ -23,7 +24,8 @@ _OBJS=main.o                      \
     b03_SimpleTriangle.o          \
     b04_ETCTextureTest.o          \
     b05_RGBTextureTest.o          \
-    b06_VBOElementsRGB.o
+    b06_VBOElementsRGB.o          \
+    b07_PointCloud.o
 
 ODIR=objs
 OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
@@ -40,7 +42,8 @@ HEADERS=                          \
     b03_SimpleTriangle.h          \
     b04_ETCTextureTest.h          \
     b05_RGBTextureTest.h          \
-    b06_VBOElementsRGB.h
+    b06_VBOElementsRGB.h          \
+    b07_PointCloud.h
 
 default: ${ODIR} all
 
