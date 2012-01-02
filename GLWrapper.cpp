@@ -216,7 +216,7 @@ void GLWrapper::GLVERTEXATTRIBPOINTER(GLuint index, GLint size, GLenum type, GLb
 
 void GLWrapper::GLENABLEVERTEXATTRIBARRAY(GLuint index)
 {
-    DebugLog::Instance()->MESSAGE(5, "GL call: glEnableVertexAttribPointer(%d)\n", index);
+    DebugLog::Instance()->MESSAGE(5, "GL call: glEnableVertexAttribArray(%d)\n", index);
     glEnableVertexAttribArray(index);
     flushGLErrors();
 }
