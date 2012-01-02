@@ -1,10 +1,10 @@
 
 /*
- * b06_VBOElementsRGB - benchmark #1, EGL context creation:
- * -----------------------------------------------------
- * This test case initializes native window, creates render surfaces and associated EGL context
- * to hold all of this information. No other actions are taken. This is the simplest test for EGL
- * framework.
+ * b06_VBOElementsRGB - benchmark #6, VBO element RGB:
+ * ---------------------------------------------------
+ * This test has a number of variations implemented. It compares ETC1 and RGB texturing,
+ * has external mesh loading implemented and has test code paths for Array and Element
+ * rendering.
  *
  * Author: Jarkko Vatjus-Anttila <jvatjusanttila@gmail.com>
  *

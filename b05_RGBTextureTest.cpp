@@ -1,10 +1,8 @@
 
 /*
- * b05_RGBTextureTest - benchmark #1, EGL context creation:
- * -----------------------------------------------------
- * This test case initializes native window, creates render surfaces and associated EGL context
- * to hold all of this information. No other actions are taken. This is the simplest test for EGL
- * framework.
+ * b05_RGBTextureTest - benchmark #5, RGB Texture test:
+ * ----------------------------------------------------
+ * This test tests RGB based texturing on a quadrilateral shape rendering
  *
  * Author: Jarkko Vatjus-Anttila <jvatjusanttila@gmail.com>
  *

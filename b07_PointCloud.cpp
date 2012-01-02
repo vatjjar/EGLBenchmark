@@ -1,10 +1,10 @@
 
 /*
- * b07_PointCloud - benchmark #1, EGL context creation:
- * -----------------------------------------------------
- * This test case initializes native window, creates render surfaces and associated EGL context
- * to hold all of this information. No other actions are taken. This is the simplest test for EGL
- * framework.
+ * b07_PointCloud - benchmark #7, Point cloud rendering test:
+ * ----------------------------------------------------------
+ * This test case creates a point cloud formation and renders it
+ * via arrays of points. The idea is to test different shading of
+ * the points and number of points that can be handled.
  *
  * Author: Jarkko Vatjus-Anttila <jvatjusanttila@gmail.com>
  *
@@ -74,6 +74,7 @@ void Pointcloud::generate(void)
             points[nPoints].x = x;
             points[nPoints].y = y;
             points[nPoints].z = z;
+            //std::cout << "x="<<x<<",y="<<y<<",z="<<z<<"\n";
         }
         else
         {

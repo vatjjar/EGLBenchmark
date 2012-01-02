@@ -1,10 +1,8 @@
 
 /*
- * b04_ETCTextureTest - benchmark #1, EGL context creation:
- * -----------------------------------------------------
- * This test case initializes native window, creates render surfaces and associated EGL context
- * to hold all of this information. No other actions are taken. This is the simplest test for EGL
- * framework.
+ * b04_ETCTextureTest - benchmark #4, ETC Texture test:
+ * ----------------------------------------------------
+ * This test case tests the ETC1 texturing method on a quadrilateral rendering
  *
  * Author: Jarkko Vatjus-Anttila <jvatjusanttila@gmail.com>
  *
