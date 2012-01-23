@@ -225,7 +225,9 @@ bool b07_PointCloud::destroyBenchmark(void)
  */
 bool b07_PointCloud::renderSingleFrame(float timedelta)
 {
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
+    ss->bindProgram();
     p->render();
     GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
     return true;

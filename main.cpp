@@ -19,6 +19,7 @@
 #include "b05_RGBTextureTest.h"
 #include "b06_VBOElementsRGB.h"
 #include "b07_PointCloud.h"
+#include "b08_Scenegraph.h"
 
 #include "DebugLog.h"
 
@@ -31,6 +32,7 @@ enum {
     TEST_RGBTEXTURE,
     TEST_VBOELEMENTSRGB,
     TEST_POINTCLOUD,
+    TEST_SCENEGRAPH
 };
 static unsigned int width = 840;
 static unsigned int height = 480;
@@ -120,7 +122,8 @@ bool parseArgs(int argc, char *argv[])
                     std::cout << "   etctest:       ETC texture mapping test\n";
                     std::cout << "   rgbtest:       RGB texture mapping test\n";
                     std::cout << "   vboelementrgb: VBO rendering with elements and RGB texturing\n";
-                    std::cout << "   pointcloud     Point cloud rendering test\n";
+                    std::cout << "   pointcloud:    Point cloud rendering test\n";
+                    std::cout << "   scenegraph:    Simple scenegraph rendering test\n";
                     return false;
                 case OPT_TESTCASE:
                     if (i+1 == argc) break; // No params anymore
@@ -131,6 +134,7 @@ bool parseArgs(int argc, char *argv[])
                     else if (0 == strcmp(argv[i+1], "rgbtest")) testcase = TEST_RGBTEXTURE;
                     else if (0 == strcmp(argv[i+1], "vboelementrgb")) testcase = TEST_VBOELEMENTSRGB;
                     else if (0 == strcmp(argv[i+1], "pointcloud")) testcase = TEST_POINTCLOUD;
+                    else if (0 == strcmp(argv[i+1], "scenegraph")) testcase = TEST_SCENEGRAPH;
                     else
                     {
                         std::cout << "Unrecognized test case: " << argv[i+1] << "\n";
@@ -205,6 +209,9 @@ int main(int argc, char *argv[])
         break;
     case TEST_POINTCLOUD:
         bm = dynamic_cast<EGLX11Benchmark*>(new b07_PointCloud());
+        break;
+    case TEST_SCENEGRAPH:
+        bm = dynamic_cast<EGLX11Benchmark*>(new b08_Scenegraph());
         break;
     }
 

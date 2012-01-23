@@ -25,7 +25,8 @@ _OBJS=                            \
     b04_ETCTextureTest.o          \
     b05_RGBTextureTest.o          \
     b06_VBOElementsRGB.o          \
-    b07_PointCloud.o
+    b07_PointCloud.o              \
+    b08_Scenegraph.o
 
 ODIR=objs
 OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
@@ -43,7 +44,8 @@ HEADERS=                          \
     b04_ETCTextureTest.h          \
     b05_RGBTextureTest.h          \
     b06_VBOElementsRGB.h          \
-    b07_PointCloud.h
+    b07_PointCloud.h              \
+    b08_Scenegraph.h
 
 default: ${ODIR} all
 
