@@ -83,7 +83,7 @@ GLuint SimpleShader::getProgramObject(void)
  * ----------------------
  */
 
-void SimpleShader::printShaderInfo ( GLuint shader )
+bool SimpleShader::printShaderInfo ( GLuint shader )
 {
    GLint length;
 
@@ -101,9 +101,10 @@ void SimpleShader::printShaderInfo ( GLuint shader )
       if ( success != GL_TRUE )
       {
           DebugLog::Instance()->MESSAGE(4, "Error: Shader compilation failed\n");
-          return;
+          return false;
       }
    }
+   return true;
 }
 
 GLuint SimpleShader::loadShaderProgram ( const char *shader_source, GLenum type)
@@ -120,7 +121,10 @@ GLuint SimpleShader::loadShaderProgram ( const char *shader_source, GLenum type)
    GLWrapper::Instance()->GLSHADERSOURCE( shader , 1 , &shader_source , NULL );
    GLWrapper::Instance()->GLCOMPILESHADER( shader );
 
-   printShaderInfo ( shader );
+   if (false == printShaderInfo ( shader ))
+   {
+       return 0;
+   }
 
    return shader;
 }

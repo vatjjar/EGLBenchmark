@@ -41,7 +41,7 @@ private:
     GLuint createShaderProgram(const char *v_src, const char *f_src);
     GLuint loadShaderProgram(const char *shader_source, GLenum type);
     void linkShaderProgram(GLuint shaderProgram);
-    void printShaderInfo(GLuint shader);
+    bool printShaderInfo(GLuint shader);
 
     GLuint vertexShader;
     GLuint fragmentShader;
