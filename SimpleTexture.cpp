@@ -285,6 +285,8 @@ GLuint SimpleTexture::loadRGBTexturefromPNG(const char *filename)
     /*
      * GL texture generation part
      */
+    GLuint gl_errors = GLWrapper::Instance()->getGLErrors();
+
     GLWrapper::Instance()->GLGENTEXTURES(1, &textureID);
     GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID);
     GLWrapper::Instance()->GLPIXELSTOREI(GL_UNPACK_ALIGNMENT, 1);
@@ -294,7 +296,7 @@ GLuint SimpleTexture::loadRGBTexturefromPNG(const char *filename)
                  buffer);
 
     // At this point we might have errors already in the pipe, and if so, we'll cancel
-    if (GLWrapper::Instance()->getGLErrors() != 0)
+    if (GLWrapper::Instance()->getGLErrors() != gl_errors)
     {
         DebugLog::Instance()->MESSAGE(4, "Texture loading aborted due to errors in glTexImage2D()\n");
         GLWrapper::Instance()->GLDELETETEXTURES(1, &textureID);
