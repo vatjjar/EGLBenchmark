@@ -10,10 +10,7 @@
 
 #include "b08_Scenegraph.h"
 
-typedef struct
-{
-    GLfloat   m[4][4];
-} Matrix4x4;
+#include <math.h>
 
 /*************************************************************************************************
  * Constructor and destructor are dummy ones. Only descriptions are set, and other activities are
@@ -38,15 +35,16 @@ b08_Scenegraph::~b08_Scenegraph()
 bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
 {
     const char vertex_src[] =
-       "attribute vec4 a_Position;   \n"
-       "attribute vec2 a_Texcoord;   \n"
-       "varying vec2 v_Texcoord;     \n"
-       "uniform mat4 u_RotationMatrix\n"
-       "void main()                  \n"
-       "{                            \n"
+       "attribute vec4 a_Position;       \n"
+       "attribute vec2 a_Texcoord;       \n"
+       "varying   vec2 v_Texcoord;       \n"
+       "uniform   mat4 u_RotationMatrix; \n"
+       "void main()                      \n"
+       "{                                \n"
+       "   //gl_Position = a_Position; \n"
        "   gl_Position = u_RotationMatrix * a_Position; \n"
-       "   v_Texcoord = a_Texcoord;  \n"
-       "}                            \n";
+       "   v_Texcoord = a_Texcoord;      \n"
+       "}                                \n";
     const char fragment_src[] =
        "precision mediump float;                     \n"
        "varying vec2 v_Texcoord;                     \n"
@@ -68,8 +66,11 @@ bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool
     }
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "a_Position");
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 1, "a_Texcoord");
-    GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 3, "u_RotationMatrix");
+    //GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 3, "u_RotationMatrix");
     ss->linkProgram();
+    //a_position = GLWrapper::Instance()->GLATTRIBLOCATION(ss->getProgramObject(), "u_Position");
+    //a_texcoord = GLWrapper::Instance()->GLATTRIBLOCATION(ss->getProgramObject(), "u_Texcoord");
+    u_matrix = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "u_RotationMatrix");
 
     ssg = new SimpleScenegraph();
     if (false == ssg->fromFile("./scenegraph.txt"))
@@ -78,9 +79,35 @@ bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool
         return false;
     }
 
+    camera_x = 0.0f;
+    camera_y = 0.0f;
+    camera_z = 0.0f;
+
     GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
     GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     return true;
+}
+
+bool b08_Scenegraph::keyHandler(char text)
+{
+    switch (text)
+    {
+    case 033: /* ESC */
+        return true;
+    case 'w':
+        camera_z += 1.0f;
+        break;
+    case 's':
+        camera_z -= 1.0f;
+        break;
+    case 'a':
+        camera_x -= 1.0f;
+        break;
+    case 'd':
+        camera_x += 1.0f;
+        break;
+    }
+    return false;
 }
 
 /*
@@ -106,24 +133,24 @@ bool b08_Scenegraph::renderSingleFrame(float timedelta)
     Matrix4x4 result;
 
     // Generate a perspective matrix with a 60 degree FOV
-    _glMatrixLoadIdentity(&perspective);
-    _glPerspective(&perspective, 60.0f, w_Width/w_height, 1.0f, 20.0f);
-    _glTranslate(&perspective, 0, 0, -2);
+    _glLoadIdentity(&perspective);
+    _glPerspective(&perspective, 60.0f, w_width/w_height, 1.0f, 20.0f);
+    _glTranslate(&perspective, camera_x, camera_y, camera_z);
 
     // Generate a model view matrix to rotate/translate the cube
-    _glMatrixLoadIdentity( &modelview );
+    _glLoadIdentity( &modelview );
 
     // Translate away from the viewer
-    _glTranslate( &modelview, 0.0, 0.0, -2.0 );
+    _glTranslate( &modelview, 0.0, 0.0, 0.0f );
 
     // Compute the final MVP by multiplying the
-    // modevleiw and perspective matrices together
+    // modelview and perspective matrices together
     _glMatrixMultiply( &result, &modelview, &perspective );
 
     ss->bindProgram();
 
     // Load the MVP matrix
-    glUniformMatrix4fv( 3, 1, GL_FALSE, (GLfloat*) &result );
+    glUniformMatrix4fv( u_matrix, 1, GL_FALSE, (GLfloat*) &result );
 
     ssg->render();
     GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
@@ -173,8 +200,8 @@ void b08_Scenegraph::_glRotate(Matrix4x4 *result, GLfloat angle, GLfloat x, GLfl
    GLfloat sinAngle, cosAngle;
    GLfloat mag = sqrtf(x * x + y * y + z * z);
 
-   sinAngle = sinf ( angle * PI / 180.0f );
-   cosAngle = cosf ( angle * PI / 180.0f );
+   sinAngle = sinf ( angle * M_PI / 180.0f );
+   cosAngle = cosf ( angle * M_PI / 180.0f );
    if ( mag > 0.0f )
    {
       GLfloat xx, yy, zz, xy, yz, zx, xs, ys, zs;
@@ -216,7 +243,7 @@ void b08_Scenegraph::_glRotate(Matrix4x4 *result, GLfloat angle, GLfloat x, GLfl
       rotMat.m[3][2] = 0.0F;
       rotMat.m[3][3] = 1.0F;
 
-      Matrix4x4Multiply( result, &rotMat, result );
+      _glMatrixMultiply( result, &rotMat, result );
    }
 }
 
@@ -245,7 +272,7 @@ void b08_Scenegraph::_glFrustum(Matrix4x4 *result, float left, float right, floa
     frust.m[3][2] = -2.0f * nearZ * farZ / deltaZ;
     frust.m[3][0] = frust.m[3][1] = frust.m[3][3] = 0.0f;
 
-    Matrix4x4Multiply(result, &frust, result);
+    _glMatrixMultiply(result, &frust, result);
 }
 
 
@@ -253,10 +280,10 @@ void b08_Scenegraph::_glPerspective(Matrix4x4 *result, float fovy, float aspect,
 {
    GLfloat frustumW, frustumH;
 
-   frustumH = tanf( fovy / 360.0f * PI ) * nearZ;
+   frustumH = tanf( fovy / 360.0f * M_PI ) * nearZ;
    frustumW = frustumH * aspect;
 
-   esFrustum( result, -frustumW, frustumW, -frustumH, frustumH, nearZ, farZ );
+   _glFrustum( result, -frustumW, frustumW, -frustumH, frustumH, nearZ, farZ );
 }
 
 void b08_Scenegraph::_glOrtho(Matrix4x4 *result, float left, float right, float bottom, float top, float nearZ, float farZ)
@@ -269,7 +296,7 @@ void b08_Scenegraph::_glOrtho(Matrix4x4 *result, float left, float right, float 
     if ( (deltaX == 0.0f) || (deltaY == 0.0f) || (deltaZ == 0.0f) )
         return;
 
-    Matrix4x4LoadIdentity(&ortho);
+    _glLoadIdentity(&ortho);
     ortho.m[0][0] = 2.0f / deltaX;
     ortho.m[3][0] = -(right + left) / deltaX;
     ortho.m[1][1] = 2.0f / deltaY;
@@ -277,11 +304,11 @@ void b08_Scenegraph::_glOrtho(Matrix4x4 *result, float left, float right, float 
     ortho.m[2][2] = -2.0f / deltaZ;
     ortho.m[3][2] = -(nearZ + farZ) / deltaZ;
 
-    Matrix4x4Multiply(result, &ortho, result);
+    _glMatrixMultiply(result, &ortho, result);
 }
 
 
-void Matrix4x4Multiply(Matrix4x4 *result, Matrix4x4 *srcA, Matrix4x4 *srcB)
+void b08_Scenegraph::_glMatrixMultiply(Matrix4x4 *result, Matrix4x4 *srcA, Matrix4x4 *srcB)
 {
     Matrix4x4    tmp;
     int         i;
@@ -312,11 +339,19 @@ void Matrix4x4Multiply(Matrix4x4 *result, Matrix4x4 *srcA, Matrix4x4 *srcB)
 }
 
 
-void b08_Scenegraph::_glMatrixLoadIdentity(Matrix4x4 *result)
+void b08_Scenegraph::_glLoadIdentity(Matrix4x4 *result)
 {
     memset(result, 0x0, sizeof(Matrix4x4));
     result->m[0][0] = 1.0f;
     result->m[1][1] = 1.0f;
     result->m[2][2] = 1.0f;
     result->m[3][3] = 1.0f;
+}
+
+void b08_Scenegraph::_printMatrix(Matrix4x4 *result)
+{
+    for (int i=0; i<4; i++) std::cout << result->m[0][i] << " "; std::cout << "\n";
+    for (int i=0; i<4; i++) std::cout << result->m[1][i] << " "; std::cout << "\n";
+    for (int i=0; i<4; i++) std::cout << result->m[2][i] << " "; std::cout << "\n";
+    for (int i=0; i<4; i++) std::cout << result->m[3][i] << " "; std::cout << "\n";
 }
