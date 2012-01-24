@@ -57,6 +57,10 @@ public:
     virtual bool destroyBenchmark(void) = 0;
     virtual bool renderSingleFrame(float deltatime) = 0;
     virtual bool getRenderStatistics(RENDER_STATISTICS *rs) = 0;
+    virtual bool keyHandler(char text) {
+        if (text == 033) return true;  /* ESC */
+        return false;
+    }
 
     // Wraps for GL error fetching
     void flushGLErrors(void);

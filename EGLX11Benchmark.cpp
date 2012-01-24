@@ -81,6 +81,8 @@ bool EGLX11Benchmark::userInterrupt(void)
 {
     XEvent  xev;
     bool userinterrupt = false;
+    char text;
+    KeySym key;
 
     // Pump all messages from X server and interpret keypresses as user interrupts
     // No other intelligence here whatsoever
@@ -88,7 +90,14 @@ bool EGLX11Benchmark::userInterrupt(void)
     {
         XNextEvent( x_display, &xev );
         if ( xev.type == KeyPress )
-            userinterrupt = true;
+        {
+            if (XLookupString(&xev.xkey,&text,1,&key,0)==1)
+            {
+                userinterrupt = keyHandler(text);
+            }
+        }
+        if ( xev.type == DestroyNotify )
+            userinterrupt = GL_TRUE;
     }
     return userinterrupt;
 }
