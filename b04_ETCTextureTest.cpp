@@ -78,18 +78,10 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
         DebugLog::Instance()->MESSAGE(2, "Shader program object creation failed\n");
         return false;
     }
-#if 0
-    shaderProgram = createShaderProgram(vertex_src, fragment_src);
-    if (shaderProgram == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
-        return false;
-    }
-#endif
+
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "a_Position");
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 1, "a_Texcoord");
     ss->linkProgram();
-//    linkShaderProgram(shaderProgram);
 
     texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "s_texture");
 
