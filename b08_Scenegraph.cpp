@@ -61,6 +61,13 @@ bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "vPosition");
     ss->linkProgram();
 
+    ssg = new SimpleScenegraph();
+    if (false == ssg->fromFile("./scenegraph.txt"))
+    {
+        DebugLog::Instance()->MESSAGE(2, "Scenegraph loading failed from scenegraph.txt\n");
+        return false;
+    }
+
     GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
     GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     return true;
@@ -84,6 +91,7 @@ bool b08_Scenegraph::renderSingleFrame(float timedelta)
     GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
     ss->bindProgram();
+    ssg->render();
     GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
     return true;
 }

@@ -12,6 +12,7 @@
 #include "EGLX11Benchmark.h"
 
 #include "SimpleShader.h"
+#include "SimpleScenegraph.h"
 #include "DebugLog.h"
 
 class b08_Scenegraph : public EGLX11Benchmark
@@ -26,6 +27,7 @@ public:
     bool getRenderStatistics(RENDER_STATISTICS *rs);
 
 private:
+    SimpleScenegraph *ssg;
     SimpleShader *ss;
 };
 

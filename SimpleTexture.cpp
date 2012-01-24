@@ -51,7 +51,8 @@ bool SimpleTexture::fromFile(const char *filename)
     }
     else
     {
-        DebugLog::Instance()->MESSAGE(2, "File %s nto recognized. Abort!\n", filename);
+        DebugLog::Instance()->MESSAGE(2, "File %s not recognized. Abort!\n", filename);
+        DebugLog::Instance()->MESSAGE(2, "%c %c %c\n", filename[l-3], filename[l-2], filename[l-1]);
         return false;
     }
     return true;
