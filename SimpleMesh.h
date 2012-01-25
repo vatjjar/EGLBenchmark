@@ -16,6 +16,8 @@
 #include <string>
 
 #include "GLWrapper.h"
+#include "GLMath.h"
+#include "SimpleShader.h"
 
 // Class definition
 
@@ -28,6 +30,11 @@ public:
 public:
     /* File I/O */
     bool fromFiles(const char *filename);
+
+    /* Params */
+    void setShader(SimpleShader &shader);
+    void setLocation(GLfloat x, GLfloat y, GLfloat z);
+    void getModelview(Matrix4X4 *m);
 
     /* Rendering methods: */
     void renderAsIndexedElements(void);
@@ -58,6 +65,12 @@ private:
     GLfloat *a_normals;
     GLfloat *a_texcoords;
     GLshort *a_faces;
+
+    // Location (simple placeable component)
+    GLfloat loc_x, loc_y, loc_z;
+
+    // Attached shader object
+    SimpleShader &shader;
 
     // Array data (non-indexed, and generated runtime)
     GLfloat *a_array_vertices;

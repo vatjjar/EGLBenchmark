@@ -9,6 +9,7 @@
 #include "SimpleMesh.h"
 #include "GLWrapper.h"
 #include "DebugLog.h"
+#include "GLMath.h"
 
 #include <iostream>
 #include <fstream>
@@ -26,6 +27,10 @@ SimpleMesh::SimpleMesh() :
     a_normals(NULL),
     a_texcoords(NULL),
     a_faces(NULL),
+    loc_x(0),
+    loc_y(0),
+    loc_z(0),
+    shader(NULL),
     a_array_vertices(NULL),
     a_array_normals(NULL),
     a_array_texcoords(NULL),
@@ -90,8 +95,25 @@ bool SimpleMesh::fromFiles(const char *filename)
         return false;
     }
 
-
     return true;
+}
+
+void SimpleMesh::setShader(SimpleShader &s)
+{
+    shader = s;
+}
+
+void SimpleMesh::setLocation(GLfloat x, GLfloat y, GLfloat z)
+{
+    loc_x = x;
+    loc_y = y;
+    loc_z = z;
+}
+
+void SimpleMesh::getModelview(Matrix4X4 *m)
+{
+    GLMath::Instance()->_glLoadIdentity(m);
+    GLMath::Instance()->_glTranslate(m, loc_x, loc_y, loc_z);
 }
 
 /******************************************************************************
@@ -100,6 +122,13 @@ bool SimpleMesh::fromFiles(const char *filename)
 
 void SimpleMesh::renderAsIndexedElements(void)
 {
+    if (shader == NULL)
+    {
+        DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
+        return
+    }
+    shader->bindProgram();
+
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
     // 1: for texcoords
@@ -119,6 +148,13 @@ void SimpleMesh::renderAsIndexedElements(void)
 
 void SimpleMesh::renderAsIndexedElements_VBO(void)
 {
+    if (shader == NULL)
+    {
+        DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
+        return
+    }
+    shader->bindProgram();
+
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
     // 1: for texcoords
@@ -171,6 +207,13 @@ void SimpleMesh::renderAsIndexedElements_VBO(void)
 
 void SimpleMesh::renderAsArrays(void)
 {
+    if (shader == NULL)
+    {
+        DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
+        return
+    }
+    shader->bindProgram();
+
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
     // 1: for texcoords
@@ -190,6 +233,13 @@ void SimpleMesh::renderAsArrays(void)
 
 void SimpleMesh::renderAsArrays_VBO(void)
 {
+    if (shader == NULL)
+    {
+        DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
+        return
+    }
+    shader->bindProgram();
+
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
     // 1: for texcoords
