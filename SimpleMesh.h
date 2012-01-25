@@ -70,6 +70,9 @@ private:
     unsigned int r_texcoords;
     unsigned int r_faces;
     unsigned int r_batches;
+
+    // VBO Handles
+    GLuint VBOs[3];
 };
 
 #endif // SIMPLEMESH_H

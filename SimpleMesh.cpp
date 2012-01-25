@@ -34,6 +34,7 @@ SimpleMesh::SimpleMesh() :
     r_texcoords(0),
     r_batches(0)
 {
+    memset(VBOs, 0, sizeof(VBOs));
 }
 
 SimpleMesh::~SimpleMesh()
@@ -118,8 +119,6 @@ void SimpleMesh::renderAsIndexedElements(void)
 
 void SimpleMesh::renderAsIndexedElements_VBO(void)
 {
-    static GLuint VBOs[3] = { 0, 0, 0 };
-
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
     // 1: for texcoords
@@ -191,8 +190,6 @@ void SimpleMesh::renderAsArrays(void)
 
 void SimpleMesh::renderAsArrays_VBO(void)
 {
-    static GLuint VBOs[2] = { 0, 0 };
-
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
     // 1: for texcoords
