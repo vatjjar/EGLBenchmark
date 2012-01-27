@@ -209,12 +209,12 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
 
    DebugLog::Instance()->MESSAGE(3, "EGL: eglGetDisplay()\n");
    egl_display  =  eglGetDisplay( (EGLNativeDisplayType) x_display );
+   flushEGLErrors();
    if ( egl_display == EGL_NO_DISPLAY ) {
-       flushEGLErrors();
        DebugLog::Instance()->MESSAGE(1, "EGL: eglGetDisplay() failed!\n");
        return false;
    }
-   flushEGLErrors();
+
 
    DebugLog::Instance()->MESSAGE(3, "EGL: eglInitialize()\n");
    if ( !eglInitialize( egl_display, NULL, NULL ) ) {
@@ -234,29 +234,27 @@ bool EGLX11Benchmark::createEGLDisplay(int width, int height, bool fullscreen)
 
    DebugLog::Instance()->MESSAGE(3, "EGL: EGL configs available?\n");
    if ( num_config == 0 ) {
-       flushEGLErrors();
        DebugLog::Instance()->MESSAGE(1, "EGL: eglGetDisplay() no configs found!\n");
        return false;
    }
-   flushEGLErrors();
 
    DebugLog::Instance()->MESSAGE(3, "EGL: eglCreateWindowSurface()\n");
    egl_surface = eglCreateWindowSurface ( egl_display, ecfg, win, NULL );
+   flushEGLErrors();
    if ( egl_surface == EGL_NO_SURFACE ) {
-       flushEGLErrors();
        DebugLog::Instance()->MESSAGE(5, "EGL: eglCreateWindowSurface() failed!\n");
        return false;
    }
-   flushEGLErrors();
+
 
    DebugLog::Instance()->MESSAGE(3, "EGL: eglCreateContext()\n");
    egl_context = eglCreateContext ( egl_display, ecfg, EGL_NO_CONTEXT, ctxattr );
+   flushEGLErrors();
    if ( egl_context == EGL_NO_CONTEXT ) {
-       flushEGLErrors();
        DebugLog::Instance()->MESSAGE(1, "EGL: eglCreateContext() failed!\n");
        return false;
    }
-   flushEGLErrors();
+
 
    DebugLog::Instance()->MESSAGE(3, "EGL: eglMakeCurrent()\n");
    eglMakeCurrent( egl_display, egl_surface, egl_surface, egl_context );

@@ -28,6 +28,8 @@
 const EGLint attr[] = {       // some attributes to set up our egl-interface
    EGL_BUFFER_SIZE,     16,
    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+   EGL_ALPHA_SIZE,      8,
+   EGL_DEPTH_SIZE,      8,
    EGL_NONE
 };
 
