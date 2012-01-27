@@ -62,16 +62,22 @@ bool b08_Scenegraph::keyHandler(char text)
     case 033: /* ESC */
         return true;
     case 'w':
-        ssg->setCameraDelta(0.0f, 0.0f, 1.0f);
+        ssg->setCameraDelta(0.0f, 0.0f, 0.1f);
         break;
     case 's':
-        ssg->setCameraDelta(0.0f, 0.0f, -1.0f);
+        ssg->setCameraDelta(0.0f, 0.0f, -0.1f);
         break;
     case 'a':
-        ssg->setCameraDelta(1.0f, 0.0f, 0.0f);
+        ssg->setCameraDelta(0.1f, 0.0f, 0.0f);
         break;
     case 'd':
-        ssg->setCameraDelta(-1.0f, 0.0f, 0.0f);
+        ssg->setCameraDelta(-0.1f, 0.0f, 0.0f);
+        break;
+    case 'r':
+        ssg->setCameraDelta(0.0f, -0.1f, 0.0f);
+        break;
+    case 'f':
+        ssg->setCameraDelta(0.0f, 0.1f, 0.0f);
         break;
     }
     return false;

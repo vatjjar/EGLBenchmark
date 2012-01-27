@@ -54,6 +54,7 @@ void SimpleScenegraph::setCameraLocation(GLfloat x, GLfloat y, GLfloat z)
     camera_x = x;
     camera_y = y;
     camera_z = z;
+    DebugLog::Instance()->MESSAGE(4, "Camera reset location %f %f %f\n", camera_x, camera_y, camera_z);
 }
 
 void SimpleScenegraph::setCameraDelta(GLfloat x, GLfloat y, GLfloat z)
@@ -61,6 +62,7 @@ void SimpleScenegraph::setCameraDelta(GLfloat x, GLfloat y, GLfloat z)
     camera_x += x;
     camera_y += y;
     camera_z += z;
+    DebugLog::Instance()->MESSAGE(4, "Camera delta location %f %f %f\n", camera_x, camera_y, camera_z);
 }
 
 /******************************************************************************
@@ -107,7 +109,7 @@ bool SimpleScenegraph::fromFile(const char *filename)
             delete sm;
             return false;
         }
-        sm->setLocation((float)(rand()%16-8), 0.0f, (float)(rand()%16-8)); // artificial distribution of the meshes
+        sm->setLocation((float)(rand()%8-4), 0.0f, (float)(rand()%8-4)); // artificial distribution of the meshes
 
         v_sm.push_back(sm); // Finally push mesh entity into scenegraph stack.
 
