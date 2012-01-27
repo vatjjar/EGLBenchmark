@@ -63,6 +63,10 @@ public:
     void   GLCOMPILESHADER(GLuint shader);
     void   GLDELETEPROGRAM(GLuint program);
     void   GLDELETESHADER(GLuint shader);
+    void   GLENABLE(GLenum e);
+    void   GLDISABLE(GLenum e);
+    void   GLUNIFORMMATRIX4FV(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+    void   GLBLENDFUNC(GLenum sfactor, GLenum dfactor);
 
     // EGL Wrappers:
     void   EGLSWAPBUFFERS(EGLDisplay, EGLSurface egl_surface);

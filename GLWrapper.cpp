@@ -412,6 +412,35 @@ void GLWrapper::GLDELETESHADER(GLuint shader)
     flushGLErrors();
 }
 
+void GLWrapper::GLENABLE(GLenum e)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glEnable(%d)\n", e);
+    glEnable(e);
+    flushGLErrors();
+}
+
+void GLWrapper::GLDISABLE(GLenum e)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glDisable(%d)\n", e);
+    glDisable(e);
+    flushGLErrors();
+}
+
+void GLWrapper::GLUNIFORMMATRIX4FV(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+    DebugLog::Instance()->MESSAGE(5, "GL call: glUniformMatrix4fv(%d, %d, %d, %p)\n", location, count, transpose, value);
+    glUniformMatrix4fv(location, count, transpose, value);
+    flushGLErrors();
+}
+
+void GLWrapper::GLBLENDFUNC(GLenum sfactor, GLenum dfactor)
+{
+    DebugLog::Instance()->MESSAGE(4, "GL call: glBlendFunc(%d, %d)\n", sfactor, dfactor);
+    glBlendFunc(sfactor, dfactor);
+    flushGLErrors();
+}
+
+
 /******************************************************************************
  * EGL Wrappers
  */
