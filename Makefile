@@ -16,6 +16,7 @@ _OBJS=                            \
     EGLX11Benchmark.o             \
     DebugLog.o                    \
     GLWrapper.o                   \
+    GLMath.o                      \
     SimpleMesh.o                  \
     SimpleTexture.o               \
     SimpleShader.o                \
@@ -36,6 +37,7 @@ HEADERS=                          \
     EGLX11Benchmark.h             \
     DebugLog.h                    \
     GLWrapper.h                   \
+    GLMath.h                      \
     SimpleMesh.h                  \
     SimpleTexture.h               \
     SimpleShader.h                \

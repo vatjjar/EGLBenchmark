@@ -8,6 +8,11 @@
 
 #include "GLMath.h"
 
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+
 /******************************************************************************
  * Global static instance of the class
  */
@@ -35,7 +40,7 @@ GLMath::~ GLMath()
  * Public GLMath methods
  */
 
-void GLMath::_glScale(Matrix4x4 *result, GLfloat sx, GLfloat sy, GLfloat sz)
+void GLMath::_glScale(Matrix4X4 *result, GLfloat sx, GLfloat sy, GLfloat sz)
 {
     result->m[0][0] *= sx;
     result->m[0][1] *= sx;
@@ -53,7 +58,7 @@ void GLMath::_glScale(Matrix4x4 *result, GLfloat sx, GLfloat sy, GLfloat sz)
     result->m[2][3] *= sz;
 }
 
-void GLMath::_glTranslate(Matrix4x4 *result, GLfloat tx, GLfloat ty, GLfloat tz)
+void GLMath::_glTranslate(Matrix4X4 *result, GLfloat tx, GLfloat ty, GLfloat tz)
 {
     result->m[3][0] += (result->m[0][0] * tx + result->m[1][0] * ty + result->m[2][0] * tz);
     result->m[3][1] += (result->m[0][1] * tx + result->m[1][1] * ty + result->m[2][1] * tz);
@@ -61,7 +66,7 @@ void GLMath::_glTranslate(Matrix4x4 *result, GLfloat tx, GLfloat ty, GLfloat tz)
     result->m[3][3] += (result->m[0][3] * tx + result->m[1][3] * ty + result->m[2][3] * tz);
 }
 
-void GLMath::_glRotate(Matrix4x4 *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
+void GLMath::_glRotate(Matrix4X4 *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 {
    GLfloat sinAngle, cosAngle;
    GLfloat mag = sqrtf(x * x + y * y + z * z);
@@ -72,7 +77,7 @@ void GLMath::_glRotate(Matrix4x4 *result, GLfloat angle, GLfloat x, GLfloat y, G
    {
       GLfloat xx, yy, zz, xy, yz, zx, xs, ys, zs;
       GLfloat oneMinusCos;
-      Matrix4x4 rotMat;
+      Matrix4X4 rotMat;
 
       x /= mag;
       y /= mag;
@@ -113,12 +118,12 @@ void GLMath::_glRotate(Matrix4x4 *result, GLfloat angle, GLfloat x, GLfloat y, G
    }
 }
 
-void GLMath::_glFrustum(Matrix4x4 *result, float left, float right, float bottom, float top, float nearZ, float farZ)
+void GLMath::_glFrustum(Matrix4X4 *result, float left, float right, float bottom, float top, float nearZ, float farZ)
 {
     float       deltaX = right - left;
     float       deltaY = top - bottom;
     float       deltaZ = farZ - nearZ;
-    Matrix4x4    frust;
+    Matrix4X4    frust;
 
     if ( (nearZ <= 0.0f) || (farZ <= 0.0f) ||
          (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f) )
@@ -142,7 +147,7 @@ void GLMath::_glFrustum(Matrix4x4 *result, float left, float right, float bottom
 }
 
 
-void GLMath::_glPerspective(Matrix4x4 *result, float fovy, float aspect, float nearZ, float farZ)
+void GLMath::_glPerspective(Matrix4X4 *result, float fovy, float aspect, float nearZ, float farZ)
 {
    GLfloat frustumW, frustumH;
 
@@ -152,12 +157,12 @@ void GLMath::_glPerspective(Matrix4x4 *result, float fovy, float aspect, float n
    _glFrustum( result, -frustumW, frustumW, -frustumH, frustumH, nearZ, farZ );
 }
 
-void GLMath::_glOrtho(Matrix4x4 *result, float left, float right, float bottom, float top, float nearZ, float farZ)
+void GLMath::_glOrtho(Matrix4X4 *result, float left, float right, float bottom, float top, float nearZ, float farZ)
 {
     float       deltaX = right - left;
     float       deltaY = top - bottom;
     float       deltaZ = farZ - nearZ;
-    Matrix4x4    ortho;
+    Matrix4X4    ortho;
 
     if ( (deltaX == 0.0f) || (deltaY == 0.0f) || (deltaZ == 0.0f) )
         return;
@@ -174,9 +179,9 @@ void GLMath::_glOrtho(Matrix4x4 *result, float left, float right, float bottom, 
 }
 
 
-void GLMath::_glMatrixMultiply(Matrix4x4 *result, Matrix4x4 *srcA, Matrix4x4 *srcB)
+void GLMath::_glMatrixMultiply(Matrix4X4 *result, Matrix4X4 *srcA, Matrix4X4 *srcB)
 {
-    Matrix4x4    tmp;
+    Matrix4X4    tmp;
     int         i;
 
         for (i=0; i<4; i++)
@@ -201,20 +206,20 @@ void GLMath::_glMatrixMultiply(Matrix4x4 *result, Matrix4x4 *srcA, Matrix4x4 *sr
                                                 (srcA->m[i][2] * srcB->m[2][3]) +
                                                 (srcA->m[i][3] * srcB->m[3][3]) ;
         }
-    memcpy(result, &tmp, sizeof(Matrix4x4));
+    memcpy(result, &tmp, sizeof(Matrix4X4));
 }
 
 
-void GLMath::_glLoadIdentity(Matrix4x4 *result)
+void GLMath::_glLoadIdentity(Matrix4X4 *result)
 {
-    memset(result, 0x0, sizeof(Matrix4x4));
+    memset(result, 0x0, sizeof(Matrix4X4));
     result->m[0][0] = 1.0f;
     result->m[1][1] = 1.0f;
     result->m[2][2] = 1.0f;
     result->m[3][3] = 1.0f;
 }
 
-void GLMath::_printMatrix(Matrix4x4 *result)
+void GLMath::_printMatrix(Matrix4X4 *result)
 {
     for (int i=0; i<4; i++) std::cout << result->m[0][i] << " "; std::cout << "\n";
     for (int i=0; i<4; i++) std::cout << result->m[1][i] << " "; std::cout << "\n";
