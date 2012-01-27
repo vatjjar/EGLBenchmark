@@ -40,7 +40,7 @@ bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool
     }
 
     ssg = new SimpleScenegraph();
-    if (false == ssg->initScenegraph(w_width, w_height)
+    if (false == ssg->initScenegraph(w_width, w_height))
     {
         DebugLog::Instance()->MESSAGE(2, "Scenegraph initialization failed!");
         return false;
@@ -93,9 +93,7 @@ bool b08_Scenegraph::destroyBenchmark(void)
 bool b08_Scenegraph::renderSingleFrame(float timedelta)
 {
     ssg->render();
-
     GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
-
     return true;
 }
 

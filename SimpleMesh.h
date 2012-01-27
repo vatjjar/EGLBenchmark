@@ -18,6 +18,7 @@
 #include "GLWrapper.h"
 #include "GLMath.h"
 #include "SimpleShader.h"
+#include "SimpleTexture.h"
 
 // Class definition
 
@@ -32,9 +33,13 @@ public:
     bool fromFiles(const char *filename);
 
     /* Params */
-    void setShader(SimpleShader &shader);
+    bool attachDefaultShader(void);
+    bool attachDefaultTexture(const char *);
+    void bindShader(void);
     void setLocation(GLfloat x, GLfloat y, GLfloat z);
+
     void getModelview(Matrix4X4 *m);
+    void applyModelview(Matrix4X4 *m);
 
     /* Rendering methods: */
     void renderAsIndexedElements(void);
@@ -69,8 +74,10 @@ private:
     // Location (simple placeable component)
     GLfloat loc_x, loc_y, loc_z;
 
-    // Attached shader object
-    SimpleShader &shader;
+    // Attached shader and texture objects
+    SimpleShader * shader;
+    SimpleTexture * texture;
+    GLuint u_matrix;
 
     // Array data (non-indexed, and generated runtime)
     GLfloat *a_array_vertices;

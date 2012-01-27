@@ -7,6 +7,8 @@
  */
 
 #include "SimpleMesh.h"
+#include "SimpleTexture.h"
+#include "SimpleShader.h"
 #include "GLWrapper.h"
 #include "DebugLog.h"
 #include "GLMath.h"
@@ -98,9 +100,53 @@ bool SimpleMesh::fromFiles(const char *filename)
     return true;
 }
 
-void SimpleMesh::setShader(SimpleShader &s)
+bool SimpleMesh::attachDefaultShader(void)
 {
-    shader = s;
+    const char vertex_src[] =
+       "attribute vec4 a_Position;       \n"
+       "attribute vec2 a_Texcoord;       \n"
+       "varying   vec2 v_Texcoord;       \n"
+       "uniform   mat4 u_RotationMatrix; \n"
+       "void main()                      \n"
+       "{                                \n"
+       "   gl_Position = u_RotationMatrix * a_Position; \n"
+       "   v_Texcoord = a_Texcoord;      \n"
+       "}                                \n";
+    const char fragment_src[] =
+       "precision mediump float;                     \n"
+       "varying vec2 v_Texcoord;                     \n"
+       "uniform sampler2D s_texture;                 \n"
+       "void main()                                  \n"
+       "{                                            \n"
+       "  gl_FragColor = texture2D(s_texture, v_Texcoord);\n"
+       "}                                            \n";
+
+    shader = new SimpleShader();
+    if (false == shader->fromFiles(vertex_src, fragment_src))
+    {
+        DebugLog::Instance()->MESSAGE(2, "Shader program object creation failed\n");
+        return false;
+    }
+    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shader->getProgramObject(), 0, "a_Position");
+    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shader->getProgramObject(), 1, "a_Texcoord");
+    //GLWrapper::Instance()->GLBINDATTRIBLOCATION(shader->getProgramObject(), 3, "u_RotationMatrix");
+    shader->linkProgram();
+    //a_position = GLWrapper::Instance()->GLATTRIBLOCATION(shader->getProgramObject(), "u_Position");
+    //a_texcoord = GLWrapper::Instance()->GLATTRIBLOCATION(shader->getProgramObject(), "u_Texcoord");
+    u_matrix = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shader->getProgramObject(), "u_RotationMatrix");
+
+    return true;
+}
+
+bool SimpleMesh::attachDefaultTexture(const char *filename)
+{
+    texture = new SimpleTexture();
+    if (false == texture->fromFile(filename))
+    {
+        DebugLog::Instance()->MESSAGE(4, "Texture loading of %s failed\n", filename);
+        return false;
+    }
+    return true;
 }
 
 void SimpleMesh::setLocation(GLfloat x, GLfloat y, GLfloat z)
@@ -113,7 +159,13 @@ void SimpleMesh::setLocation(GLfloat x, GLfloat y, GLfloat z)
 void SimpleMesh::getModelview(Matrix4X4 *m)
 {
     GLMath::Instance()->_glLoadIdentity(m);
+    //GLMath::Instance()->_glScale(m, 0.1f, 0.1f, 0.1f);
     GLMath::Instance()->_glTranslate(m, loc_x, loc_y, loc_z);
+}
+
+void SimpleMesh::applyModelview(Matrix4X4 *m)
+{
+    GLWrapper::Instance()->GLUNIFORMMATRIX4FV(u_matrix, 1, GL_FALSE, (GLfloat*) m);
 }
 
 /******************************************************************************
@@ -125,9 +177,10 @@ void SimpleMesh::renderAsIndexedElements(void)
     if (shader == NULL)
     {
         DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
-        return
+        return;
     }
     shader->bindProgram();
+    if (texture != NULL) texture->bind();
 
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
@@ -151,9 +204,10 @@ void SimpleMesh::renderAsIndexedElements_VBO(void)
     if (shader == NULL)
     {
         DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
-        return
+        return;
     }
     shader->bindProgram();
+    if (texture != NULL) texture->bind();
 
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
@@ -210,9 +264,10 @@ void SimpleMesh::renderAsArrays(void)
     if (shader == NULL)
     {
         DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
-        return
+        return;
     }
     shader->bindProgram();
+    if (texture != NULL) texture->bind();
 
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
@@ -236,9 +291,10 @@ void SimpleMesh::renderAsArrays_VBO(void)
     if (shader == NULL)
     {
         DebugLog::Instance()->MESSAGE(5, "No shader set for the mesh. Render skipped\n");
-        return
+        return;
     }
     shader->bindProgram();
+    if (texture != NULL) texture->bind();
 
     // Assumption is that Vertex attrib array are ordered as follows:
     // 0: for vertices
@@ -326,11 +382,9 @@ void SimpleMesh::resetRenderingStatistics(void)
     r_batches = 0;
 }
 
-
 /******************************************************************************
  * Private:
  */
-
 
 bool SimpleMesh::createArrayData(void)
 {
@@ -399,7 +453,7 @@ bool SimpleMesh::fromFileToFloatVector(const char *filename, GLuint *n_elements,
 {
     FILE *f;
     char linebuffer[16];
-    GLfloat *elements = new GLfloat[20480];
+    GLfloat *elements = new GLfloat[50000];
     unsigned int i;
 
     DebugLog::Instance()->MESSAGE(4, "SimpleMesh: trying to open file: %s\n", filename);
@@ -416,7 +470,7 @@ bool SimpleMesh::fromFileToFloatVector(const char *filename, GLuint *n_elements,
         elements[i] = atof(linebuffer);
         DebugLog::Instance()->MESSAGE(5, "Read %d item from file: %f\n", i, elements[i]);
         i++;
-        if (i>=20480) return false; // Guard
+        if (i>=50000) return false; // Guard
     }
     *a_elements = elements;
     *n_elements = i;
@@ -427,7 +481,7 @@ bool SimpleMesh::fromFileToShortVector(const char *filename, GLuint *n_elements,
 {
     FILE *f;
     char linebuffer[16];
-    GLshort *elements = new GLshort[20480];
+    GLshort *elements = new GLshort[50000];
     unsigned int i;
 
     DebugLog::Instance()->MESSAGE(4, "SimpleMesh: trying to open file: %s\n", filename);
@@ -444,7 +498,7 @@ bool SimpleMesh::fromFileToShortVector(const char *filename, GLuint *n_elements,
         elements[i] = atoi(linebuffer);
         DebugLog::Instance()->MESSAGE(5, "Read %d item from file: %d\n", i, elements[i]);
         i++;
-        if (i>=20480) return false; // Guard
+        if (i>=50000) return false; // Guard
     }
     *a_elements = elements;
     *n_elements = i;

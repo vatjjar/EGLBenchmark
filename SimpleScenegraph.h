@@ -30,7 +30,7 @@ public:
     ~SimpleScenegraph();
 
 public:
-    bool initScenegraph(void);
+    bool initScenegraph(unsigned int w, unsigned int h);
     void setCameraLocation(GLfloat x, GLfloat y, GLfloat z);
     void setCameraDelta(GLfloat x, GLfloat y, GLfloat z);
 
@@ -43,10 +43,9 @@ protected:
 private:
     SimpleShader *ss;
     std::vector <SimpleMesh *> v_sm;
-    std::vector <SimpleTexture *> v_st;
+    //std::vector <SimpleTexture *> v_st;
 
     // Matrix uniform and camera coords
-    GLuint u_matrix;
     GLfloat camera_x, camera_y, camera_z;
     unsigned int w_width, w_height;
 };
