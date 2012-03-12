@@ -67,7 +67,6 @@ static const float vertexArray[] = {
  */
 
 b02_SimpleGLShading::b02_SimpleGLShading() :
-    renderedFrames(0),
     phase(0),
     phase_loc(0),
     offset_loc(0),
@@ -86,13 +85,8 @@ b02_SimpleGLShading::~b02_SimpleGLShading()
  * false must be returned to indicate core benchmark not to continue execution. Parent class MESSAGE()
  * method can be used to output information about the initialization
  */
-bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b02_SimpleGLShading::initBenchmark(void)
 {
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
-
     ss = new SimpleShader();
     if (false == ss->fromFiles(vertex_src, fragment_src))
     {
@@ -101,28 +95,22 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
     }
     ss->linkProgram();
 
-#if 0
-    shaderProgram = createShaderProgram(vertex_src, fragment_src);
-    if (shaderProgram == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Shader program object creation failed\n");
-    }
-    linkShaderProgram(shaderProgram);
-#endif
     position_loc  = GLWrapper::Instance()->GLGETATTRIBLOCATION(ss->getProgramObject(), "position");
     phase_loc     = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "phase"   );
     offset_loc    = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "offset"  );
 
-    if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 ) {
+    if ( position_loc < 0  ||  phase_loc < 0  ||  offset_loc < 0 )
+    {
        DebugLog::Instance()->MESSAGE(1, "Error: Unable to get uniform location\n");
        return false;
     }
 
-    GLWrapper::Instance()->GLVIEWPORT ( 0, 0, w_width, w_height );
+    GLWrapper::Instance()->GLVIEWPORT (0, 0, display->getDisplayWidth(), display->getDisplayHeight());
     GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
 
     // If we have errors in GL pipe, then abort.
-    if (getGLErrors() > 0) return false;
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
+
     return true;
 }
 
@@ -132,10 +120,8 @@ bool b02_SimpleGLShading::initBenchmark(unsigned int width, unsigned int height,
  */
 bool b02_SimpleGLShading::destroyBenchmark(void)
 {
-    destroyEGLDisplay();
     return true;
 }
-
 
 void b02_SimpleGLShading::Render(void)
 {
@@ -150,7 +136,8 @@ void b02_SimpleGLShading::Render(void)
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY ( position_loc );
     GLWrapper::Instance()->GLDRAWARRAYS ( GL_TRIANGLE_STRIP, 0, 5 );
 
-    GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
 }
 
 /*

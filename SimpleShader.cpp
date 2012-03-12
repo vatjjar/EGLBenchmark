@@ -74,11 +74,6 @@ GLuint SimpleShader::getProgramObject(void)
  */
 
 /*
- * File I/O helper
- * ---------------
- */
-
-/*
  * Shader program helpers
  * ----------------------
  */

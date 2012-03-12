@@ -34,7 +34,15 @@ public:
 
     /* Params */
     bool attachDefaultShader(void);
+    bool attachCustomShader(SimpleShader *);
     bool attachDefaultTexture(const char *);
+    bool attachCustomTexture(SimpleTexture *);
+
+    bool attachVertexData(GLuint num, GLfloat *d);
+    bool attachNormalData(GLuint num, GLfloat *d);
+    bool attachTexcoordData(GLuint num, GLfloat *d);
+    bool attachFaceData(GLuint num, GLushort *d);
+
     void bindShader(void);
     void setLocation(GLfloat x, GLfloat y, GLfloat z);
 
@@ -59,7 +67,7 @@ protected:
 
 private:
     bool fromFileToFloatVector(const char *filename, GLuint *n_elements, GLfloat **a_elements);
-    bool fromFileToShortVector(const char *filename, GLuint *n_elements, GLshort **a_elements);
+    bool fromFileToShortVector(const char *filename, GLuint *n_elements, GLushort **a_elements);
     bool createArrayData(void);
 
     GLuint n_vertices;
@@ -69,7 +77,7 @@ private:
     GLfloat *a_vertices;
     GLfloat *a_normals;
     GLfloat *a_texcoords;
-    GLshort *a_faces;
+    GLushort *a_faces;
 
     // Location (simple placeable component)
     GLfloat loc_x, loc_y, loc_z;
@@ -78,6 +86,8 @@ private:
     SimpleShader * shader;
     SimpleTexture * texture;
     GLuint u_matrix;
+
+    //SimpleShader & l;
 
     // Array data (non-indexed, and generated runtime)
     GLfloat *a_array_vertices;

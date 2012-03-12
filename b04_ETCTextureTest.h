@@ -20,7 +20,7 @@ public:
     b04_ETCTextureTest();
     ~b04_ETCTextureTest();
 
-    bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
+    bool initBenchmark(void);
     bool destroyBenchmark(void);
     bool renderSingleFrame(float deltatime);
     bool getRenderStatistics(RENDER_STATISTICS *rs);

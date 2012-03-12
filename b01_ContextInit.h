@@ -17,7 +17,7 @@ public:
     b01_ContextInit();
     ~b01_ContextInit();
 
-    bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
+    bool initBenchmark(void);
     bool destroyBenchmark(void);
     bool renderSingleFrame(float deltatime);
     bool getRenderStatistics(RENDER_STATISTICS *rs);

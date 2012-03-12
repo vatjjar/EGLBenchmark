@@ -36,7 +36,7 @@ b06_VBOElementsRGB::~b06_VBOElementsRGB()
  * false must be returned to indicate core benchmark not to continue execution. DebugLog::Instance()->MESSAGE()
  * method can be used to output information about the initialization
  */
-bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b06_VBOElementsRGB::initBenchmark(void)
 {
     const char vertex_src[] =
        "attribute vec4 a_Position;   \n"
@@ -57,34 +57,8 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
        "}                                            \n";
 
     /*
-     * Display and context init
-     */
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
-
-    /*
-     * Shader program init:
-     */
-#if 0
-    shaderProgram = createShaderProgram(vertex_src, fragment_src);
-    if (shaderProgram == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
-        return false;
-    }
-#endif
-//    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 0, "a_Position");
-//    GLWrapper::Instance()->GLBINDATTRIBLOCATION(shaderProgram, 1, "a_Texcoord");
-//    linkShaderProgram(shaderProgram);
-
-//    texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(shaderProgram, "s_texture");
-
-    /*
      * Texture and mesh loading for the test case:
      */
-
     for (int i=0; i<TESTOBJECTS; i++)
     {
         // Generate meshes
@@ -96,11 +70,7 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
         }
 
         // Generate textures
-#if 0 //defined(GL_ETC1_RGB8_OES)
-        const char * filename = "resources/etctexture.pkm";
-#else
         const char * filename = "resources/pngRGB.png";
-#endif
         st[i] = new SimpleTexture();
         if (false == st[i]->fromFile(filename))
         {
@@ -119,10 +89,13 @@ bool b06_VBOElementsRGB::initBenchmark(unsigned int width, unsigned int height, 
         GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss[i]->getProgramObject(), 1, "a_Texcoord");
         ss[i]->linkProgram();
         texturesampler[i] = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss[i]->getProgramObject(), "s_texture");
-
     }
 
     GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // If we have errors in GL pipe, then abort.
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
+
     return true;
 }
 
@@ -138,22 +111,19 @@ bool b06_VBOElementsRGB::destroyBenchmark(void)
         delete st[i];
         delete ss[i];
     }
-    destroyEGLDisplay();
     return true;
 }
 
 
 void b06_VBOElementsRGB::Render(void)
 {
-    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, display->getDisplayWidth(), display->getDisplayHeight());
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-//    GLWrapper::Instance()->GLUSEPROGRAM(shaderPr);
 
     for (int i=0; i<TESTOBJECTS; i++)
     {
         GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
         st[i]->bind();
-        //GLWrapper::Instance()->GLBINDTEXTURE(GL_TEXTURE_2D, textureID[i]);
         GLWrapper::Instance()->GLUNIFORM1I(texturesampler[i], 0);
 
         ss[i]->bindProgram();
@@ -164,7 +134,8 @@ void b06_VBOElementsRGB::Render(void)
         sm[i]->renderAsArrays_VBO();
     }
 
-    GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
 }
 
 

@@ -34,7 +34,7 @@ b05_RGBTextureTest::~b05_RGBTextureTest()
  * false must be returned to indicate core benchmark not to continue execution. DebugLog::Instance()->MESSAGE()
  * method can be used to output information about the initialization
  */
-bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b05_RGBTextureTest::initBenchmark(void)
 {
     const char *texturefilename = "./resources/pngRGB.png";
     const char vertex_src[] =
@@ -56,14 +56,6 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
        "}                                            \n";
 
     /*
-     * Display and context init
-     */
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
-
-    /*
      * Shader program init:
      */
     ss = new SimpleShader();
@@ -72,18 +64,10 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
         DebugLog::Instance()->MESSAGE(2, "Shader program object creation failed\n");
         return false;
     }
-#if 0
-    shaderProgram = createShaderProgram(vertex_src, fragment_src);
-    if (shaderProgram == 0)
-    {
-        DebugLog::Instance()->MESSAGE(1, "Error: Shader program creation failed\n");
-        return false;
-    }
-#endif
+
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "a_Position");
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 1, "a_Texcoord");
     ss->linkProgram();
-//    linkShaderProgram(shaderProgram);
 
     texturesampler = GLWrapper::Instance()->GLGETUNIFORMLOCATION(ss->getProgramObject(), "s_texture");
 
@@ -97,8 +81,11 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
         return false;
     }
 
-
     GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // If we have errors in GL pipe, then abort.
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
+
     return true;
 }
 
@@ -108,7 +95,6 @@ bool b05_RGBTextureTest::initBenchmark(unsigned int width, unsigned int height, 
  */
 bool b05_RGBTextureTest::destroyBenchmark(void)
 {
-    destroyEGLDisplay();
     return true;
 }
 
@@ -129,9 +115,8 @@ static GLfloat vTexcoord[] = { 0.0f, 0.0f,
 
 void b05_RGBTextureTest::Render(void)
 {
-    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, display->getDisplayWidth(), display->getDisplayHeight());
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-//  GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
 
     GLWrapper::Instance()->GLACTIVETEXTURE(GL_TEXTURE0);
     st->bind();
@@ -143,7 +128,8 @@ void b05_RGBTextureTest::Render(void)
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(1);
     GLWrapper::Instance()->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
 
-    GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
 }
 
 

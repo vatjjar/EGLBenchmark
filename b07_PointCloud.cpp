@@ -170,7 +170,7 @@ static Pointcloud *p;
  * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
  * method can be used to output information about the initialization
  */
-bool b07_PointCloud::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b07_PointCloud::initBenchmark(void)
 {
     const char vertex_src[] =
        "attribute vec4 vPosition;    \n"
@@ -186,11 +186,6 @@ bool b07_PointCloud::initBenchmark(unsigned int width, unsigned int height, bool
        "  gl_FragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );\n"
        "}                                            \n";
 
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
-
     ss = new SimpleShader();
     if (false == ss->fromFiles(vertex_src, fragment_src))
     {
@@ -205,7 +200,10 @@ bool b07_PointCloud::initBenchmark(unsigned int width, unsigned int height, bool
     p->generate();
 
     GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
-    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+
+    // If we have errors in GL pipe, then abort.
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
+
     return true;
 }
 
@@ -216,7 +214,6 @@ bool b07_PointCloud::initBenchmark(unsigned int width, unsigned int height, bool
 bool b07_PointCloud::destroyBenchmark(void)
 {
     delete p;
-    destroyEGLDisplay();
     return true;
 }
 
@@ -225,11 +222,13 @@ bool b07_PointCloud::destroyBenchmark(void)
  */
 bool b07_PointCloud::renderSingleFrame(float timedelta)
 {
-    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, display->getDisplayWidth(), display->getDisplayHeight());
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
     ss->bindProgram();
     p->render();
-    GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
     return true;
 }
 

@@ -28,11 +28,11 @@ public:
 public:
     /* File I/O */
     bool fromFile(const char *filename);
+    unsigned char * readBinaryFile(const char *filename, unsigned int & length);
     void bind(void);
     void destroy(void);
 
 protected:
-    unsigned char * readBinaryFile(const char *filename, unsigned int & length);
     GLuint loadETCTextureFromFile(const char *filename);
     GLuint loadRGBTexturefromPNG(const char *filename);
 

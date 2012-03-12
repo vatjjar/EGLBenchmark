@@ -22,7 +22,7 @@ public:
     b08_Scenegraph();
     ~b08_Scenegraph();
 
-    bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
+    bool initBenchmark(void);
     bool destroyBenchmark(void);
     bool renderSingleFrame(float deltatime);
     bool getRenderStatistics(RENDER_STATISTICS *rs);

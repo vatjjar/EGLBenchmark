@@ -138,6 +138,13 @@ bool SimpleMesh::attachDefaultShader(void)
     return true;
 }
 
+bool SimpleMesh::attachCustomShader(SimpleShader * s)
+{
+    DebugLog::Instance()->MESSAGE(2, "Attaching custom shader to SimpleMesh\n");
+    shader = s;
+    return true;
+}
+
 bool SimpleMesh::attachDefaultTexture(const char *filename)
 {
     texture = new SimpleTexture();
@@ -146,6 +153,36 @@ bool SimpleMesh::attachDefaultTexture(const char *filename)
         DebugLog::Instance()->MESSAGE(4, "Texture loading of %s failed\n", filename);
         return false;
     }
+    return true;
+}
+
+bool SimpleMesh::attachCustomTexture(SimpleTexture *st)
+{
+    return false;
+}
+
+bool SimpleMesh::attachVertexData(GLuint num, GLfloat *d)
+{
+    DebugLog::Instance()->MESSAGE(1, "%d %d\n", n_vertices, num);
+    n_vertices = num;
+    a_vertices = d;
+    return true;
+}
+
+bool SimpleMesh::attachNormalData(GLuint num, GLfloat *d)
+{
+    return false;
+}
+
+bool SimpleMesh::attachTexcoordData(GLuint num, GLfloat *d)
+{
+    return false;
+}
+
+bool SimpleMesh::attachFaceData(GLuint num, GLushort *d)
+{
+    n_faces = num;
+    a_faces = d;
     return true;
 }
 
@@ -160,6 +197,7 @@ void SimpleMesh::getModelview(Matrix4X4 *m)
 {
     GLMath::Instance()->_glLoadIdentity(m);
     //GLMath::Instance()->_glScale(m, 0.1f, 0.1f, 0.1f);
+    GLMath::Instance()->_glRotate(m, 180.0, 0.0f, 0.0f, 1.0f);
     GLMath::Instance()->_glTranslate(m, loc_x, loc_y, loc_z);
 }
 
@@ -229,7 +267,7 @@ void SimpleMesh::renderAsIndexedElements_VBO(void)
         GLWrapper::Instance()->GLBUFFERDATA(GL_ARRAY_BUFFER, n_texcoords*2*sizeof(GLfloat), a_texcoords, GL_STATIC_DRAW);
 
         GLWrapper::Instance()->GLBINDBUFFER(GL_ELEMENT_ARRAY_BUFFER, VBOs[2]);
-        GLWrapper::Instance()->GLBUFFERDATA(GL_ELEMENT_ARRAY_BUFFER, n_faces*3*sizeof(GLshort), a_faces, GL_STATIC_DRAW);
+        GLWrapper::Instance()->GLBUFFERDATA(GL_ELEMENT_ARRAY_BUFFER, n_faces*3*sizeof(GLushort), a_faces, GL_STATIC_DRAW);
 
         // At this point it should be safe to delete original data, since it is in GPU mem
     }
@@ -477,11 +515,11 @@ bool SimpleMesh::fromFileToFloatVector(const char *filename, GLuint *n_elements,
     return true;
 }
 
-bool SimpleMesh::fromFileToShortVector(const char *filename, GLuint *n_elements, GLshort **a_elements)
+bool SimpleMesh::fromFileToShortVector(const char *filename, GLuint *n_elements, GLushort **a_elements)
 {
     FILE *f;
     char linebuffer[16];
-    GLshort *elements = new GLshort[50000];
+    GLushort *elements = new GLushort[50000];
     unsigned int i;
 
     DebugLog::Instance()->MESSAGE(4, "SimpleMesh: trying to open file: %s\n", filename);

@@ -20,7 +20,7 @@ public:
     b05_RGBTextureTest();
     ~b05_RGBTextureTest();
 
-    bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
+    bool initBenchmark();
     bool destroyBenchmark(void);
     bool renderSingleFrame(float deltatime);
     bool getRenderStatistics(RENDER_STATISTICS *rs);

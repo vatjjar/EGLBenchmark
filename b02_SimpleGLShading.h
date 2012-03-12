@@ -20,7 +20,7 @@ public:
     ~b02_SimpleGLShading();
 
 public:
-    bool initBenchmark(unsigned int width, unsigned int height, bool fullscreen);
+    bool initBenchmark(void);
     bool destroyBenchmark(void);
     bool renderSingleFrame(float deltatime);
     bool getRenderStatistics(RENDER_STATISTICS *rs);
@@ -30,8 +30,8 @@ private:
     void Render(void);
 
     // Test case specific variables
-    unsigned int renderedFrames;
-    float totaltime;
+//    unsigned int renderedFrames;
+//    float totaltime;
 
     // Variables for the animation in this test case
     float phase;

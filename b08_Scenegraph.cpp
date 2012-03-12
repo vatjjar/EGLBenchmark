@@ -32,15 +32,10 @@ b08_Scenegraph::~b08_Scenegraph()
  * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
  * method can be used to output information about the initialization
  */
-bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b08_Scenegraph::initBenchmark(void)
 {
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
-
     ssg = new SimpleScenegraph();
-    if (false == ssg->initScenegraph(w_width, w_height))
+    if (false == ssg->initScenegraph(display->getDisplayWidth(), display->getDisplayHeight()))
     {
         DebugLog::Instance()->MESSAGE(2, "Scenegraph initialization failed!");
         return false;
@@ -50,7 +45,10 @@ bool b08_Scenegraph::initBenchmark(unsigned int width, unsigned int height, bool
         DebugLog::Instance()->MESSAGE(2, "Scenegraph loading failed from scenegraph.txt\n");
         return false;
     }
-    ssg->setCameraLocation(0.0f, 0.0f, 0.0f);
+    ssg->setCameraLocation(0.0f, 0.5f, 0.0f);
+
+    // If we have errors in GL pipe, then abort.
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
 
     return true;
 }
@@ -89,7 +87,6 @@ bool b08_Scenegraph::keyHandler(char text)
  */
 bool b08_Scenegraph::destroyBenchmark(void)
 {
-    destroyEGLDisplay();
     return true;
 }
 
@@ -99,7 +96,11 @@ bool b08_Scenegraph::destroyBenchmark(void)
 bool b08_Scenegraph::renderSingleFrame(float timedelta)
 {
     ssg->render();
-    GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
+
+    ssg->setCameraDelta(0.0f, 0.0f, -0.1f*timedelta);
     return true;
 }
 

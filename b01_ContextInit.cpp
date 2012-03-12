@@ -30,15 +30,10 @@ b01_ContextInit::~b01_ContextInit()
 
 /*
  * initBenchmark() shall initialize all required resources for this test case. If initialization fails,
- * false must be returned to indicate core benchmark not to continue execution. Parent class outputMessage()
- * method can be used to output information about the initialization
+ * false must be returned to indicate core benchmark not to continue execution.
  */
-bool b01_ContextInit::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b01_ContextInit::initBenchmark()
 {
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
     GLWrapper::Instance()->GLCLEARCOLOR(0, 0, 0, 0);
     return true;
 }
@@ -49,7 +44,6 @@ bool b01_ContextInit::initBenchmark(unsigned int width, unsigned int height, boo
  */
 bool b01_ContextInit::destroyBenchmark(void)
 {
-    destroyEGLDisplay();
     return true;
 }
 
@@ -59,10 +53,9 @@ bool b01_ContextInit::destroyBenchmark(void)
 bool b01_ContextInit::renderSingleFrame(float timedelta)
 {
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-    GLWrapper::Instance()->EGLSWAPBUFFERS ( egl_display, egl_surface );  // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());  // get the rendered buffer to the screen
     return true;
 }
-
 
 /*
  * getRenderStatistics()

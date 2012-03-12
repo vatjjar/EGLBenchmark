@@ -35,7 +35,7 @@ b03_SimpleTriangle::~b03_SimpleTriangle()
  * false must be returned to indicate core benchmark not to continue execution. DebugLog::Instance()->MESSAGE()
  * method can be used to output information about the initialization
  */
-bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b03_SimpleTriangle::initBenchmark(void)
 {
     const char vertex_src[] =
        "attribute vec4 vPosition;    \n"
@@ -51,9 +51,6 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
        "  gl_FragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );\n"
        "}                                            \n";
 
-    if (false == createEGLDisplay(width, height, fullscreen))
-        return false;
-
     ss = new SimpleShader();
     if (false == ss->fromFiles(vertex_src, fragment_src))
     {
@@ -62,6 +59,9 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
     }
     GLWrapper::Instance()->GLBINDATTRIBLOCATION(ss->getProgramObject(), 0, "vPosition");
     ss->linkProgram();
+
+    // If we have errors in GL pipe, then abort.
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
 
     return true;
 }
@@ -72,7 +72,6 @@ bool b03_SimpleTriangle::initBenchmark(unsigned int width, unsigned int height, 
  */
 bool b03_SimpleTriangle::destroyBenchmark(void)
 {
-    destroyEGLDisplay();
     return true;
 }
 
@@ -83,15 +82,15 @@ static GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f,
 
 void b03_SimpleTriangle::Render(void)
 {
-    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, display->getDisplayWidth(), display->getDisplayHeight());
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
     GLWrapper::Instance()->GLDRAWARRAYS(GL_TRIANGLES, 0, 3);
 
-    GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
 }
-
 
 /*
  * renderSingleFrame()

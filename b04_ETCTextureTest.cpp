@@ -34,7 +34,7 @@ b04_ETCTextureTest::~b04_ETCTextureTest()
  * false must be returned to indicate core benchmark not to continue execution. Parent class DebugLog::Instance()->MESSAGE()
  * method can be used to output information about the initialization
  */
-bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, bool fullscreen)
+bool b04_ETCTextureTest::initBenchmark(void)
 {
     const char *texturefilename = "./resources/etctexture.pkm";
     const char vertex_src[] =
@@ -54,13 +54,6 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
        "{                                            \n"
        "  gl_FragColor = texture2D(s_texture, v_Texcoord);\n"
        "}                                            \n";
-
-
-    // Display and context init
-    if (false == createEGLDisplay(width, height, fullscreen))
-    {
-        return false;
-    }
 
     // Check for support of compressed ETC1 texture format
     if (false == queryCompressedTextureformats())
@@ -96,6 +89,10 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
     }
 
     GLWrapper::Instance()->GLCLEARCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // If we have errors in GL pipe, then abort.
+    if (GLWrapper::Instance()->getGLErrors() > 0) return false;
+
     return true;
 }
 
@@ -105,7 +102,6 @@ bool b04_ETCTextureTest::initBenchmark(unsigned int width, unsigned int height, 
  */
 bool b04_ETCTextureTest::destroyBenchmark(void)
 {
-    destroyEGLDisplay();
     return true;
 }
 
@@ -126,9 +122,8 @@ static GLfloat vTexcoord[] = { 0.0f, 0.0f,
 
 void b04_ETCTextureTest::Render(void)
 {
-    GLWrapper::Instance()->GLVIEWPORT(0, 0, w_width, w_height);
+    GLWrapper::Instance()->GLVIEWPORT(0, 0, display->getDisplayWidth(), display->getDisplayHeight());
     GLWrapper::Instance()->GLCLEAR(GL_COLOR_BUFFER_BIT);
-//    GLWrapper::Instance()->GLUSEPROGRAM(shaderProgram);
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
     GLWrapper::Instance()->GLENABLEVERTEXATTRIBARRAY(0);
     GLWrapper::Instance()->GLVERTEXATTRIBPOINTER(1, 2, GL_FLOAT, GL_FALSE, 0, vTexcoord);
@@ -140,7 +135,8 @@ void b04_ETCTextureTest::Render(void)
 
     GLWrapper::Instance()->GLDRAWARRAYS(GL_TRIANGLES, 0, 6);
 
-    GLWrapper::Instance()->EGLSWAPBUFFERS(egl_display, egl_surface);
+    // get the rendered buffer to the screen
+    GLWrapper::Instance()->EGLSWAPBUFFERS(display->getEGLDisplay(), display->getEGLSurface());
 }
 
 
@@ -172,7 +168,7 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
 
     // First we query the list of supported compressed texture formats
     glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &t);
-    flushGLErrors();
+    GLWrapper::Instance()->flushGLErrors();
     DebugLog::Instance()->MESSAGE(1, "Number of compressed texture formats supported by the driver: %d\n", t);
     if (t == 0)
     {
@@ -183,7 +179,7 @@ bool b04_ETCTextureTest::queryCompressedTextureformats(void)
     v = new GLint [t];
 
     glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, v);
-    flushGLErrors();
+    GLWrapper::Instance()->flushGLErrors();
 
     DebugLog::Instance()->MESSAGE(2, "Supported compressed texture formats:\n");
     for (int i=0; i<t; i++)
