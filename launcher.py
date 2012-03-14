@@ -10,8 +10,8 @@
 import sys, os
 
 def run_benchmark(xsize, ysize, fullscreen, verbose, framelimit, testcase, fpslimit):
-    print ("xsize=%d, ysize=%d, fullscreen=%d, verbose=%d, framelimit=%d, testcase=%d:%s, fpslimit=%d" %
-        (xsize, ysize, fullscreen, verbose, framelimit, testcase, tName[testcase-1], fpslimit))
+    #print ("xsize=%d, ysize=%d, fullscreen=%d, verbose=%d, framelimit=%d, testcase=%d:%s, fpslimit=%d" %
+    #    (xsize, ysize, fullscreen, verbose, framelimit, testcase, tName[testcase-1], fpslimit))
     import __API, time
 
     __API.initCore()
@@ -29,7 +29,7 @@ def run_benchmark(xsize, ysize, fullscreen, verbose, framelimit, testcase, fpsli
 
     starttime = time.time()
     if 0 != __API.runBenchmark(fpslimit, framelimit):
-        print "Error in benchmark execution"
+        print "Error during benchmark execution"
     else:
         endtime = time.time()
         print "Total time elapsed    %2.3f" % (endtime - starttime)
